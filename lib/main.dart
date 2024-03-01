@@ -14,9 +14,14 @@ import 'package:ea_frontend/screens/profile_screen/edit_password.dart';
 import 'package:ea_frontend/screens/credential_screen/login_screen.dart';
 import 'package:ea_frontend/screens/credential_screen/register_screen.dart';
 import 'package:ea_frontend/screens/credential_screen/splash_screen.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Color.fromARGB(255, 15, 15, 15),
+  ));
 
   await Firebase.initializeApp(
     name: "Dev Project",
@@ -34,7 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'EETAC Go',
+      title: 'UNIGO!',
       theme: ThemeData.light().copyWith(
         brightness: Brightness.light,
         backgroundColor: Color.fromARGB(255, 235, 235, 235),
@@ -71,7 +76,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark().copyWith(
         brightness: Brightness.dark,
-        backgroundColor: Color.fromARGB(255, 25, 25, 25),
+        backgroundColor: Color.fromARGB(255, 15, 15, 15),
         dividerColor: Color.fromARGB(255, 242, 242, 242),
         textTheme: TextTheme(
           bodyText1: TextStyle(

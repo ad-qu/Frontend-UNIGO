@@ -87,7 +87,8 @@ class MapsWidget extends State<MapScreen> {
         width: 35,
         point: LatLng(lat, long),
         rotate: true,
-        builder: (context) => GestureDetector(
+        // Utiliza 'child' para especificar el widget dentro del marcador
+        child: GestureDetector(
           onTap: () {
             setState(() {
               questions = challenge.questions;
@@ -311,7 +312,9 @@ class MapsWidget extends State<MapScreen> {
         height: 20,
         width: 20,
         point: LatLng(userLocation!.latitude, userLocation!.longitude),
-        builder: (_) => Image.asset(
+        // Utiliza 'child' para especificar el widget dentro del marcador
+        // En este caso, una imagen
+        child: Image.asset(
           'images/gps_pointer.png',
         ),
       );

@@ -1,11 +1,13 @@
 // ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:ea_frontend/screens/initial_screens/welcome_screen.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 
 void main() async {
   await dotenv.load();
@@ -32,7 +34,11 @@ class _SplashScreenState extends State<SplashScreen> {
     String? email = prefs.getString("email");
     String? password = prefs.getString("password");
     if (username == null) {
-      Navigator.pushNamed(context, '/login_screen');
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: const WelcomeScreen()));
     } else {
       var response = await Dio().post(
           'http://${dotenv.env['API_URL']}/auth/login',
@@ -52,8 +58,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(
-          255, 25, 25, 25), // Agregue el color de fondo aquí
+      backgroundColor:
+          Color.fromARGB(255, 15, 15, 15), // Agregue el color de fondo aquí
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,15 +70,18 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 children: [
                   Image.asset(
-                    'images/logo_splash.png',
-                    height: 225,
+                    'assets/icon/logo.png',
+                    height: 100,
                   ),
                 ],
               ),
             ),
             const CircularProgressIndicator(
+                backgroundColor: Color.fromARGB(25, 217, 59, 60),
+                strokeCap: StrokeCap.round,
+                strokeWidth: 5,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromARGB(255, 222, 66, 66))),
+                    Color.fromARGB(255, 217, 59, 60))),
             const Spacer(),
           ],
         ),

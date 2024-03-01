@@ -1,4 +1,12 @@
 {
+
+ "@---------------- WELCOME ------------------": {
+  },
+  "@@locale": "es",
+  "welcome": "¡Conoce, juega, reúnete y habla con tus amigos de la universidad! 🎉",
+  "get_stated": "Empieza",
+  "already_account": "Ya tengo una cuenta",
+
   "@---------------- PROFILE ------------------": {
   },
   "@@locale": "es",
