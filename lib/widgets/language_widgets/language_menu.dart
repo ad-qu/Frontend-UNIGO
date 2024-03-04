@@ -11,13 +11,13 @@ class LanguageMenu extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            selectedLanguage.value = 'ENG'; // Cambia al idioma seleccionado
-            Navigator.pop(context); // Cierra el popover
+            selectedLanguage.value = 'ENG';
+            Navigator.pop(context);
           },
           child: Container(
             height: 39,
-            color: const Color.fromARGB(255, 15, 15, 15),
-            child: Center(
+            color: const Color.fromARGB(255, 14, 14, 14),
+            child: const Center(
               child: Text(
                 'English',
                 style: TextStyle(
@@ -28,16 +28,16 @@ class LanguageMenu extends StatelessWidget {
             ),
           ),
         ),
-        const Divider(color: Color.fromARGB(45, 227, 227, 227), height: 1),
+        const Divider(color: Color.fromARGB(50, 227, 227, 227), height: 1),
         GestureDetector(
           onTap: () {
-            selectedLanguage.value = 'ESP'; // Cambia al idioma seleccionado
-            Navigator.pop(context); // Cierra el popover
+            selectedLanguage.value = 'ESP';
+            Navigator.pop(context);
           },
           child: Container(
             height: 40,
             color: const Color.fromARGB(255, 41, 41, 41),
-            child: Center(
+            child: const Center(
               child: Text(
                 'Español',
                 style: TextStyle(
@@ -48,16 +48,16 @@ class LanguageMenu extends StatelessWidget {
             ),
           ),
         ),
-        const Divider(color: Color.fromARGB(45, 227, 227, 227), height: 1),
+        const Divider(color: Color.fromARGB(50, 227, 227, 227), height: 1),
         GestureDetector(
           onTap: () {
             selectedLanguage.value = 'CAT';
-            Navigator.pop(context); // Cierra el popover
+            Navigator.pop(context);
           },
           child: Container(
             height: 40,
-            color: const Color.fromARGB(255, 25, 25, 25),
-            child: Center(
+            color: const Color.fromARGB(255, 14, 14, 14),
+            child: const Center(
               child: Text(
                 'Català',
                 style: TextStyle(

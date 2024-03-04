@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:ea_frontend/models/user.dart';
+import 'package:unigo/models/user.dart';
 
 List<Challenge> subjectFromJson(String str) =>
     List<Challenge>.from(json.decode(str).map((x) => Challenge.fromJson(x)));

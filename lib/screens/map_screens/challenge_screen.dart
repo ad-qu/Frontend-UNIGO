@@ -3,7 +3,7 @@ import '../../models/challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ea_frontend/screens/home_screen/qr_screen.dart';
+import 'package:unigo/screens/map_screens/qr_screen.dart';
 
 class MyChallengePage extends StatefulWidget {
   final String? selectedChallengeId;

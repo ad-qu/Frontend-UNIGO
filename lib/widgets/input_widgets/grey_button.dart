@@ -13,15 +13,15 @@ class BlackButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-            border: Border.all(
-                color: const Color.fromARGB(255, 41, 41, 41), width: 1),
-            color: const Color.fromARGB(15, 41, 41, 41),
+            border:
+                Border.all(color: Color.fromARGB(255, 25, 25, 25), width: 1),
+            color: const Color.fromARGB(50, 30, 30, 30),
             borderRadius: BorderRadius.circular(20)),
         child: Center(
           child: Text(
             buttonText,
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               color: Color.fromARGB(255, 227, 227, 227),
             ),
           ),

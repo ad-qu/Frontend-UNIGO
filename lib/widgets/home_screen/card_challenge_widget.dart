@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:ea_frontend/screens/home_screen/qr_screen.dart';
+import 'package:unigo/screens/map_screens/qr_screen.dart';
 
 class MyChallengeCard extends StatelessWidget {
   final int index;

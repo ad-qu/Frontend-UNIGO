@@ -3,13 +3,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:ea_frontend/screens/navbar_mobile.dart';
+import 'package:unigo/screens/navbar_mobile.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/credential_screen/credential_button.dart';
-import 'package:ea_frontend/widgets/credential_screen/credential_textfield.dart';
+import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {

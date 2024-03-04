@@ -2,14 +2,14 @@ import 'package:chat_bubbles/bubbles/bubble_special_one.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ea_frontend/widgets/loading_circle.dart';
+import 'package:unigo/widgets/loading_circle.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../models/challenge.dart';
 import '../../models/message.dart';
-import '../../widgets/chat_screen/chat_title_widget.dart';
+import '../../widgets/chat_title_widget.dart';
 import 'chat_service.dart';
 
 void main() async {

@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'card_challenge_list_widget.dart';
-import 'package:ea_frontend/models/challenge.dart';
+import 'package:unigo/models/challenge.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:ea_frontend/models/itinerario.dart';
+import 'package:unigo/models/itinerario.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ea_frontend/widgets/home_screen/card_challenge_widget.dart';
+import 'package:unigo/widgets/home_screen/card_challenge_widget.dart';
 
 void main() async {
   await dotenv.load();

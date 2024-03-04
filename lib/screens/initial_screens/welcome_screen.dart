@@ -1,12 +1,10 @@
-import 'package:ea_frontend/screens/credential_screen/login_screen.dart';
-import 'package:ea_frontend/screens/credential_screen/register_screen.dart';
+import 'package:unigo/screens/initial_screens/login_screen.dart';
+import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
-import 'package:ea_frontend/screens/initial_screens/login_screen.dart';
-import 'package:ea_frontend/widgets/input_widgets/grey_button.dart';
-import 'package:ea_frontend/widgets/language_widgets/language_button.dart';
-import 'package:ea_frontend/screens/initial_screens/signup_screen.dart';
-import 'package:ea_frontend/widgets/input_widgets/red_button.dart';
+import 'package:unigo/widgets/input_widgets/grey_button.dart';
+import 'package:unigo/widgets/language_widgets/language_button.dart';
+import 'package:unigo/widgets/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -35,11 +33,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       Navigator.push(
           context,
           PageTransition(
-              type: PageTransitionType.rightToLeft, child: RegisterScreen()));
+              type: PageTransitionType.rightToLeft, child: SignupScreen()));
     }
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 15, 15, 15),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: DoubleBackToCloseApp(
         snackBar: SnackBar(
           shape:
@@ -64,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       'v0.0.1',
                       style: TextStyle(
                         fontSize: 15,
-                        color: Color.fromARGB(255, 41, 41, 41),
+                        color: Color.fromARGB(255, 30, 30, 30),
                         fontWeight: FontWeight.normal,
                       ),
                     ),

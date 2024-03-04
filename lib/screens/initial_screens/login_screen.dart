@@ -1,138 +1,367 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+import 'package:flutter/widgets.dart';
+import 'package:unigo/screens/initial_screens/signup_screen.dart';
+import 'package:unigo/screens/navbar_mobile.dart';
+import 'package:unigo/services/auth_service.dart';
+import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
+import 'package:unigo/widgets/credential_screen/credential_button.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:popover/popover.dart';
+import 'package:dio/dio.dart';
+import 'package:unigo/widgets/credential_screen/password_textfield.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../models/user.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
+import 'package:page_transition/page_transition.dart';
 
-class LogInScreen extends StatefulWidget {
-  const LogInScreen({super.key});
-
-  @override
-  //ignore: library_private_types_in_public_api
-  _LogInScreenState createState() => _LogInScreenState();
+void main() async {
+  await dotenv.load();
 }
 
-class _LogInScreenState extends State<LogInScreen> {
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+    //Text editing controllers
+    final passwordController = TextEditingController();
+    final emailController = TextEditingController();
+    //Login with Google
+
+    //Login method
+    void logIn() async {
+      if ((emailController.text != '') && (passwordController.text != '')) {
+        try {
+          var response = await Dio().post(
+            'http://${dotenv.env['API_URL']}/auth/login',
+            data: {
+              "email": emailController.text,
+              "password": passwordController.text
+            },
+          );
+          if (response.statusCode == 200) {
+            Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
+            User u = User.fromJson(payload);
+            var data = json.decode(response.toString());
+            final SharedPreferences prefs =
+                await SharedPreferences.getInstance();
+            prefs.setString('token', data['token']);
+            prefs.setString('idUser', u.idUser);
+            prefs.setString('name', u.name);
+            prefs.setString('surname', u.surname);
+            prefs.setString('username', u.username);
+            prefs.setString('email', emailController.text);
+            prefs.setString('password', passwordController.text);
+            prefs.setString('imageURL', u.imageURL ?? '');
+            try {
+              // prefs.setInt('exp', u.exp!);
+              prefs.setInt('level', u.level!);
+              prefs.setInt('experience', u.experience!);
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+                  showCloseIcon: true,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                  content: Text(
+                    'Error $e',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                  const Button(),
-                ],
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
+            Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.rightToLeft,
+                    child: const NavBar()));
+          } else if (response.statusCode == 220) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+                showCloseIcon: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                content: const Text(
+                  'Disabled account',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          } else if (response.statusCode == 221) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+                showCloseIcon: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                content: const Text(
+                  'Account not found',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          } else if (response.statusCode == 222) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+                showCloseIcon: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                content: const Text(
+                  'Wrong credentials. Try again with other values',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+                showCloseIcon: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                content: const Text(
+                  'Wrong credentials. Try again with other values',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+              showCloseIcon: true,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+              content: const Text(
+                'Wrong credentials. Try again with other values',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+            showCloseIcon: true,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+            content: const Text(
+              'Empty credentials. Please, try again',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(50.0),
-                child: Center(
-                  child: Column(
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: DoubleBackToCloseApp(
+        snackBar: SnackBar(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+            content: const Text(
+              'Tap back again to leave',
+              textAlign: TextAlign.center,
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(milliseconds: 850)),
+        child: SafeArea(
+          child: Center(
+            child: SizedBox(
+              width: 1080,
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Image.asset('assets/icon/logo.png', height: 75),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 5),
+
+                        // Email address textfield
+                        CredentialTextField(
+                          controller: emailController,
+                          labelText: AppLocalizations.of(context)!.email,
+                          obscureText: false,
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        // Password textfield
+                        PasswordTextField(
+                          controller: passwordController,
+                          labelText: AppLocalizations.of(context)!.pass,
+                          obscureText: true,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Log in button
+                        CredentialButton(
+                          buttonText: AppLocalizations.of(context)!.login,
+                          onTap: logIn,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Or continue with
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Divider(
+                                  thickness: 1,
+                                  color: Color.fromARGB(255, 138, 138, 138),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 30),
+                                child: Text(
+                                  AppLocalizations.of(context)!.continuewith,
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        ?.color,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  thickness: 1,
+                                  color: Color.fromARGB(255, 138, 138, 138),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Google
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: GestureDetector(
+                        onTap: () => AuthService().signInWithGoogle(context),
+                        child: Image.asset(
+                          Theme.of(context).brightness == Brightness.light
+                              ? 'images/google_2.png'
+                              : 'images/google.png',
+                          height: 65,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Don't have an account?
+                  const SizedBox(height: 20),
+
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/welcome.png'),
-                      const SizedBox(
-                          height: 60), // Espacio entre la imagen y el texto
-                      const Text(
-                        'Meet, play, get together and talk with your friends from your university! 🎉',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 15),
+                      Text(
+                        AppLocalizations.of(context)!.dont_have_account,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyText1?.color,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: const SignupScreen()));
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.signin,
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 222, 66, 66),
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 15),
+                ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
-}
-
-class Button extends StatelessWidget {
-  const Button({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 80,
-      height: 40,
-      child: GestureDetector(
-        child: const Row(
-          children: [
-            const Icon(Icons.language),
-            const SizedBox(width: 7.5),
-            SizedBox(
-              width: 40,
-              child: Text(
-                "ENG",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Color.fromARGB(255, 227, 227, 227),
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-          ],
-        ),
-        onTap: () {
-          showPopover(
-            context: context,
-            bodyBuilder: (context) => const ListItems(),
-            direction: PopoverDirection.bottom,
-            width: 200,
-            height: 400,
-            arrowHeight: 15,
-            arrowWidth: 30,
-          );
-        },
-      ),
-    );
-  }
-}
-
-class ListItems extends StatelessWidget {
-  const ListItems({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ListView(
-        padding: const EdgeInsets.all(8),
-        children: [
-          InkWell(
-            onTap: () {},
-            child: Container(
-              height: 50,
-              color: Colors.amber[100],
-              child: const Center(child: Text('English')),
-            ),
-          ),
-          const Divider(),
-          Container(
-            height: 50,
-            color: Colors.amber[200],
-            child: const Center(child: Text('Español')),
-          ),
-          const Divider(),
-          Container(
-            height: 50,
-            color: Colors.amber[300],
-            child: const Center(child: Text('Català')),
-          ),
-        ],
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
-import 'package:ea_frontend/screens/navbar_mobile.dart';
+import 'package:unigo/screens/navbar_mobile.dart';
 // ignore: unnecessary_import
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

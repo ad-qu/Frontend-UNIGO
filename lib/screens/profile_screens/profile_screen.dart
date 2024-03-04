@@ -1,5 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
-import 'package:ea_frontend/screens/credential_screen/login_screen.dart';
+import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:dio/dio.dart';
@@ -12,8 +12,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/user.dart' as user_ea;
 import '../../widgets/profile_screen/card_user_widget.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:ea_frontend/screens/profile_screen/edit_info.dart';
-import 'package:ea_frontend/screens/profile_screen/edit_password.dart';
+import 'package:unigo/screens/profile_screens/edit_info.dart';
+import 'package:unigo/screens/profile_screens/edit_password.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -886,7 +886,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   const SizedBox(height: 45),
                                                   Padding(
                                                     padding: const EdgeInsets
-                                                            .symmetric(
+                                                        .symmetric(
                                                         horizontal: 2.0),
                                                     child: TextField(
                                                       onChanged: (value) {
@@ -932,7 +932,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         ),
                                                         contentPadding:
                                                             const EdgeInsets
-                                                                    .fromLTRB(
+                                                                .fromLTRB(
                                                                 18.5, 14, 0, 0),
                                                       ),
                                                     ),
@@ -988,11 +988,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                           ),
                                                           margin:
                                                               const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  20,
-                                                                  0,
-                                                                  20,
-                                                                  22.5),
+                                                                  .fromLTRB(20,
+                                                                  0, 20, 22.5),
                                                           content: const Text(
                                                             'Nombre de usuario incorrecto',
                                                             textAlign: TextAlign

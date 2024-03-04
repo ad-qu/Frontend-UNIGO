@@ -1,26 +1,26 @@
 // ignore_for_file: prefer_const_constructors, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'screens/chat_screen/chat_screen.dart';
+import 'screens/entity_screens/chat_screen.dart';
 import 'services/firebase_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:ea_frontend/screens/navbar_mobile.dart';
+import 'package:unigo/screens/navbar_mobile.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ea_frontend/screens/profile_screen/edit_info.dart';
-import 'package:ea_frontend/screens/profile_screen/edit_password.dart';
-import 'package:ea_frontend/screens/credential_screen/login_screen.dart';
-import 'package:ea_frontend/screens/credential_screen/register_screen.dart';
-import 'package:ea_frontend/screens/credential_screen/splash_screen.dart';
+import 'package:unigo/screens/profile_screens/edit_info.dart';
+import 'package:unigo/screens/profile_screens/edit_password.dart';
+import 'package:unigo/screens/initial_screens/login_screen.dart';
+import 'package:unigo/screens/initial_screens/signup_screen.dart';
+import 'package:unigo/screens/initial_screens/splash_screen.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Color.fromARGB(255, 15, 15, 15),
+    statusBarColor: Color.fromARGB(255, 10, 10, 10),
   ));
 
   await Firebase.initializeApp(
@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
       title: 'UNIGO!',
       theme: ThemeData.light().copyWith(
         brightness: Brightness.light,
+        scaffoldBackgroundColor: Color.fromARGB(255, 10, 10, 10),
         backgroundColor: Color.fromARGB(255, 235, 235, 235),
         dividerColor: Color.fromARGB(255, 37, 37, 37),
         buttonTheme: ButtonThemeData(
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark().copyWith(
         brightness: Brightness.dark,
+        scaffoldBackgroundColor: Color.fromARGB(255, 10, 10, 10),
         backgroundColor: Color.fromARGB(255, 15, 15, 15),
         dividerColor: Color.fromARGB(255, 242, 242, 242),
         textTheme: TextTheme(
@@ -117,13 +119,12 @@ class MyApp extends StatelessWidget {
         Locale('en'),
         Locale('es'),
         Locale('ca'),
-        Locale('zh')
       ],
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/register_screen':
             return MaterialPageRoute(
-                builder: (context) => const RegisterScreen());
+                builder: (context) => const SignupScreen());
 
           case '/navbar':
             return MaterialPageRoute(builder: (context) => const NavBar());

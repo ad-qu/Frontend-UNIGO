@@ -19,7 +19,7 @@ class RedButton extends StatelessWidget {
           child: Text(
             buttonText,
             style: const TextStyle(
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
                 color: Color.fromARGB(255, 227, 227, 227)),
           ),

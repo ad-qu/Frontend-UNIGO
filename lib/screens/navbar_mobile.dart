@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
 //Screens
-import 'package:ea_frontend/screens/home_screen/home_screen.dart';
-import 'package:ea_frontend/screens/profile_screen/profile_screen.dart';
-import 'package:ea_frontend/screens/discover_screen/discover_screen.dart';
+import 'package:unigo/screens/map_screens/home_screen.dart';
+import 'package:unigo/screens/profile_screens/profile_screen.dart';
+import 'package:unigo/screens/entity_screens/discover_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 
-import 'chat_screen/list_chat_screen.dart';
+import 'entity_screens/list_chat_screen.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({Key? key}) : super(key: key);

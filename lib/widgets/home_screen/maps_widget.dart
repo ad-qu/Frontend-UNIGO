@@ -6,11 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:ea_frontend/models/challenge.dart';
+import 'package:unigo/models/challenge.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:ea_frontend/screens/home_screen/challenge_screen.dart';
+import 'package:unigo/screens/map_screens/challenge_screen.dart';
 
 void main() async {
   await dotenv.load();

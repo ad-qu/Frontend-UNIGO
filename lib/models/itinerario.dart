@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:ea_frontend/models/challengeextract.dart';
+import 'package:unigo/models/challengeextract.dart';
 
 List<Itinerario> subjectFromJson(String str) =>
     List<Itinerario>.from(json.decode(str).map((x) => Itinerario.fromJson(x)));

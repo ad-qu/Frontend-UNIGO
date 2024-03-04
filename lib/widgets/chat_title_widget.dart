@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:ea_frontend/screens/navbar_mobile.dart';
+import 'package:unigo/screens/navbar_mobile.dart';
 
 class MyChatTitleCard extends StatelessWidget {
   final String attr1;

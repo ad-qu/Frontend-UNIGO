@@ -12,22 +12,17 @@ class CredentialButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(22),
-        margin: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.all(21.5),
         decoration: BoxDecoration(
-            border: Border.all(
-                color: Theme.of(context).textTheme.headline2?.color ??
-                    const Color.fromARGB(255, 242, 242, 242),
-                width: 3),
-            color: const Color.fromARGB(255, 222, 66, 66),
+            color: const Color.fromARGB(255, 217, 59, 60),
             borderRadius: BorderRadius.circular(20)),
         child: Center(
           child: Text(
             buttonText,
             style: const TextStyle(
-              color: Color.fromARGB(255, 242, 242, 242),
+              color: Color.fromARGB(255, 227, 227, 227),
               fontWeight: FontWeight.w900,
-              fontSize: 19,
+              fontSize: 14,
             ),
           ),
         ),

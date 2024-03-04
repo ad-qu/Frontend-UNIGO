@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:557103334938:android:3d30fa74130ba514c3b3a3",
         "android_client_info": {
-          "package_name": "com.example.ea_frontend"
+          "package_name": "com.example.unigo"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "557103334938-gtuisb5las14oelkep12j4a8v1ckrj1h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.ea_frontend",
+            "package_name": "com.example.unigo",
             "certificate_hash": "097ae48bff5a5fe602c9a4f4056b78f622a377b6"
           }
         },

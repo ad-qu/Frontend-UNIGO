@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:popover/popover.dart';
-import 'package:ea_frontend/widgets/language_widgets/language_menu.dart';
+import 'package:unigo/widgets/language_widgets/language_menu.dart';
 
 class LanguageButton extends StatelessWidget {
   final ValueNotifier<String> selectedLanguage;
@@ -37,6 +38,9 @@ class LanguageButton extends StatelessWidget {
           ],
         ),
         onTap: () {
+          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+            statusBarColor: Color.fromARGB(255, 5, 5, 5),
+          ));
           showPopover(
             context: context,
             bodyBuilder: (context) =>
@@ -49,7 +53,14 @@ class LanguageButton extends StatelessWidget {
             arrowWidth: 15,
             arrowDxOffset: 15,
             radius: 20,
-            backgroundColor: const Color.fromARGB(255, 25, 25, 25),
+            backgroundColor: Color.fromARGB(255, 14, 14, 14),
+            onPop: () {
+              // Restaurar el color de la barra de estado cuando se cierra el popover
+              SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+                statusBarColor: Color.fromARGB(255, 10, 10,
+                    10), // Cambiar al color predeterminado cuando se cierra el popover
+              ));
+            },
           );
         },
       ),
