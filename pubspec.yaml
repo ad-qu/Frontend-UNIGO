@@ -58,7 +58,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   dio: ^5.0.2
-  flutter_native_splash: ^2.2.10+1
   jwt_decode: ^0.3.1
   shared_preferences: ^2.1.0
   email_validator: ^2.1.17
@@ -107,10 +106,6 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
-fluter_native_splash:
-  color: "#0B5DAE"
-  image: "images/logoApp.png"
-
 # The following section is specific to Flutter packages.
 flutter:
   generate: true
@@ -123,9 +118,8 @@ flutter:
   assets:
     - images/
     - .env
-    - assets/images/welcome.png
-    - assets/images/padkey.png
-    - assets/icon/logo.png
+    - assets/icon/
+    - assets/images/
 
   #   - images/a_dot_ham.jpeg
 

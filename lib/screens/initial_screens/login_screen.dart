@@ -1,9 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
-import 'package:unigo/screens/navbar_mobile.dart';
+import 'package:unigo/screens/initial_screens/welcome_screen.dart';
+import 'package:unigo/screens/navbar.dart';
 import 'package:unigo/services/auth_service.dart';
 import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
 import 'package:unigo/widgets/credential_screen/credential_button.dart';
@@ -18,6 +20,7 @@ import '../../models/user.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:unigo/widgets/language_widgets/language_button.dart';
 
 void main() async {
   await dotenv.load();
@@ -32,6 +35,7 @@ class LoginScreen extends StatelessWidget {
     final passwordController = TextEditingController();
     final emailController = TextEditingController();
     //Login with Google
+    final ValueNotifier<String> selectedLanguage = ValueNotifier<String>('ENG');
 
     //Login method
     void logIn() async {
@@ -207,7 +211,7 @@ class LoginScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: DoubleBackToCloseApp(
         snackBar: SnackBar(
             shape:
@@ -225,20 +229,43 @@ class LoginScreen extends StatelessWidget {
               width: 1080,
               child: Column(
                 children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    type: PageTransitionType.leftToRight,
+                                    child: const WelcomeScreen()));
+                          },
+                          child: const Icon(
+                            Icons
+                                .arrow_back_ios_rounded, // Replace with the desired icon
+                            color: Color.fromARGB(255, 227, 227, 227),
+                            size: 25,
+                          ),
+                        ),
+                        LanguageButton(selectedLanguage: selectedLanguage),
+                      ],
+                    ),
+                  ),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Image.asset('assets/icon/logo.png', height: 75),
+                        Image.asset('assets/icon/logo.png', height: 92.5),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 5),
                   Padding(
-                    padding: EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(30.0),
                     child: Column(
                       children: [
-                        const SizedBox(height: 5),
-
                         // Email address textfield
                         CredentialTextField(
                           controller: emailController,
@@ -255,7 +282,7 @@ class LoginScreen extends StatelessWidget {
                           obscureText: true,
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 35),
 
                         // Log in button
                         CredentialButton(
@@ -263,7 +290,7 @@ class LoginScreen extends StatelessWidget {
                           onTap: logIn,
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 30),
 
                         // Or continue with
                         Padding(
@@ -273,7 +300,7 @@ class LoginScreen extends StatelessWidget {
                               Expanded(
                                 child: Divider(
                                   thickness: 1,
-                                  color: Color.fromARGB(255, 138, 138, 138),
+                                  color: const Color.fromARGB(255, 25, 25, 25),
                                 ),
                               ),
                               Padding(
@@ -293,70 +320,102 @@ class LoginScreen extends StatelessWidget {
                               Expanded(
                                 child: Divider(
                                   thickness: 1,
-                                  color: Color.fromARGB(255, 138, 138, 138),
+                                  color: const Color.fromARGB(255, 25, 25, 25),
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        const SizedBox(height: 30),
+
+                        // Google
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 65.0,
+                              height: 65.0,
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 25, 25, 25),
+                                borderRadius: BorderRadius.circular(
+                                    55.0), // Mitad de la altura
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(55.0),
+                                  child: Image.asset(
+                                    'assets/images/google.png',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 35),
+
+                            // Google
+                            Container(
+                              width: 65.0,
+                              height: 65.0,
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 25, 25, 25),
+                                borderRadius: BorderRadius.circular(
+                                    55.0), // Mitad de la altura
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(55.0),
+                                  child: Image.asset(
+                                    'assets/images/apple_dark.png',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Don't have an account?
+                        const SizedBox(height: 30),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.dont_have_account,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    ?.color,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: const SignupScreen()));
+                              },
+                              child: Text(
+                                AppLocalizations.of(context)!.signin,
+                                style: const TextStyle(
+                                  color: Color.fromARGB(255, 222, 66, 66),
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  // Google
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: GestureDetector(
-                        onTap: () => AuthService().signInWithGoogle(context),
-                        child: Image.asset(
-                          Theme.of(context).brightness == Brightness.light
-                              ? 'images/google_2.png'
-                              : 'images/google.png',
-                          height: 65,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Don't have an account?
-                  const SizedBox(height: 20),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.dont_have_account,
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyText1?.color,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const SignupScreen()));
-                        },
-                        child: Text(
-                          AppLocalizations.of(context)!.signin,
-                          style: const TextStyle(
-                            color: Color.fromARGB(255, 222, 66, 66),
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
                 ],
               ),
             ),

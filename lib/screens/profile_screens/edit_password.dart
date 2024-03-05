@@ -2,7 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
-import 'package:unigo/screens/navbar_mobile.dart';
+import 'package:unigo/screens/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';

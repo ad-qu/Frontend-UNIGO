@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import '../../widgets/credential_screen/credential_button.dart';
 import 'package:unigo/widgets/credential_screen/password_textfield.dart';
 import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:unigo/widgets/language_widgets/language_button.dart';
 
 void main() async {
   await dotenv.load();
@@ -47,6 +49,8 @@ class _SignupScreenState extends State<SignupScreen> {
     super.initState();
     passwordVisible = true;
   }
+
+  final ValueNotifier<String> selectedLanguage = ValueNotifier<String>('ENG');
 
   Widget buildRichTextWithEllipsis(BuildContext context) {
     String termsText = AppLocalizations.of(context)!.terms;
@@ -330,6 +334,30 @@ class _SignupScreenState extends State<SignupScreen> {
           width: 1080,
           child: Column(
             children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.leftToRight,
+                                child: const WelcomeScreen()));
+                      },
+                      child: const Icon(
+                        Icons
+                            .arrow_back_ios_rounded, // Replace with the desired icon
+                        color: Color.fromARGB(255, 227, 227, 227),
+                        size: 25,
+                      ),
+                    ),
+                    LanguageButton(selectedLanguage: selectedLanguage),
+                  ],
+                ),
+              ),
               Expanded(
                 child: Center(
                   child: Column(
@@ -358,7 +386,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             obscureText: false,
                           ),
                         ),
-                        SizedBox(width: 15),
+                        const SizedBox(width: 15),
                         Flexible(
                           child: CredentialTextField(
                             controller: surnameController,
