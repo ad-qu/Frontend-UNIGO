@@ -28,7 +28,8 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return TextField(
       controller: widget.controller,
       obscureText: _obscureText,
-      cursorColor: const Color.fromARGB(255, 222, 66, 66),
+      cursorColor: const Color.fromARGB(255, 227, 227, 227),
+      cursorWidth: 1,
       style: const TextStyle(
           color: Color.fromARGB(255, 227, 227, 227), fontSize: 14),
       decoration: InputDecoration(
@@ -49,17 +50,20 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           fillColor: const Color.fromARGB(50, 30, 30, 30),
           filled: true,
           suffixIcon: Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: IconButton(
-              icon: Icon(
-                _obscureText ? Icons.visibility : Icons.visibility_off,
-                color: Color.fromARGB(255, 227, 227, 227),
+            padding: EdgeInsets.only(right: 7.0),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                  color: Color.fromARGB(255, 227, 227, 227),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
             ),
           )),
     );

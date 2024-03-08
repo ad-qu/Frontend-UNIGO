@@ -7,8 +7,8 @@ import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import 'package:unigo/screens/navbar.dart';
 import 'package:unigo/services/auth_service.dart';
-import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
-import 'package:unigo/widgets/credential_screen/credential_button.dart';
+import 'package:unigo/widgets/credential_screen/input_textfield.dart';
+import 'package:unigo/widgets/input_widgets/red_button.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -236,7 +236,7 @@ class LoginScreen extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pop(
                                 context,
                                 PageTransition(
                                     type: PageTransitionType.leftToRight,
@@ -257,17 +257,17 @@ class LoginScreen extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Image.asset('assets/icon/logo.png', height: 92.5),
+                        Image.asset('assets/icon/logo.png', height: 95),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 7.5),
                   Padding(
                     padding: const EdgeInsets.all(30.0),
                     child: Column(
                       children: [
                         // Email address textfield
-                        CredentialTextField(
+                        InputTextField(
                           controller: emailController,
                           labelText: AppLocalizations.of(context)!.email,
                           obscureText: false,
@@ -281,11 +281,51 @@ class LoginScreen extends StatelessWidget {
                           labelText: AppLocalizations.of(context)!.pass,
                           obscureText: true,
                         ),
+                        const SizedBox(height: 12.5),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12.5, 0, 0, 0),
+                          child: Row(
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.forgot_password,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        ?.color,
+                                    fontSize: 14),
+                              ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType.leftToRight,
+                                          child: const LoginScreen()));
+                                },
+                                child: Text(
+                                  AppLocalizations.of(context)!.click_here,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.underline,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        ?.color,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         const SizedBox(height: 35),
 
                         // Log in button
-                        CredentialButton(
+                        RedButton(
                           buttonText: AppLocalizations.of(context)!.login,
                           onTap: logIn,
                         ),
@@ -395,10 +435,10 @@ class LoginScreen extends StatelessWidget {
                             const SizedBox(width: 4),
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     PageTransition(
-                                        type: PageTransitionType.rightToLeft,
+                                        type: PageTransitionType.fade,
                                         child: const SignupScreen()));
                               },
                               child: Text(

@@ -3,7 +3,7 @@
  "@---------------- WELCOME ------------------": {
   },
   "@@locale": "es",
-  "welcome": "¡Conoce, juega, reúnete y habla con tus amigos de la universidad! 🎉",
+  "welcome": "¡Explora, conecta y descubre! 🎉",
   "get_stated": "Empieza",
   "already_account": "Ya tengo una cuenta",
 
@@ -76,6 +76,8 @@
   "continuewith": "O continúa con",
   "dont_have_account": "¿No tienes cuenta?",
   "signin": "Regístrate",
+  "forgot_password": "¿Has olvidado tu contraseña?",
+  "click_here": "Presione aquí",
 
   "@---------------- REGISTER ------------------": {
   },

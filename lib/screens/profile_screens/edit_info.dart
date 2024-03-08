@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../widgets/credential_screen/credential_button.dart';
-import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
+import '../../widgets/input_widgets/red_button.dart';
+import 'package:unigo/widgets/credential_screen/input_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -256,7 +256,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
                                 child: Column(
                                   children: [
                                     //Name textfield
-                                    CredentialTextField(
+                                    InputTextField(
                                         controller: nameController,
                                         labelText: "$_name",
                                         obscureText: false),
@@ -264,7 +264,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
                                     const SizedBox(height: 10),
 
                                     //Surname textfield
-                                    CredentialTextField(
+                                    InputTextField(
                                         controller: surnameController,
                                         labelText: "$_surname",
                                         obscureText: false),
@@ -272,7 +272,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
                                     const SizedBox(height: 10),
 
                                     //Username textfield
-                                    CredentialTextField(
+                                    InputTextField(
                                         controller: usernameController,
                                         labelText: "$_username",
                                         obscureText: false),
@@ -280,7 +280,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
                                     const SizedBox(height: 30),
 
                                     //Sign up button
-                                    CredentialButton(
+                                    RedButton(
                                       buttonText: "EDITAR",
                                       onTap: editAccount,
                                     ),

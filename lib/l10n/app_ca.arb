@@ -72,6 +72,8 @@
   "continuewith": "O continua amb",
   "dont_have_account": "No tens cap compte?",
   "signin": "Registra't",
+  "forgot_password": "Has oblidat la contrasenya?",
+  "click_here": "Premeu aquí",
 
   "@---------------- REGISTER ------------------": {
   },

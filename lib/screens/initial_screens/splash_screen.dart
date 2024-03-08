@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          Color.fromARGB(255, 10, 10, 10), // Agregue el color de fondo aquí
+          Color.fromARGB(255, 15, 15, 15), // Agregue el color de fondo aquí
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

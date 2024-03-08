@@ -1,10 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
+import 'package:unigo/widgets/input_widgets/red_button.dart';
 import 'package:unigo/widgets/input_widgets/grey_button.dart';
 import 'package:unigo/widgets/language_widgets/language_button.dart';
-import 'package:unigo/widgets/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -73,25 +74,42 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(50.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/images/welcome.png'),
-                        const SizedBox(
-                          height: 60,
-                        ), // Espacio entre la imagen y el texto
-                        Text(
-                          AppLocalizations.of(context)!.welcome,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: Color.fromARGB(255, 227, 227, 227),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // child: Center(
+                  //   child: Column(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Align(
+                  //         alignment: Alignment.topCenter,
+                  //         child: Image.asset(
+                  //           'assets/images/logo.png',
+                  //           width: 150,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(
+                  //         height: 15,
+                  //       ),
+                  //       Align(
+                  //         alignment: Alignment.topCenter,
+                  //         child: Image.asset(
+                  //           'assets/images/UNIGO.png',
+                  //           width: 157.5,
+                  //         ),
+                  //       ),
+                  //       const SizedBox(
+                  //         height: 60,
+                  //       ), // Espacio entre la imagen y el texto
+                  //       Text(
+                  //         AppLocalizations.of(context)!.welcome,
+                  //         textAlign: TextAlign.center,
+                  //         style: const TextStyle(
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.w900,
+                  //           color: Color.fromARGB(255, 227, 227, 227),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ),
               ),
               Padding(

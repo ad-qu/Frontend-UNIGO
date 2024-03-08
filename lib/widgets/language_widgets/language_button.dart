@@ -39,7 +39,7 @@ class LanguageButton extends StatelessWidget {
         ),
         onTap: () {
           SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-            statusBarColor: Color.fromARGB(255, 5, 5, 5),
+            statusBarColor: Color.fromARGB(255, 7, 7, 7),
           ));
           showPopover(
             context: context,
@@ -57,8 +57,8 @@ class LanguageButton extends StatelessWidget {
             onPop: () {
               // Restaurar el color de la barra de estado cuando se cierra el popover
               SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-                statusBarColor: Color.fromARGB(255, 10, 10,
-                    10), // Cambiar al color predeterminado cuando se cierra el popover
+                statusBarColor: Color.fromARGB(255, 15, 15,
+                    15), // Cambiar al color predeterminado cuando se cierra el popover
               ));
             },
           );

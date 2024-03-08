@@ -8,9 +8,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
-import '../../widgets/credential_screen/credential_button.dart';
+import '../../widgets/input_widgets/red_button.dart';
 import 'package:unigo/widgets/credential_screen/password_textfield.dart';
-import 'package:unigo/widgets/credential_screen/credential_textfield.dart';
+import 'package:unigo/widgets/credential_screen/input_textfield.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/widgets/language_widgets/language_button.dart';
 
@@ -341,7 +341,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pop(
                             context,
                             PageTransition(
                                 type: PageTransitionType.leftToRight,
@@ -380,7 +380,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          child: CredentialTextField(
+                          child: InputTextField(
                             controller: nameController,
                             labelText: AppLocalizations.of(context)!.name,
                             obscureText: false,
@@ -388,7 +388,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         const SizedBox(width: 15),
                         Flexible(
-                          child: CredentialTextField(
+                          child: InputTextField(
                             controller: surnameController,
                             labelText: AppLocalizations.of(context)!.surname,
                             obscureText: false,
@@ -400,7 +400,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(height: 15),
 
                     //Username textfield
-                    CredentialTextField(
+                    InputTextField(
                         controller: usernameController,
                         labelText: AppLocalizations.of(context)!.username,
                         obscureText: false),
@@ -408,7 +408,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 15),
 
                     //Email address textfield
-                    CredentialTextField(
+                    InputTextField(
                         controller: emailController,
                         labelText: AppLocalizations.of(context)!.email2,
                         obscureText: false),
@@ -585,7 +585,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(height: 20),
 
                     //Sign up button
-                    CredentialButton(
+                    RedButton(
                       buttonText: AppLocalizations.of(context)!.signup,
                       onTap: signUp,
                     ),
@@ -606,10 +606,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         const SizedBox(width: 4),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 PageTransition(
-                                    type: PageTransitionType.leftToRight,
+                                    type: PageTransitionType.fade,
                                     child: const LoginScreen()));
                           },
                           child: Text(

@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../widgets/credential_screen/credential_button.dart';
+import '../../widgets/input_widgets/red_button.dart';
 import 'package:unigo/widgets/credential_screen/password_textfield.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -456,7 +456,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                                     const SizedBox(height: 30),
 
                                     //Sign up button
-                                    CredentialButton(
+                                    RedButton(
                                       buttonText: "EDITAR",
                                       onTap: editAccount,
                                     ),

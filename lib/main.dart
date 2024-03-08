@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'screens/entity_screens/chat_screen.dart';
 import 'services/firebase_service.dart';
@@ -20,7 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Color.fromARGB(255, 10, 10, 10),
+    statusBarColor: Color.fromARGB(255, 15, 15, 15),
   ));
 
   await Firebase.initializeApp(
@@ -34,7 +32,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -77,7 +76,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark().copyWith(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: Color.fromARGB(255, 10, 10, 10),
+        scaffoldBackgroundColor: Color.fromARGB(255, 15, 15, 15),
         backgroundColor: Color.fromARGB(255, 15, 15, 15),
         dividerColor: Color.fromARGB(255, 242, 242, 242),
         textTheme: TextTheme(
@@ -108,7 +107,19 @@ class MyApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      home: SplashScreen(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textSelectionTheme: const TextSelectionThemeData(
+              cursorColor: Color.fromARGB(255, 227, 227, 227),
+              selectionColor: Color.fromARGB(35, 227, 227, 227),
+              selectionHandleColor: Color.fromARGB(255, 217, 59, 60),
+            ),
+          ),
+          child: child!,
+        );
+      },
+      home: const SplashScreen(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

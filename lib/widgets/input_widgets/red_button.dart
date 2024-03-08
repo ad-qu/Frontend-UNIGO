@@ -13,15 +13,16 @@ class RedButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(21.5),
         decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 217, 59, 60),
+            color: Color.fromARGB(255, 204, 49, 49),
             borderRadius: BorderRadius.circular(20)),
         child: Center(
           child: Text(
             buttonText,
             style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: Color.fromARGB(255, 227, 227, 227)),
+              color: Color.fromARGB(255, 227, 227, 227),
+              fontWeight: FontWeight.w900,
+              fontSize: 14,
+            ),
           ),
         ),
       ),
