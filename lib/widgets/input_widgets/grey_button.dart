@@ -11,17 +11,18 @@ class BlackButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16.5),
         decoration: BoxDecoration(
             border:
-                Border.all(color: Color.fromARGB(255, 25, 25, 25), width: 1),
-            color: const Color.fromARGB(50, 30, 30, 30),
-            borderRadius: BorderRadius.circular(20)),
+                Border.all(color: Color.fromARGB(255, 30, 30, 30), width: 1),
+            color: const Color.fromARGB(255, 23, 23, 23),
+            borderRadius: BorderRadius.circular(17.5)),
         child: Center(
           child: Text(
             buttonText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
+              //fontWeight: FontWeight.w300,
               color: Color.fromARGB(255, 227, 227, 227),
             ),
           ),

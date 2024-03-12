@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LanguageMenu extends StatelessWidget {
   final ValueNotifier<String> selectedLanguage;
@@ -16,19 +17,19 @@ class LanguageMenu extends StatelessWidget {
           },
           child: Container(
             height: 39,
-            color: const Color.fromARGB(255, 14, 14, 14),
-            child: const Center(
+            color: const Color.fromARGB(255, 20, 20, 20),
+            child: Center(
               child: Text(
                 'English',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color.fromARGB(255, 227, 227, 227),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: const Color.fromARGB(255, 227, 227, 227),
                 ),
               ),
             ),
           ),
         ),
-        const Divider(color: Color.fromARGB(50, 227, 227, 227), height: 1),
+        const Divider(color: Color.fromARGB(255, 35, 35, 35), height: 1),
         GestureDetector(
           onTap: () {
             selectedLanguage.value = 'ESP';
@@ -36,19 +37,19 @@ class LanguageMenu extends StatelessWidget {
           },
           child: Container(
             height: 40,
-            color: const Color.fromARGB(255, 41, 41, 41),
-            child: const Center(
+            color: const Color.fromARGB(255, 30, 30, 30),
+            child: Center(
               child: Text(
                 'Español',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color.fromARGB(255, 227, 227, 227),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: const Color.fromARGB(255, 227, 227, 227),
                 ),
               ),
             ),
           ),
         ),
-        const Divider(color: Color.fromARGB(50, 227, 227, 227), height: 1),
+        const Divider(color: Color.fromARGB(255, 35, 35, 35), height: 1),
         GestureDetector(
           onTap: () {
             selectedLanguage.value = 'CAT';
@@ -56,13 +57,13 @@ class LanguageMenu extends StatelessWidget {
           },
           child: Container(
             height: 40,
-            color: const Color.fromARGB(255, 14, 14, 14),
-            child: const Center(
+            color: const Color.fromARGB(255, 20, 20, 20),
+            child: Center(
               child: Text(
                 'Català',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Color.fromARGB(255, 227, 227, 227),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: const Color.fromARGB(255, 227, 227, 227),
                 ),
               ),
             ),

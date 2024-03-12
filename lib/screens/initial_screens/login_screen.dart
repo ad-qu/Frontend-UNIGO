@@ -212,252 +212,146 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: DoubleBackToCloseApp(
-        snackBar: SnackBar(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-            content: const Text(
-              'Tap back again to leave',
-              textAlign: TextAlign.center,
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(milliseconds: 850)),
-        child: SafeArea(
-          child: Center(
-            child: SizedBox(
-              width: 1080,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(
-                                context,
-                                PageTransition(
-                                    type: PageTransitionType.leftToRight,
-                                    child: const WelcomeScreen()));
-                          },
-                          child: const Icon(
-                            Icons
-                                .arrow_back_ios_rounded, // Replace with the desired icon
-                            color: Color.fromARGB(255, 227, 227, 227),
-                            size: 25,
-                          ),
+      body: SafeArea(
+        child: Center(
+          child: SizedBox(
+            width: 1080,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.leftToRight,
+                                  child: const WelcomeScreen()));
+                        },
+                        child: const Icon(
+                          Icons
+                              .arrow_back_ios_rounded, // Replace with the desired icon
+                          color: Color.fromARGB(255, 227, 227, 227),
+                          size: 25,
                         ),
-                        LanguageButton(selectedLanguage: selectedLanguage),
-                      ],
-                    ),
+                      ),
+                      LanguageButton(selectedLanguage: selectedLanguage),
+                    ],
                   ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Image.asset('assets/icon/logo.png', height: 95),
-                      ],
-                    ),
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Image.asset('assets/icon/logo.png', height: 95),
+                    ],
                   ),
-                  const SizedBox(height: 7.5),
-                  Padding(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Column(
-                      children: [
-                        // Email address textfield
-                        InputTextField(
-                          controller: emailController,
-                          labelText: AppLocalizations.of(context)!.email,
-                          obscureText: false,
-                        ),
+                ),
+                const SizedBox(height: 7.5),
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Column(
+                    children: [
+                      // Email address textfield
+                      InputTextField(
+                        controller: emailController,
+                        labelText: AppLocalizations.of(context)!.email,
+                        obscureText: false,
+                      ),
 
-                        const SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
-                        // Password textfield
-                        PasswordTextField(
-                          controller: passwordController,
-                          labelText: AppLocalizations.of(context)!.pass,
-                          obscureText: true,
-                        ),
-                        const SizedBox(height: 12.5),
+                      // Password textfield
+                      PasswordTextField(
+                        controller: passwordController,
+                        labelText: AppLocalizations.of(context)!.pass,
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 12.5),
 
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12.5, 0, 0, 0),
-                          child: Row(
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.forgot_password,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        ?.color,
-                                    fontSize: 14),
-                              ),
-                              const SizedBox(width: 4),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          type: PageTransitionType.leftToRight,
-                                          child: const LoginScreen()));
-                                },
-                                child: Text(
-                                  AppLocalizations.of(context)!.click_here,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        ?.color,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 35),
-
-                        // Log in button
-                        RedButton(
-                          buttonText: AppLocalizations.of(context)!.login,
-                          onTap: logIn,
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        // Or continue with
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Divider(
-                                  thickness: 1,
-                                  color: const Color.fromARGB(255, 25, 25, 25),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 30),
-                                child: Text(
-                                  AppLocalizations.of(context)!.continuewith,
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1
-                                        ?.color,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Divider(
-                                  thickness: 1,
-                                  color: const Color.fromARGB(255, 25, 25, 25),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-
-                        // Google
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 65.0,
-                              height: 65.0,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 25, 25, 25),
-                                borderRadius: BorderRadius.circular(
-                                    55.0), // Mitad de la altura
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(55.0),
-                                  child: Image.asset(
-                                    'assets/images/google.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(width: 35),
-
-                            // Google
-                            Container(
-                              width: 65.0,
-                              height: 65.0,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 25, 25, 25),
-                                borderRadius: BorderRadius.circular(
-                                    55.0), // Mitad de la altura
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(55.0),
-                                  child: Image.asset(
-                                    'assets/images/apple_dark.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Don't have an account?
-                        const SizedBox(height: 30),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12.5, 0, 0, 0),
+                        child: Row(
                           children: [
                             Text(
-                              AppLocalizations.of(context)!.dont_have_account,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    ?.color,
-                                fontSize: 14,
-                              ),
+                              AppLocalizations.of(context)!.forgot_password,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const SizedBox(width: 4),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                     context,
                                     PageTransition(
-                                        type: PageTransitionType.fade,
-                                        child: const SignupScreen()));
+                                        type: PageTransitionType.leftToRight,
+                                        child: const LoginScreen()));
                               },
                               child: Text(
-                                AppLocalizations.of(context)!.signin,
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 222, 66, 66),
-                                  decoration: TextDecoration.underline,
+                                AppLocalizations.of(context)!.click_here,
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.color,
                                   fontSize: 14,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(height: 35),
+
+                      // Log in button
+                      RedButton(
+                        buttonText: AppLocalizations.of(context)!.login,
+                        onTap: logIn,
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.dont_have_account,
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyText1?.color,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      type: PageTransitionType.fade,
+                                      child: const SignupScreen()));
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.signin,
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 222, 66, 66),
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

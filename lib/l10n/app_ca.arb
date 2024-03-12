@@ -3,7 +3,8 @@
  "@---------------- WELCOME ------------------": {
   },
   "@@locale": "ca",
-  "welcome": "Coneix, juga, reuneix-te i parla amb els teus amics de la universitat! 🎉",
+  "slogan": "Explora, connecta i descobreix!",
+  "description": "Descubre tu campus universitario en UNIGO!\n¡Únete para retos, chats y más!",
   "get_stated": "Comença",
   "already_account": "Ja tinc un compte",
 

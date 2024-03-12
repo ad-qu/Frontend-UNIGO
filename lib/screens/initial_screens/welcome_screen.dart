@@ -1,56 +1,65 @@
+import 'dart:async';
 import 'package:flutter/widgets.dart';
-import 'package:unigo/screens/initial_screens/login_screen.dart';
-import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
+import 'package:unigo/screens/initial_screens/login_screen.dart';
+import 'package:unigo/screens/initial_screens/signup_screen.dart';
+import 'package:unigo/widgets/credential_screen/background.dart';
+import 'package:unigo/widgets/input_widgets/apple_button.dart';
+import 'package:unigo/widgets/input_widgets/google_button%20copy.dart';
 import 'package:unigo/widgets/input_widgets/red_button.dart';
-import 'package:unigo/widgets/input_widgets/grey_button.dart';
 import 'package:unigo/widgets/language_widgets/language_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:animate_gradient/animate_gradient.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final ValueNotifier<String> selectedLanguage = ValueNotifier<String>('ENG');
+  int _emojiIndex = 0;
+  final List<String> _emojis = ['🧭', '🤝', '📚', '🗺️', '👨‍🏫'];
+
+  @override
+  void initState() {
+    super.initState();
+    _updateEmoji();
+  }
+
+  void _updateEmoji() {
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      setState(() {
+        _emojiIndex = (_emojiIndex + 1) % _emojis.length;
+      });
+      _updateEmoji();
+    });
+  }
+
+  void logIn() async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.rightToLeft, child: const LoginScreen()));
+  }
+
+  void signUp() async {
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.rightToLeft, child: const SignupScreen()));
+  }
 
   @override
   Widget build(BuildContext context) {
-    void logIn() async {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.rightToLeft,
-              child: const LoginScreen()));
-    }
-
-    void signUp() async {
-      Navigator.push(
-          context,
-          PageTransition(
-              type: PageTransitionType.rightToLeft, child: SignupScreen()));
-    }
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: DoubleBackToCloseApp(
-        snackBar: SnackBar(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-          content: const Text(
-            'Tap back again to leave',
-            textAlign: TextAlign.center,
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(milliseconds: 1000),
-        ),
+      body: BackgroundWidget(
         child: SafeArea(
           child: Column(
             children: <Widget>[
@@ -59,57 +68,38 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'v0.0.1',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Color.fromARGB(255, 30, 30, 30),
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
+                    Text('v0.0.1',
+                        style: Theme.of(context).textTheme.labelMedium),
                     LanguageButton(selectedLanguage: selectedLanguage),
                   ],
                 ),
               ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(50.0),
-                  // child: Center(
-                  //   child: Column(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Align(
-                  //         alignment: Alignment.topCenter,
-                  //         child: Image.asset(
-                  //           'assets/images/logo.png',
-                  //           width: 150,
-                  //         ),
-                  //       ),
-                  //       const SizedBox(
-                  //         height: 15,
-                  //       ),
-                  //       Align(
-                  //         alignment: Alignment.topCenter,
-                  //         child: Image.asset(
-                  //           'assets/images/UNIGO.png',
-                  //           width: 157.5,
-                  //         ),
-                  //       ),
-                  //       const SizedBox(
-                  //         height: 60,
-                  //       ), // Espacio entre la imagen y el texto
-                  //       Text(
-                  //         AppLocalizations.of(context)!.welcome,
-                  //         textAlign: TextAlign.center,
-                  //         style: const TextStyle(
-                  //           fontSize: 18,
-                  //           fontWeight: FontWeight.w900,
-                  //           color: Color.fromARGB(255, 227, 227, 227),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(60, 0, 60, 65),
+                        child: Image.asset(
+                          'assets/images/welcome.png',
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 25),
+                        child: Text(
+                            '${AppLocalizations.of(context)!.slogan}  ${_emojis[_emojiIndex]}',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                        child: Text(AppLocalizations.of(context)!.description,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleMedium),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Padding(
@@ -121,9 +111,36 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       onTap: signUp,
                     ),
                     const SizedBox(height: 10),
-                    BlackButton(
-                      buttonText: AppLocalizations.of(context)!.already_account,
+                    GoogleButton(
+                      buttonText: "Continúa con Google",
                       onTap: logIn,
+                    ),
+                    const SizedBox(height: 10),
+                    AppleButton(
+                      buttonText: "Continúa con Apple",
+                      onTap: logIn,
+                    ),
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.have_account,
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                        const SizedBox(width: 4),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: const LoginScreen()));
+                          },
+                          child: Text(AppLocalizations.of(context)!.login2,
+                              style: Theme.of(context).textTheme.displayLarge),
+                        ),
+                      ],
                     ),
                   ],
                 ),

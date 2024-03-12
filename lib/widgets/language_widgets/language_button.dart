@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:popover/popover.dart';
 import 'package:unigo/widgets/language_widgets/language_menu.dart';
 
@@ -27,10 +28,9 @@ class LanguageButton extends StatelessWidget {
                 builder: (context, value, child) => Text(
                   value,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 15,
-                    color: Color.fromARGB(255, 227, 227, 227),
-                    fontWeight: FontWeight.normal,
+                    color: const Color.fromARGB(255, 227, 227, 227),
                   ),
                 ),
               ),
@@ -38,9 +38,6 @@ class LanguageButton extends StatelessWidget {
           ],
         ),
         onTap: () {
-          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-            statusBarColor: Color.fromARGB(255, 7, 7, 7),
-          ));
           showPopover(
             context: context,
             bodyBuilder: (context) =>
@@ -53,14 +50,7 @@ class LanguageButton extends StatelessWidget {
             arrowWidth: 15,
             arrowDxOffset: 15,
             radius: 20,
-            backgroundColor: Color.fromARGB(255, 14, 14, 14),
-            onPop: () {
-              // Restaurar el color de la barra de estado cuando se cierra el popover
-              SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-                statusBarColor: Color.fromARGB(255, 15, 15,
-                    15), // Cambiar al color predeterminado cuando se cierra el popover
-              ));
-            },
+            backgroundColor: const Color.fromARGB(255, 20, 20, 20),
           );
         },
       ),

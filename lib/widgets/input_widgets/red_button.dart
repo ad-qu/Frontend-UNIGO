@@ -11,19 +11,13 @@ class RedButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(21.5),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: Color.fromARGB(255, 204, 49, 49),
-            borderRadius: BorderRadius.circular(20)),
+            color: Theme.of(context).splashColor,
+            borderRadius: BorderRadius.circular(17.5)),
         child: Center(
-          child: Text(
-            buttonText,
-            style: const TextStyle(
-              color: Color.fromARGB(255, 227, 227, 227),
-              fontWeight: FontWeight.w900,
-              fontSize: 14,
-            ),
-          ),
+          child:
+              Text(buttonText, style: Theme.of(context).textTheme.labelLarge),
         ),
       ),
     );

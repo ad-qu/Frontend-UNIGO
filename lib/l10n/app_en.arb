@@ -4,7 +4,8 @@
  "@---------------- WELCOME ------------------": {
   },
   "@@locale": "en",
-  "welcome": "Meet, play, get together and talk with your friends from your university! 🎉",
+  "slogan": "Explore, connect and discover!",
+  "description": "Discover your university campus on UNIGO!\nJoin for challenges, chats and more!",
   "get_stated": "Get started",
   "already_account": "I already have an account",
 

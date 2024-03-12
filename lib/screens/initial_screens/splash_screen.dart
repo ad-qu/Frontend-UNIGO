@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
     String? email = prefs.getString("email");
     String? password = prefs.getString("password");
     if (username == null) {
-      Navigator.push(
+      Navigator.pushReplacement(
           context,
           PageTransition(
               type: PageTransitionType.rightToLeft,
@@ -58,8 +58,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Color.fromARGB(255, 15, 15, 15), // Agregue el color de fondo aquí
+      backgroundColor: Theme.of(context)
+          .scaffoldBackgroundColor, // Agregue el color de fondo aquí
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -76,12 +76,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 ],
               ),
             ),
-            const CircularProgressIndicator(
-                backgroundColor: Color.fromARGB(25, 217, 59, 60),
+            CircularProgressIndicator(
+                backgroundColor: Theme.of(context).hoverColor,
                 strokeCap: StrokeCap.round,
                 strokeWidth: 5,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromARGB(255, 217, 59, 60))),
+                    Theme.of(context).splashColor)),
             const Spacer(),
           ],
         ),

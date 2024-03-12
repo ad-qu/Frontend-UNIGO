@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'screens/entity_screens/chat_screen.dart';
 import 'services/firebase_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +19,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Color.fromARGB(255, 15, 15, 15),
+    statusBarColor: Colors.transparent,
   ));
 
   await Firebase.initializeApp(
@@ -42,67 +43,66 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         brightness: Brightness.light,
         scaffoldBackgroundColor: Color.fromARGB(255, 10, 10, 10),
-        backgroundColor: Color.fromARGB(255, 235, 235, 235),
         dividerColor: Color.fromARGB(255, 37, 37, 37),
         buttonTheme: ButtonThemeData(
             buttonColor: Color.fromARGB(255, 222, 66, 66),
             textTheme: ButtonTextTheme.primary),
-        textTheme: TextTheme(
-          bodyText1: TextStyle(
-            color: Color.fromARGB(255, 25, 25, 25),
-          ),
-          bodyText2: TextStyle(
-            color: Color.fromARGB(255, 25, 25, 25),
-          ),
-          headline1: TextStyle(
-            color: Color.fromARGB(255, 217, 217, 217),
-          ),
-          headline2: TextStyle(
-            color: Color.fromARGB(255, 222, 66, 66),
-          ),
-          headline3: TextStyle(
-            color: Color.fromARGB(255, 226, 226, 226),
-          ),
-          headline4: TextStyle(
-            color: Color.fromARGB(255, 222, 66, 66),
-          ),
-          headline5: TextStyle(
-            color: Colors.white,
-          ),
-          headline6: TextStyle(
-            color: Color.fromARGB(255, 222, 66, 66),
-          ),
-        ),
+        textTheme: TextTheme(),
       ),
       darkTheme: ThemeData.dark().copyWith(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: Color.fromARGB(255, 15, 15, 15),
-        backgroundColor: Color.fromARGB(255, 15, 15, 15),
-        dividerColor: Color.fromARGB(255, 242, 242, 242),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 20, 20, 20),
+        secondaryHeaderColor: const Color.fromARGB(255, 227, 227, 227),
+        splashColor: const Color.fromARGB(255, 204, 49, 49),
+        hoverColor: const Color.fromARGB(25, 217, 59, 60),
+        dividerColor: const Color.fromARGB(255, 30, 30, 30),
+        cardColor: const Color.fromARGB(255, 23, 23, 23),
         textTheme: TextTheme(
-          bodyText1: TextStyle(
-            color: Color.fromARGB(255, 242, 242, 242),
+          //Welcome slogan
+          titleLarge: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+            color: const Color.fromARGB(255, 227, 227, 227),
           ),
-          bodyText2: TextStyle(
-            color: Color.fromARGB(255, 25, 25, 25),
+          //Welcome description
+          titleMedium: GoogleFonts.inter(
+            height: 2,
+            fontSize: 14,
+            color: const Color.fromARGB(255, 175, 175, 175),
           ),
-          headline1: TextStyle(
-            color: Color.fromARGB(255, 242, 242, 242),
+          titleSmall: GoogleFonts.inter(
+            color: const Color.fromARGB(255, 227, 227, 227),
           ),
-          headline2: TextStyle(
-            color: Color.fromARGB(255, 222, 66, 66),
+          bodyLarge: GoogleFonts.inter(
+            color: const Color.fromARGB(255, 227, 227, 227),
           ),
-          headline3: TextStyle(
-            color: Color.fromARGB(255, 242, 242, 242),
+          bodyMedium: GoogleFonts.inter(
+            color: const Color.fromARGB(255, 227, 227, 227),
           ),
-          headline4: TextStyle(
-            color: Color.fromARGB(255, 252, 197, 31),
+          bodySmall: GoogleFonts.inter(
+            color: const Color.fromARGB(255, 227, 227, 227),
           ),
-          headline5: TextStyle(
-            color: Color.fromARGB(255, 25, 25, 25),
+          //Text bold
+          labelLarge: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: const Color.fromARGB(255, 227, 227, 227),
           ),
-          headline6: TextStyle(
-            color: Colors.red,
+          //Text normal
+          labelMedium: GoogleFonts.inter(
+            fontSize: 14,
+            color: const Color.fromARGB(255, 227, 227, 227),
+          ),
+          //Text thin
+          labelSmall: GoogleFonts.inter(
+            color: const Color.fromARGB(255, 227, 227, 227),
+          ),
+          //Red text bold
+          displayLarge: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.underline,
+            color: const Color.fromARGB(255, 204, 49, 49),
           ),
         ),
       ),

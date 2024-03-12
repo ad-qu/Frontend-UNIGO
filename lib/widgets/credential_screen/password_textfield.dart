@@ -28,44 +28,43 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
     return TextField(
       controller: widget.controller,
       obscureText: _obscureText,
-      cursorColor: const Color.fromARGB(255, 227, 227, 227),
       cursorWidth: 1,
-      style: const TextStyle(
-          color: Color.fromARGB(255, 227, 227, 227), fontSize: 14),
+      style: Theme.of(context).textTheme.labelMedium,
       decoration: InputDecoration(
-          enabledBorder: const OutlineInputBorder(
-              borderSide:
-                  BorderSide(color: Color.fromARGB(255, 25, 25, 25), width: 1),
-              borderRadius: BorderRadius.all(Radius.circular(20))),
-          contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-          focusedBorder: const OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
             borderSide:
-                BorderSide(color: Color.fromARGB(255, 25, 25, 25), width: 1),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          labelText: widget.labelText,
-          labelStyle: const TextStyle(
-              color: Color.fromARGB(255, 138, 138, 138), fontSize: 14),
-          floatingLabelBehavior: FloatingLabelBehavior.never,
-          fillColor: const Color.fromARGB(50, 30, 30, 30),
-          filled: true,
-          suffixIcon: Padding(
-            padding: EdgeInsets.only(right: 7.0),
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: Color.fromARGB(255, 227, 227, 227),
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
+                BorderSide(color: Theme.of(context).dividerColor, width: 1),
+            borderRadius: const BorderRadius.all(Radius.circular(17.5))),
+        contentPadding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+        focusedBorder: OutlineInputBorder(
+          borderSide:
+              BorderSide(color: Theme.of(context).dividerColor, width: 1),
+          borderRadius: const BorderRadius.all(Radius.circular(17.5)),
+        ),
+        labelText: widget.labelText,
+        labelStyle: const TextStyle(
+            color: Color.fromARGB(255, 138, 138, 138), fontSize: 14),
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        fillColor: Theme.of(context).cardColor,
+        filled: true,
+        suffixIcon: Padding(
+          padding: const EdgeInsets.only(right: 7.0),
+          child: Padding(
+            padding: const EdgeInsets.all(2.5),
+            child: IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility : Icons.visibility_off,
+                color: Theme.of(context).secondaryHeaderColor,
               ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

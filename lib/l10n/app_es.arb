@@ -3,9 +3,10 @@
  "@---------------- WELCOME ------------------": {
   },
   "@@locale": "es",
-  "welcome": "¡Explora, conecta y descubre! 🎉",
-  "get_stated": "Empieza",
-  "already_account": "Ya tengo una cuenta",
+  "slogan": "¡Explora, conecta y descubre!",
+  "description": "Descubre tu campus universitario en UNIGO!\n¡Únete para retos, chats y más!",
+  "get_stated": "Regístrate con tu correo electrónico",
+  "already_account": "Inicia sesión con tu correo electrónico",
 
   "@---------------- PROFILE ------------------": {
   },

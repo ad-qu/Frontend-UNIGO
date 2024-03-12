@@ -1,31 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        textSelectionTheme: TextSelectionThemeData(
-          selectionHandleColor: Colors.black,
-        ),
-      ),
-      home: Scaffold(
-        body: Center(
-          child: InputTextField(
-            controller: TextEditingController(),
-            labelText: 'Password',
-            obscureText: true,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class InputTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
@@ -33,14 +7,15 @@ class InputTextField extends StatefulWidget {
   final Function(String)? function;
 
   const InputTextField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     required this.obscureText,
     this.function,
-  }) : super(key: key);
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _InputTextFieldState createState() => _InputTextFieldState();
 }
 
@@ -50,27 +25,19 @@ class _InputTextFieldState extends State<InputTextField> {
     return TextField(
       controller: widget.controller,
       obscureText: widget.obscureText,
-      cursorColor: const Color.fromARGB(255, 227, 227, 227),
       cursorWidth: 1,
-      style: const TextStyle(
-        color: Color.fromARGB(255, 227, 227, 227),
-        fontSize: 14,
-      ),
+      style: Theme.of(context).textTheme.labelMedium,
       decoration: InputDecoration(
-        enabledBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Color.fromARGB(255, 25, 25, 25),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+        enabledBorder: OutlineInputBorder(
+          borderSide:
+              BorderSide(color: Theme.of(context).dividerColor, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(17.5)),
         ),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Color.fromARGB(255, 25, 25, 25),
-            width: 1,
-          ),
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+        contentPadding: const EdgeInsets.all(17),
+        focusedBorder: OutlineInputBorder(
+          borderSide:
+              BorderSide(color: Theme.of(context).dividerColor, width: 1),
+          borderRadius: BorderRadius.all(Radius.circular(17.5)),
         ),
         labelText: widget.labelText,
         labelStyle: const TextStyle(
@@ -78,7 +45,7 @@ class _InputTextFieldState extends State<InputTextField> {
           fontSize: 14,
         ),
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        fillColor: const Color.fromARGB(50, 30, 30, 30),
+        fillColor: Theme.of(context).cardColor,
         filled: true,
       ),
     );
