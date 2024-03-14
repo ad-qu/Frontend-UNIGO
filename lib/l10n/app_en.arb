@@ -6,8 +6,10 @@
   "@@locale": "en",
   "slogan": "Explore, connect and discover!",
   "description": "Discover your university campus on UNIGO!\nJoin for challenges, chats and more!",
-  "get_stated": "Get started",
+  "get_stated": "Sign up with your email address",
   "already_account": "I already have an account",
+  "google_login": "Continue with Google", 
+  "apple_login": "Continue with Apple",
 
  "@---------------- PROFILE ------------------": {
   },

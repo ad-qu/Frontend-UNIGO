@@ -354,7 +354,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         size: 25,
                       ),
                     ),
-                    LanguageButton(selectedLanguage: selectedLanguage),
+                    LanguageButton(),
                   ],
                 ),
               ),

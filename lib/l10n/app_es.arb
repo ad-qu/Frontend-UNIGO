@@ -7,6 +7,8 @@
   "description": "Descubre tu campus universitario en UNIGO!\n¡Únete para retos, chats y más!",
   "get_stated": "Regístrate con tu correo electrónico",
   "already_account": "Inicia sesión con tu correo electrónico",
+  "google_login": "Continúa con Google", 
+  "apple_login": "Continúa con Apple",
 
   "@---------------- PROFILE ------------------": {
   },

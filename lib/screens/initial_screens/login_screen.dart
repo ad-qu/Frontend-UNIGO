@@ -238,7 +238,7 @@ class LoginScreen extends StatelessWidget {
                           size: 25,
                         ),
                       ),
-                      LanguageButton(selectedLanguage: selectedLanguage),
+                      LanguageButton(),
                     ],
                   ),
                 ),

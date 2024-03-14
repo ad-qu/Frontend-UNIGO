@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
-import 'package:unigo/widgets/credential_screen/background.dart';
+import 'package:unigo/widgets/credential_screen/animated_background.dart';
 import 'package:unigo/widgets/input_widgets/apple_button.dart';
-import 'package:unigo/widgets/input_widgets/google_button%20copy.dart';
+import 'package:unigo/widgets/input_widgets/google_button.dart';
 import 'package:unigo/widgets/input_widgets/red_button.dart';
 import 'package:unigo/widgets/language_widgets/language_button.dart';
 import 'package:page_transition/page_transition.dart';
@@ -22,7 +22,6 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final ValueNotifier<String> selectedLanguage = ValueNotifier<String>('ENG');
   int _emojiIndex = 0;
   final List<String> _emojis = ['🧭', '🤝', '📚', '🗺️', '👨‍🏫'];
 
@@ -64,13 +63,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
+                padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('v0.0.1',
                         style: Theme.of(context).textTheme.labelMedium),
-                    LanguageButton(selectedLanguage: selectedLanguage),
+                    const LanguageButton(),
                   ],
                 ),
               ),
@@ -112,12 +111,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     GoogleButton(
-                      buttonText: "Continúa con Google",
+                      buttonText: AppLocalizations.of(context)!.google_login,
                       onTap: logIn,
                     ),
                     const SizedBox(height: 10),
                     AppleButton(
-                      buttonText: "Continúa con Apple",
+                      buttonText: AppLocalizations.of(context)!.apple_login,
                       onTap: logIn,
                     ),
                     const SizedBox(height: 30),

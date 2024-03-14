@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/entity_screens/chat_screen.dart';
 import 'services/firebase_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,7 +18,6 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
@@ -32,8 +32,38 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+
+  static void setLocale(BuildContext context, Locale newLocale) {
+    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?.setLocale(newLocale);
+  }
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale? _locale;
+
+  setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+
+  Future<Locale> getLocale() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String language = prefs.getString("language") ?? "";
+    return Locale(language);
+  }
+
+  @override
+  void didChangeDependencies() {
+    getLocale().then((locale) => {setLocale(locale)});
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +72,12 @@ class MyApp extends StatelessWidget {
       title: 'UNIGO!',
       theme: ThemeData.light().copyWith(
         brightness: Brightness.light,
-        scaffoldBackgroundColor: Color.fromARGB(255, 10, 10, 10),
-        dividerColor: Color.fromARGB(255, 37, 37, 37),
-        buttonTheme: ButtonThemeData(
+        scaffoldBackgroundColor: const Color.fromARGB(255, 10, 10, 10),
+        dividerColor: const Color.fromARGB(255, 37, 37, 37),
+        buttonTheme: const ButtonThemeData(
             buttonColor: Color.fromARGB(255, 222, 66, 66),
             textTheme: ButtonTextTheme.primary),
-        textTheme: TextTheme(),
+        textTheme: const TextTheme(),
       ),
       darkTheme: ThemeData.dark().copyWith(
         brightness: Brightness.dark,
@@ -119,7 +149,6 @@ class MyApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: const SplashScreen(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -131,29 +160,8 @@ class MyApp extends StatelessWidget {
         Locale('es'),
         Locale('ca'),
       ],
-      onGenerateRoute: (RouteSettings settings) {
-        switch (settings.name) {
-          case '/register_screen':
-            return MaterialPageRoute(
-                builder: (context) => const SignupScreen());
-
-          case '/navbar':
-            return MaterialPageRoute(builder: (context) => const NavBar());
-          case '/chat':
-            return MaterialPageRoute(builder: (context) => const ChatWidget());
-
-          case '/edit_account':
-            return MaterialPageRoute(
-                builder: (context) => const EditInfoScreen());
-
-          case '/edit_password':
-            return MaterialPageRoute(
-                builder: (context) => const EditPasswordScreen());
-
-          default:
-            return MaterialPageRoute(builder: (context) => const LoginScreen());
-        }
-      },
+      locale: _locale,
+      home: const SplashScreen(),
     );
   }
 }
