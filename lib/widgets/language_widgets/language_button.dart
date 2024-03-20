@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:popover/popover.dart';
+import 'package:flutter/material.dart';
 import 'package:unigo/widgets/language_widgets/language_menu.dart';
 
 class LanguageButton extends StatelessWidget {
@@ -11,11 +9,11 @@ class LanguageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       child: GestureDetector(
-        child: const Row(
+        child: Row(
           children: [
             Icon(
               Icons.language,
-              color: Color.fromARGB(255, 227, 227, 227),
+              color: Theme.of(context).secondaryHeaderColor,
             ),
           ],
         ),
@@ -31,7 +29,7 @@ class LanguageButton extends StatelessWidget {
             arrowWidth: 15,
             arrowDxOffset: 0,
             radius: 20,
-            backgroundColor: const Color.fromARGB(255, 20, 20, 20),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           );
         },
       ),

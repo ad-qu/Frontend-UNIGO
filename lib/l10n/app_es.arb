@@ -4,11 +4,37 @@
   },
   "@@locale": "es",
   "slogan": "¡Explora, conecta y descubre!",
-  "description": "Descubre tu campus universitario en UNIGO!\n¡Únete para retos, chats y más!",
+  "description": "Investiga tu campus universitario en UNIGO!\n¡Únete para retos, chats y más!",
   "get_stated": "Regístrate con tu correo electrónico",
   "already_account": "Inicia sesión con tu correo electrónico",
   "google_login": "Continúa con Google", 
   "apple_login": "Continúa con Apple",
+  "double_back_to_close_app": "Toca atrás de nuevo para salir",
+
+  "@---------------- LOGIN ------------------": {
+  },
+  "email": "Dirección electrónica",
+  "pass": "Contraseña",
+  "login": "INICIA SESIÓN",
+  "continuewith": "O continúa con",
+  "dont_have_account": "¿No tienes cuenta?",
+  "signin": "Regístrate",
+  "forgot_password": "¿Olvidaste tu contraseña?",
+  "click_here": "Presione aquí",
+
+  "@---------------- REGISTER ------------------": {
+  },
+  "name": "Nombre",
+  "surname": "Apellido",
+  "username": "Nombre de usuario",
+  "email2": "Dirección electrónica",
+  "pass2": "Contraseña",
+  "pass22": "Repita la contraseña",
+  "i_accept": "Acepto los ",
+  "terms": "Términos de uso y Políticas de Privacidad",
+  "signup": "REGÍSTRATE",
+  "have_account": "¿Ya tienes una cuenta?",
+  "login2": "Inicia sesión",
 
   "@---------------- PROFILE ------------------": {
   },
@@ -70,31 +96,6 @@
   "repeat_pass_label": "Repite la nueva contraseña",
   "edit_button": "EDITAR",
 
-
-  "@---------------- LOGIN ------------------": {
-  },
-  "email": "Dirección electrónica",
-  "pass": "Contraseña",
-  "login": "INICIA SESIÓN",
-  "continuewith": "O continúa con",
-  "dont_have_account": "¿No tienes cuenta?",
-  "signin": "Regístrate",
-  "forgot_password": "¿Has olvidado tu contraseña?",
-  "click_here": "Presione aquí",
-
-  "@---------------- REGISTER ------------------": {
-  },
-  "name": "Nombre",
-  "surname": "Apellido",
-  "username": "Nombre de usuario",
-  "email2": "Dirección electrónica",
-  "pass2": "Contraseña",
-  "pass22": "Repita la contraseña",
-  "i_accept": "Acepto los ",
-  "terms": "Términos de uso y Políticas de Privacidad",
-  "signup": "REGÍSTRATE",
-  "have_account": "¿Ya tienes una cuenta?",
-  "login2": "Inicia sesión",
   "@--- CHECK PASS ---": {
   },
   "enterpass": "Por favor, introduzca una contraseña",

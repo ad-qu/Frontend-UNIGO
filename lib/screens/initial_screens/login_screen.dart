@@ -35,7 +35,6 @@ class LoginScreen extends StatelessWidget {
     final passwordController = TextEditingController();
     final emailController = TextEditingController();
     //Login with Google
-    final ValueNotifier<String> selectedLanguage = ValueNotifier<String>('ENG');
 
     //Login method
     void logIn() async {
@@ -238,13 +237,13 @@ class LoginScreen extends StatelessWidget {
                           size: 25,
                         ),
                       ),
-                      LanguageButton(),
+                      const LanguageButton(),
                     ],
                   ),
                 ),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset('assets/icon/logo.png', height: 95),
                     ],
@@ -270,7 +269,6 @@ class LoginScreen extends StatelessWidget {
                         labelText: AppLocalizations.of(context)!.pass,
                         obscureText: true,
                       ),
-                      const SizedBox(height: 12.5),
 
                       Padding(
                         padding: const EdgeInsets.fromLTRB(12.5, 0, 0, 0),
@@ -312,41 +310,6 @@ class LoginScreen extends StatelessWidget {
                       RedButton(
                         buttonText: AppLocalizations.of(context)!.login,
                         onTap: logIn,
-                      ),
-
-                      const SizedBox(height: 30),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.dont_have_account,
-                            style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodyText1?.color,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  PageTransition(
-                                      type: PageTransitionType.fade,
-                                      child: const SignupScreen()));
-                            },
-                            child: Text(
-                              AppLocalizations.of(context)!.signin,
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 222, 66, 66),
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),

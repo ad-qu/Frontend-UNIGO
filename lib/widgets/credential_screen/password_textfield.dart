@@ -9,12 +9,12 @@ class PasswordTextField extends StatefulWidget {
   final Function(String)? function;
 
   const PasswordTextField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     required this.obscureText,
     this.function,
-  }) : super(key: key);
+  });
 
   @override
   _PasswordTextFieldState createState() => _PasswordTextFieldState();

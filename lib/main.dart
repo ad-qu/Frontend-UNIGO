@@ -96,7 +96,6 @@ class _MyAppState extends State<MyApp> {
           ),
           //Welcome description
           titleMedium: GoogleFonts.inter(
-            height: 2,
             fontSize: 14,
             color: const Color.fromARGB(255, 175, 175, 175),
           ),

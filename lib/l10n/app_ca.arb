@@ -4,11 +4,37 @@
   },
   "@@locale": "ca",
   "slogan": "Explora, connecta i descobreix!",
-  "description": "Descobreix el teu campus universitari en UNIGO!\nUneix-te per a reptes, xats i més!",
+  "description": "Investiga el teu campus universitari en UNIGO!\nUneix-te per a reptes, xats i més!",
   "get_stated": "Registra't amb el teu correu electrònic",
   "already_account": "Inicia sessió amb el teu correu electrònic",
   "google_login": "Continua amb Google", 
   "apple_login": "Continua amb Apple",
+  "double_back_to_close_app": "Toca enrere de nou per sortir",
+
+  "@---------------- LOGIN ------------------": {
+  },
+  "email": "Adreça electrònica",
+  "pass": "Contrasenya",
+  "login": "Inicia sessió",
+  "continuewith": "O continua amb",
+  "dont_have_account": "No tens cap compte?",
+  "signin": "Registra't",
+  "forgot_password": "Has oblidat la contrasenya?",
+  "click_here": "Premeu aquí",
+
+  "@---------------- REGISTER ------------------": {
+  },
+  "name": "Nom",
+  "surname": "Cognom",
+  "username": "Nom d'usuari",
+  "email2": "Adreça electrònica",
+  "pass2": "Contrasenya",
+  "pass22": "Repeteix la contrasenya",
+  "i_accept": "Accepto els ",
+  "terms": "Termes d'ús i les Polítiques de Privacitat",
+  "signup": "REGISTRA'T",
+  "have_account": "Ja tens un compte?",
+  "login2": "Inicia sessió",
 
   "@---------------- PROFILE ------------------": {
   },
@@ -64,33 +90,6 @@
   "repeat_pass_label": "Torna a escriure la contrasenya",
   "edit_button": "EDITAR",
 
-
-
-
-  "@---------------- LOGIN ------------------": {
-  },
-  "email": "Adreça electrònica",
-  "pass": "Contrasenya",
-  "login": "Inicia sessió",
-  "continuewith": "O continua amb",
-  "dont_have_account": "No tens cap compte?",
-  "signin": "Registra't",
-  "forgot_password": "Has oblidat la contrasenya?",
-  "click_here": "Premeu aquí",
-
-  "@---------------- REGISTER ------------------": {
-  },
-  "name": "Nom",
-  "surname": "Cognom",
-  "username": "Nom d'usuari",
-  "email2": "Adreça electrònica",
-  "pass2": "Contrasenya",
-  "pass22": "Repeteix la contrasenya",
-  "i_accept": "Accepto els ",
-  "terms": "Termes d'ús i les Polítiques de Privacitat",
-  "signup": "REGISTRA'T",
-  "have_account": "Ja tens un compte?",
-  "login2": "Inicia sessió",
   "@--- CHECK PASS ---": {
   },
   "enterpass": "Si us plau, introduïu una contrasenya",

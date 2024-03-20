@@ -354,7 +354,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         size: 25,
                       ),
                     ),
-                    LanguageButton(),
+                    const LanguageButton(),
                   ],
                 ),
               ),
@@ -397,7 +397,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
 
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
 
                     //Username textfield
                     InputTextField(
@@ -420,7 +420,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       onChanged: (val) => checkPassword(val),
                       controller: passwordController,
                       obscureText: passwordVisible,
-                      cursorColor: const Color.fromARGB(255, 222, 66, 66),
+                      cursorWidth: 1,
                       style: const TextStyle(
                           color: Color.fromARGB(255, 227, 227, 227),
                           fontSize: 14),
@@ -443,25 +443,26 @@ class _SignupScreenState extends State<SignupScreen> {
                             },
                           ),
                         ),
-                        enabledBorder: const OutlineInputBorder(
+                        enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                                color: Color.fromARGB(255, 25, 25, 25),
+                                color: Theme.of(context).dividerColor,
                                 width: 1),
                             borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
+                                const BorderRadius.all(Radius.circular(17.5))),
                         contentPadding:
-                            const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                        focusedBorder: const OutlineInputBorder(
+                            const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                        focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: Color.fromARGB(255, 25, 25, 25), width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                              color: Theme.of(context).dividerColor, width: 1),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(17.5)),
                         ),
                         labelText: AppLocalizations.of(context)!.pass2,
                         labelStyle: const TextStyle(
                             color: Color.fromARGB(255, 138, 138, 138),
                             fontSize: 14),
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        fillColor: const Color.fromARGB(50, 30, 30, 30),
+                        fillColor: Theme.of(context).cardColor,
                         filled: true,
                       ),
                     ),
@@ -589,40 +590,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       buttonText: AppLocalizations.of(context)!.signup,
                       onTap: signUp,
                     ),
-
-                    //Already have an account?
-                    const SizedBox(height: 30),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.have_account,
-                          style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodyText1?.color,
-                              fontSize: 14),
-                        ),
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                    type: PageTransitionType.fade,
-                                    child: const LoginScreen()));
-                          },
-                          child: Text(
-                            AppLocalizations.of(context)!.login2,
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 222, 66, 66),
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
-                          ),
-                        ),
-                      ],
-                    ),
+                    const SizedBox(height: 5),
                   ],
                 ),
               ),

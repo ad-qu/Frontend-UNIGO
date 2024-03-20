@@ -31,13 +31,13 @@ class _InputTextFieldState extends State<InputTextField> {
         enabledBorder: OutlineInputBorder(
           borderSide:
               BorderSide(color: Theme.of(context).dividerColor, width: 1),
-          borderRadius: BorderRadius.all(Radius.circular(17.5)),
+          borderRadius: const BorderRadius.all(Radius.circular(17.5)),
         ),
         contentPadding: const EdgeInsets.all(17),
         focusedBorder: OutlineInputBorder(
           borderSide:
               BorderSide(color: Theme.of(context).dividerColor, width: 1),
-          borderRadius: BorderRadius.all(Radius.circular(17.5)),
+          borderRadius: const BorderRadius.all(Radius.circular(17.5)),
         ),
         labelText: widget.labelText,
         labelStyle: const TextStyle(
