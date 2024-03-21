@@ -133,27 +133,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         onTap: logIn,
                       ),
                       const SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.have_account,
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                          const SizedBox(width: 4),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: const LoginScreen()));
-                            },
-                            child: Text(AppLocalizations.of(context)!.login2,
-                                style:
-                                    Theme.of(context).textTheme.displayLarge),
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: const LoginScreen()));
+                        },
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!.have_account,
+                                style: Theme.of(context).textTheme.labelMedium,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(AppLocalizations.of(context)!.login2,
+                                  style:
+                                      Theme.of(context).textTheme.displayLarge),
+                            ]),
                       ),
                     ],
                   ),

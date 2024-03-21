@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -591,6 +592,42 @@ class _SignupScreenState extends State<SignupScreen> {
                       onTap: signUp,
                     ),
                     const SizedBox(height: 5),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: GoogleFonts.inter(
+                            color: Theme.of(context).textTheme.bodySmall?.color,
+                            fontSize: 12,
+                          ),
+                          children: [
+                            const TextSpan(
+                              text:
+                                  'By clicking "LOG IN", you agree that UNIGO! may retain some information you provide, and to our ',
+                            ),
+                            TextSpan(
+                              text: 'Terms of Use',
+                              style: GoogleFonts.inter(
+                                  color: const Color.fromARGB(255, 204, 49,
+                                      49)), // Cambia el color a rojo
+                            ),
+                            const TextSpan(
+                              text: ' and ',
+                            ),
+                            TextSpan(
+                              text: 'Privacy Policy',
+                              style: GoogleFonts.inter(
+                                  color: const Color.fromARGB(255, 204, 49,
+                                      49)), // Cambia el color a rojo
+                            ),
+                            const TextSpan(
+                              text: '.',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

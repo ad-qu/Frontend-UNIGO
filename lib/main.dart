@@ -109,7 +109,7 @@ class _MyAppState extends State<MyApp> {
             color: const Color.fromARGB(255, 227, 227, 227),
           ),
           bodySmall: GoogleFonts.inter(
-            color: const Color.fromARGB(255, 227, 227, 227),
+            color: const Color.fromARGB(255, 138, 138, 138),
           ),
           //Text bold
           labelLarge: GoogleFonts.inter(

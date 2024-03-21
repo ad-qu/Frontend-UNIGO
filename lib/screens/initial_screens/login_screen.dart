@@ -1,8 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import 'package:unigo/screens/navbar.dart';
@@ -218,7 +221,7 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
+                  padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -231,27 +234,25 @@ class LoginScreen extends StatelessWidget {
                                   child: const WelcomeScreen()));
                         },
                         child: const Icon(
-                          Icons
-                              .arrow_back_ios_rounded, // Replace with the desired icon
+                          Icons.arrow_back_ios_rounded,
                           color: Color.fromARGB(255, 227, 227, 227),
                           size: 25,
+                        ),
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.login2,
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).textTheme.titleSmall?.color,
+                          fontSize: 16,
                         ),
                       ),
                       const LanguageButton(),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/icon/logo.png', height: 95),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 7.5),
                 Padding(
-                  padding: const EdgeInsets.all(30.0),
+                  padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
                   child: Column(
                     children: [
                       // Email address textfield
@@ -269,49 +270,81 @@ class LoginScreen extends StatelessWidget {
                         labelText: AppLocalizations.of(context)!.pass,
                         obscureText: true,
                       ),
-
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12.5, 0, 0, 0),
-                        child: Row(
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.leftToRight,
+                                child: const LoginScreen()));
+                      },
+                      child: Text(
+                        AppLocalizations.of(context)!.forgot_password,
+                        style: GoogleFonts.inter(
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        RedButton(
+                          buttonText: AppLocalizations.of(context)!.login,
+                          onTap: logIn,
+                        ),
+                        const SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              AppLocalizations.of(context)!.forgot_password,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              "UNIGO! will",
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.color,
+                                fontSize: 12,
+                              ),
                             ),
-                            const SizedBox(width: 4),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.leftToRight,
-                                        child: const LoginScreen()));
-                              },
-                              child: Text(
-                                AppLocalizations.of(context)!.click_here,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.color,
-                                  fontSize: 14,
-                                ),
+                            Text(
+                              " remember you ",
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge
+                                    ?.color,
+                                fontSize: 12,
+                              ),
+                            ),
+                            Text(
+                              "for faster logins.",
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.color,
+                                fontSize: 12,
                               ),
                             ),
                           ],
                         ),
-                      ),
-
-                      const SizedBox(height: 35),
-
-                      // Log in button
-                      RedButton(
-                        buttonText: AppLocalizations.of(context)!.login,
-                        onTap: logIn,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
