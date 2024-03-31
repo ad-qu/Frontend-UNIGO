@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -130,7 +132,6 @@ class _MyAppState extends State<MyApp> {
           displayLarge: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            decoration: TextDecoration.underline,
             color: const Color.fromARGB(255, 204, 49, 49),
           ),
         ),

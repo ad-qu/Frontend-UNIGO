@@ -221,7 +221,7 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
+                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -233,14 +233,20 @@ class LoginScreen extends StatelessWidget {
                                   type: PageTransitionType.leftToRight,
                                   child: const WelcomeScreen()));
                         },
-                        child: const Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
-                          size: 25,
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                          decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: const Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Color.fromARGB(255, 227, 227, 227),
+                            size: 25,
+                          ),
                         ),
                       ),
                       Text(
-                        AppLocalizations.of(context)!.login2,
+                        AppLocalizations.of(context)!.login_banner,
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).textTheme.titleSmall?.color,
@@ -252,7 +258,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
+                  padding: const EdgeInsets.fromLTRB(30, 17.5, 30, 0),
                   child: Column(
                     children: [
                       // Email address textfield
@@ -267,35 +273,35 @@ class LoginScreen extends StatelessWidget {
                       // Password textfield
                       PasswordTextField(
                         controller: passwordController,
-                        labelText: AppLocalizations.of(context)!.pass,
+                        labelText: AppLocalizations.of(context)!.password,
                         obscureText: true,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.leftToRight,
-                                child: const LoginScreen()));
-                      },
-                      child: Text(
-                        AppLocalizations.of(context)!.forgot_password,
-                        style: GoogleFonts.inter(
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).textTheme.bodySmall?.color,
-                          fontSize: 14,
-                        ),
+                const SizedBox(height: 15),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.leftToRight,
+                            child: const LoginScreen()));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(17.5)),
+                    child: Text(
+                      AppLocalizations.of(context)!.forgot_password,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).textTheme.titleLarge?.color,
+                        fontSize: 14,
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 Expanded(
                   child: Padding(
@@ -304,7 +310,8 @@ class LoginScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         RedButton(
-                          buttonText: AppLocalizations.of(context)!.login,
+                          buttonText:
+                              AppLocalizations.of(context)!.login_button,
                           onTap: logIn,
                         ),
                         const SizedBox(height: 30),

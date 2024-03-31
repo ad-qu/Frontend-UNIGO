@@ -76,7 +76,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
+                  padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -115,7 +115,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
                   child: Column(
                     children: [
                       RedButton(
@@ -132,29 +132,37 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         buttonText: AppLocalizations.of(context)!.apple_login,
                         onTap: logIn,
                       ),
-                      const SizedBox(height: 30),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const LoginScreen()));
-                        },
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.have_account,
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(AppLocalizations.of(context)!.login2,
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge),
-                            ]),
-                      ),
                     ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(55, 15, 55, 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: const LoginScreen()));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(17.5)),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.have_account,
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(AppLocalizations.of(context)!.login,
+                                style:
+                                    Theme.of(context).textTheme.displayLarge),
+                          ]),
+                    ),
                   ),
                 ),
               ],

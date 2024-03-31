@@ -3,7 +3,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:email_validator/email_validator.dart';
@@ -43,38 +42,18 @@ class _SignupScreenState extends State<SignupScreen> {
   late String password;
   String text = "";
   Color colorPasswordIndicator = Colors.black;
+  bool _isPasswordEightCharacters = false;
+  bool _hasPasswordOneNumber = false;
+  bool passwordVisible1 = false;
+  bool passwordVisible2 = false;
 
-  bool passwordVisible = false;
+  bool _bothPasswordMatch = false;
+
   @override
   void initState() {
     super.initState();
-    passwordVisible = true;
-  }
-
-  final ValueNotifier<String> selectedLanguage = ValueNotifier<String>('ENG');
-
-  Widget buildRichTextWithEllipsis(BuildContext context) {
-    String termsText = AppLocalizations.of(context)!.terms;
-
-    if (termsText.length > 27) {
-      termsText = termsText.substring(0, 27) + '...';
-    }
-
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: termsText,
-            style: TextStyle(
-              color: Theme.of(context).textTheme.bodyText1?.color,
-              fontSize: 14,
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
+    passwordVisible1 = true;
+    passwordVisible2 = true;
   }
 
   @override
@@ -203,9 +182,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: Row(
+                content: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Expanded(
                       // ignore: prefer_const_constructors
                       child: Text(
@@ -290,42 +269,20 @@ class _SignupScreenState extends State<SignupScreen> {
       }
     }
 
-    void checkPassword(String value) {
-      password = value.trim();
+    onPasswordChanged(String password) {
+      final numericRegex = RegExp(r'[0-9]');
+      setState(() {
+        _isPasswordEightCharacters = false;
+        if (password.length >= 8) _isPasswordEightCharacters = true;
 
-      if (password.isEmpty) {
-        setState(() {
-          strength = 0;
-          text = AppLocalizations.of(context)!.enterpass;
-        });
-      } else if (password.length < 4) {
-        setState(() {
-          strength = 1 / 5;
-          colorPasswordIndicator = const Color.fromARGB(255, 222, 66, 66);
-          text = AppLocalizations.of(context)!.shortpass;
-        });
-      } else if (password.length < 6) {
-        setState(() {
-          strength = 2 / 4;
-          colorPasswordIndicator = Colors.orange;
-          text = AppLocalizations.of(context)!.charpass;
-        });
-      } else {
-        if (!letterReg.hasMatch(password) || !numReg.hasMatch(password)) {
-          setState(() {
-            strength = 3 / 4;
-            colorPasswordIndicator = Colors.amber;
-            text = AppLocalizations.of(context)!.numpass;
-          });
-        } else {
-          setState(() {
-            strength = 1;
-            colorPasswordIndicator = Colors.green;
-            text = AppLocalizations.of(context)!.greatpass;
-            _isStrong = true;
-          });
+        _hasPasswordOneNumber = false;
+        if (numericRegex.hasMatch(password)) _hasPasswordOneNumber = true;
+
+        _bothPasswordMatch = false;
+        if ((passwordController.text == passControllerVerify.text)) {
+          _bothPasswordMatch = true;
         }
-      }
+      });
     }
 
     return Scaffold(
@@ -336,7 +293,7 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 30, 25, 0),
+                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -348,11 +305,24 @@ class _SignupScreenState extends State<SignupScreen> {
                                 type: PageTransitionType.leftToRight,
                                 child: const WelcomeScreen()));
                       },
-                      child: const Icon(
-                        Icons
-                            .arrow_back_ios_rounded, // Replace with the desired icon
-                        color: Color.fromARGB(255, 227, 227, 227),
-                        size: 25,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: const Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Color.fromARGB(255, 227, 227, 227),
+                          size: 25,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.signup_banner,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleSmall?.color,
+                        fontSize: 16,
                       ),
                     ),
                     const LanguageButton(),
@@ -360,240 +330,333 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Image.asset(
-                        'assets/images/padkey.png',
-                        height: 100,
-                      ), // Espacio entre la imagen y el texto
-                    ],
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        //Name textfield
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: InputTextField(
+                                controller: nameController,
+                                labelText: AppLocalizations.of(context)!.name,
+                                obscureText: false,
+                              ),
+                            ),
+                            const SizedBox(width: 15),
+                            Flexible(
+                              child: InputTextField(
+                                controller: surnameController,
+                                labelText:
+                                    AppLocalizations.of(context)!.surname,
+                                obscureText: false,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        //Username textfield
+                        InputTextField(
+                            controller: usernameController,
+                            labelText: AppLocalizations.of(context)!.username,
+                            obscureText: false),
+
+                        const SizedBox(height: 15),
+
+                        //Email address textfield
+                        InputTextField(
+                            controller: emailController,
+                            labelText: AppLocalizations.of(context)!.email,
+                            obscureText: false),
+
+                        const SizedBox(height: 15),
+
+                        //Password textfield
+                        TextField(
+                          onChanged: (password) => onPasswordChanged(password),
+                          controller: passwordController,
+                          obscureText: passwordVisible1,
+                          cursorWidth: 1,
+                          style: Theme.of(context).textTheme.labelMedium,
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(17.5)),
+                            ),
+                            contentPadding: const EdgeInsets.all(17),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(17.5)),
+                            ),
+                            labelText: AppLocalizations.of(context)!.password,
+                            labelStyle: const TextStyle(
+                              color: Color.fromARGB(255, 138, 138, 138),
+                              fontSize: 14,
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            fillColor: Theme.of(context).cardColor,
+                            filled: true,
+                            suffixIcon: Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    passwordVisible1 = !passwordVisible1;
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.transparent,
+                                  ),
+                                  child: Icon(
+                                    passwordVisible1
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        //Password textfield
+                        TextField(
+                          onChanged: (password) => onPasswordChanged(password),
+                          controller: passControllerVerify,
+                          obscureText: passwordVisible2,
+                          cursorWidth: 1,
+                          style: Theme.of(context).textTheme.labelMedium,
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(17.5)),
+                            ),
+                            contentPadding: const EdgeInsets.all(17),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(17.5)),
+                            ),
+                            labelText:
+                                AppLocalizations.of(context)!.repeat_password,
+                            labelStyle: const TextStyle(
+                              color: Color.fromARGB(255, 138, 138, 138),
+                              fontSize: 14,
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            fillColor: Theme.of(context).cardColor,
+                            filled: true,
+                            suffixIcon: Padding(
+                              padding: const EdgeInsets.only(right: 12.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    passwordVisible2 = !passwordVisible2;
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.transparent,
+                                  ),
+                                  child: Icon(
+                                    passwordVisible2
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 30, 0, 0),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        color: _isPasswordEightCharacters
+                                            ? const Color.fromARGB(
+                                                255, 51, 151, 67)
+                                            : Colors.transparent,
+                                        border: _isPasswordEightCharacters
+                                            ? Border.all(
+                                                color: Colors.transparent)
+                                            : Border.all(
+                                                color: const Color.fromARGB(
+                                                    255, 138, 138, 138)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.check,
+                                        color: _isPasswordEightCharacters
+                                            ? const Color.fromARGB(
+                                                255, 227, 227, 227)
+                                            : const Color.fromARGB(
+                                                255, 138, 138, 138),
+                                        size: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Contains at least 8 characters",
+                                    style: GoogleFonts.inter(
+                                        color: _isPasswordEightCharacters
+                                            ? const Color.fromARGB(
+                                                255, 227, 227, 227)
+                                            : const Color.fromARGB(
+                                                255, 138, 138, 138)),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 15),
+                              Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        color: _hasPasswordOneNumber
+                                            ? const Color.fromARGB(
+                                                255, 51, 151, 67)
+                                            : Colors.transparent,
+                                        border: _hasPasswordOneNumber
+                                            ? Border.all(
+                                                color: Colors.transparent)
+                                            : Border.all(
+                                                color: const Color.fromARGB(
+                                                    255, 138, 138, 138)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.check,
+                                        color: _hasPasswordOneNumber
+                                            ? const Color.fromARGB(
+                                                255, 227, 227, 227)
+                                            : const Color.fromARGB(
+                                                255, 138, 138, 138),
+                                        size: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Contains at least 1 number",
+                                    style: GoogleFonts.inter(
+                                        color: _hasPasswordOneNumber
+                                            ? const Color.fromARGB(
+                                                255, 227, 227, 227)
+                                            : const Color.fromARGB(
+                                                255, 138, 138, 138)),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 15),
+                              Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                        color: _bothPasswordMatch
+                                            ? const Color.fromARGB(
+                                                255, 51, 151, 67)
+                                            : Colors.transparent,
+                                        border: _bothPasswordMatch
+                                            ? Border.all(
+                                                color: Colors.transparent)
+                                            : Border.all(
+                                                color: const Color.fromARGB(
+                                                    255, 138, 138, 138)),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.check,
+                                        color: _bothPasswordMatch
+                                            ? const Color.fromARGB(
+                                                255, 227, 227, 227)
+                                            : const Color.fromARGB(
+                                                255, 138, 138, 138),
+                                        size: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "Both passwords match",
+                                    style: GoogleFonts.inter(
+                                        color: _bothPasswordMatch
+                                            ? const Color.fromARGB(
+                                                255, 227, 227, 227)
+                                            : const Color.fromARGB(
+                                                255, 138, 138, 138)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    //Name textfield
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: InputTextField(
-                            controller: nameController,
-                            labelText: AppLocalizations.of(context)!.name,
-                            obscureText: false,
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        Flexible(
-                          child: InputTextField(
-                            controller: surnameController,
-                            labelText: AppLocalizations.of(context)!.surname,
-                            obscureText: false,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    //Username textfield
-                    InputTextField(
-                        controller: usernameController,
-                        labelText: AppLocalizations.of(context)!.username,
-                        obscureText: false),
-
-                    const SizedBox(height: 15),
-
-                    //Email address textfield
-                    InputTextField(
-                        controller: emailController,
-                        labelText: AppLocalizations.of(context)!.email2,
-                        obscureText: false),
-
-                    const SizedBox(height: 15),
-
-                    //Password textfield
-                    TextField(
-                      onChanged: (val) => checkPassword(val),
-                      controller: passwordController,
-                      obscureText: passwordVisible,
-                      cursorWidth: 1,
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 227, 227, 227),
-                          fontSize: 14),
-                      decoration: InputDecoration(
-                        suffixIcon: Padding(
-                          padding: EdgeInsets.only(right: 12),
-                          child: IconButton(
-                            icon: Icon(
-                              passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Color.fromARGB(255, 227, 227, 227),
-                            ),
-                            onPressed: () {
-                              setState(
-                                () {
-                                  passwordVisible = !passwordVisible;
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Theme.of(context).dividerColor,
-                                width: 1),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(17.5))),
-                        contentPadding:
-                            const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Theme.of(context).dividerColor, width: 1),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(17.5)),
-                        ),
-                        labelText: AppLocalizations.of(context)!.pass2,
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 138, 138, 138),
-                            fontSize: 14),
-                        floatingLabelBehavior: FloatingLabelBehavior.never,
-                        fillColor: Theme.of(context).cardColor,
-                        filled: true,
-                      ),
-                    ),
-
-                    const SizedBox(height: 5),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        //borderRadius: BorderRadius.circular(  10.0), // Establece el radio de los bordes
-                        child: SizedBox(
-                          height:
-                              4.0, // Ajusta la altura del indicador de progreso según sea necesario
-                          child: LinearProgressIndicator(
-                            value: strength,
-                            backgroundColor: Color.fromARGB(225, 227, 227, 227),
-                            color: colorPasswordIndicator,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    //Password textfield
-                    PasswordTextField(
-                        controller: passControllerVerify,
-                        labelText: AppLocalizations.of(context)!.pass22,
-                        obscureText: true),
-
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                          child: Checkbox(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                            side: BorderSide(
-                                color: Theme.of(context).dividerColor),
-                            checkColor:
-                                const Color.fromARGB(255, 242, 242, 242),
-                            activeColor: const Color.fromARGB(255, 222, 66, 66),
-                            value: _isChecked,
-                            onChanged: (value) {
-                              setState(() {
-                                _isChecked = value!;
-                              });
-                            },
-                          ),
-                        ),
-                        Text(
-                          AppLocalizations.of(context)!.i_accept,
-                          style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodyText1?.color,
-                              fontSize: 14),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                      AppLocalizations.of(context)!.terms),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  content: SingleChildScrollView(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize: 13.5,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1
-                                                ?.color,
-                                          ),
-                                          textAlign: TextAlign.justify,
-                                          AppLocalizations.of(context)!
-                                              .gigaterms,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      style: ButtonStyle(
-                                        overlayColor:
-                                            MaterialStateColor.resolveWith(
-                                          (states) => const Color.fromARGB(
-                                                  255, 222, 66, 66)
-                                              .withOpacity(0.2),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        AppLocalizations.of(context)!.close,
-                                        style: const TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 222, 66, 66),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          child: buildRichTextWithEllipsis(context),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
                     //Sign up button
                     RedButton(
-                      buttonText: AppLocalizations.of(context)!.signup,
+                      buttonText: AppLocalizations.of(context)!.signup_button,
                       onTap: signUp,
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 30),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(7.5, 0, 7.5, 0),
+                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -602,27 +665,26 @@ class _SignupScreenState extends State<SignupScreen> {
                             fontSize: 12,
                           ),
                           children: [
-                            const TextSpan(
-                              text:
-                                  'By clicking "LOG IN", you agree that UNIGO! may retain some information you provide, and to our ',
+                            TextSpan(
+                              text: AppLocalizations.of(context)!.explanation1,
                             ),
                             TextSpan(
-                              text: 'Terms of Use',
+                              text: AppLocalizations.of(context)!.explanation2,
                               style: GoogleFonts.inter(
                                   color: const Color.fromARGB(255, 204, 49,
                                       49)), // Cambia el color a rojo
                             ),
-                            const TextSpan(
-                              text: ' and ',
+                            TextSpan(
+                              text: AppLocalizations.of(context)!.explanation3,
                             ),
                             TextSpan(
-                              text: 'Privacy Policy',
+                              text: AppLocalizations.of(context)!.explanation4,
                               style: GoogleFonts.inter(
                                   color: const Color.fromARGB(255, 204, 49,
                                       49)), // Cambia el color a rojo
                             ),
-                            const TextSpan(
-                              text: '.',
+                            TextSpan(
+                              text: AppLocalizations.of(context)!.explanation5,
                             ),
                           ],
                         ),
