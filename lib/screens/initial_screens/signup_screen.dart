@@ -269,7 +269,7 @@ class _SignupScreenState extends State<SignupScreen> {
       }
     }
 
-    onPasswordChanged(String password) {
+    onPasswordChangedConditions(String password) {
       final numericRegex = RegExp(r'[0-9]');
       setState(() {
         _isPasswordEightCharacters = false;
@@ -277,9 +277,19 @@ class _SignupScreenState extends State<SignupScreen> {
 
         _hasPasswordOneNumber = false;
         if (numericRegex.hasMatch(password)) _hasPasswordOneNumber = true;
-
         _bothPasswordMatch = false;
-        if ((passwordController.text == passControllerVerify.text)) {
+        if (((passControllerVerify.text != '') &&
+            (passwordController.text == passControllerVerify.text))) {
+          _bothPasswordMatch = true;
+        }
+      });
+    }
+
+    onPasswordChangedMatch(String password) {
+      setState(() {
+        _bothPasswordMatch = false;
+        if (((passControllerVerify.text != '') &&
+            (passwordController.text == passControllerVerify.text))) {
           _bothPasswordMatch = true;
         }
       });
@@ -378,7 +388,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
                         //Password textfield
                         TextField(
-                          onChanged: (password) => onPasswordChanged(password),
+                          onChanged: (password) =>
+                              onPasswordChangedConditions(password),
                           controller: passwordController,
                           obscureText: passwordVisible1,
                           cursorWidth: 1,
@@ -439,7 +450,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
                         //Password textfield
                         TextField(
-                          onChanged: (password) => onPasswordChanged(password),
+                          onChanged: (password) =>
+                              onPasswordChangedMatch(password),
                           controller: passControllerVerify,
                           obscureText: passwordVisible2,
                           cursorWidth: 1,
