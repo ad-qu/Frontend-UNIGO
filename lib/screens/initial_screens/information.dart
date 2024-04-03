@@ -1,32 +1,33 @@
-import 'dart:async';
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+import 'dart:ui';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
-import 'package:unigo/widgets/credential_screen/animated_background.dart';
-import 'package:unigo/widgets/input_widgets/apple_button.dart';
-import 'package:unigo/widgets/input_widgets/google_button.dart';
+import 'package:unigo/screens/initial_screens/welcome_screen.dart';
+import 'package:unigo/screens/navbar.dart';
+import 'package:unigo/services/auth_service.dart';
+import 'package:unigo/widgets/credential_screen/input_textfield.dart';
 import 'package:unigo/widgets/input_widgets/red_button.dart';
-import 'package:unigo/widgets/language_widgets/language_button.dart';
-import 'package:page_transition/page_transition.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:unigo/widgets/credential_screen/password_textfield.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../models/user.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:unigo/widgets/language_widgets/language_button.dart';
 
-class TermsScreen extends StatefulWidget {
-  const TermsScreen({super.key});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _TermsScreenState createState() => _TermsScreenState();
-}
-
-class _TermsScreenState extends State<TermsScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
+class InformationScreen extends StatelessWidget {
+  const InformationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +54,11 @@ class _TermsScreenState extends State<TermsScreen> {
                         ),
                       ),
                       Text(
-                        "Terms of Use and Privacy Policy",
+                        "Detailed information",
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).textTheme.titleSmall?.color,
-                          fontSize: 15,
+                          fontSize: 16,
                         ),
                       ),
                       GestureDetector(

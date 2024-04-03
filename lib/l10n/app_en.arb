@@ -20,6 +20,9 @@
   "password": "Password",
   "forgot_password": "Forgot your password?",
   "login_button": "LOG IN",
+  "faster1": "UNIGO! will ",
+  "faster2": "remember you",
+  "faster3": " for faster logins.",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -28,6 +31,9 @@
   "surname": "Surname",
   "username": "Username",
   "repeat_password": "Repeat your password",
+  "characters": "Contains at least 8 characters",
+  "number": "Contains at least 1 number",
+  "match": "Both passwords match",
   "i_accept": "I accept the ",
   "terms": "Terms of Use and Privacy Policy",
   "signup_button": "SIGN UP",

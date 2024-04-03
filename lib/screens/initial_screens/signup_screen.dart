@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/screens/initial_screens/terms_of_use_privacy_policy.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import '../../widgets/input_widgets/red_button.dart';
 import 'package:unigo/widgets/credential_screen/password_textfield.dart';
@@ -548,7 +549,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     width: 10,
                                   ),
                                   Text(
-                                    "Contains at least 8 characters",
+                                    AppLocalizations.of(context)!.characters,
                                     style: GoogleFonts.inter(
                                         color: _isPasswordEightCharacters
                                             ? const Color.fromARGB(
@@ -594,7 +595,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     width: 10,
                                   ),
                                   Text(
-                                    "Contains at least 1 number",
+                                    AppLocalizations.of(context)!.number,
                                     style: GoogleFonts.inter(
                                         color: _hasPasswordOneNumber
                                             ? const Color.fromARGB(
@@ -638,7 +639,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    "Both passwords match",
+                                    AppLocalizations.of(context)!.match,
                                     style: GoogleFonts.inter(
                                         color: _bothPasswordMatch
                                             ? const Color.fromARGB(
@@ -656,53 +657,70 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    //Sign up button
-                    RedButton(
-                      buttonText: AppLocalizations.of(context)!.signup_button,
-                      onTap: signUp,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      type: PageTransitionType.bottomToTop,
+                      child: const TermsScreen(),
                     ),
-                    const SizedBox(height: 30),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: GoogleFonts.inter(
-                            color: Theme.of(context).textTheme.bodySmall?.color,
-                            fontSize: 12,
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      //Sign up button
+                      RedButton(
+                        buttonText: AppLocalizations.of(context)!.signup_button,
+                        onTap: signUp,
+                      ),
+                      const SizedBox(height: 30),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            style: GoogleFonts.inter(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall?.color,
+                              fontSize: 12,
+                            ),
+                            children: [
+                              TextSpan(
+                                text:
+                                    AppLocalizations.of(context)!.explanation1,
+                              ),
+                              TextSpan(
+                                text:
+                                    AppLocalizations.of(context)!.explanation2,
+                                style: GoogleFonts.inter(
+                                    color: const Color.fromARGB(255, 204, 49,
+                                        49)), // Cambia el color a rojo
+                              ),
+                              TextSpan(
+                                text:
+                                    AppLocalizations.of(context)!.explanation3,
+                              ),
+                              TextSpan(
+                                text:
+                                    AppLocalizations.of(context)!.explanation4,
+                                style: GoogleFonts.inter(
+                                    color: const Color.fromARGB(255, 204, 49,
+                                        49)), // Cambia el color a rojo
+                              ),
+                              TextSpan(
+                                text:
+                                    AppLocalizations.of(context)!.explanation5,
+                              ),
+                            ],
                           ),
-                          children: [
-                            TextSpan(
-                              text: AppLocalizations.of(context)!.explanation1,
-                            ),
-                            TextSpan(
-                              text: AppLocalizations.of(context)!.explanation2,
-                              style: GoogleFonts.inter(
-                                  color: const Color.fromARGB(255, 204, 49,
-                                      49)), // Cambia el color a rojo
-                            ),
-                            TextSpan(
-                              text: AppLocalizations.of(context)!.explanation3,
-                            ),
-                            TextSpan(
-                              text: AppLocalizations.of(context)!.explanation4,
-                              style: GoogleFonts.inter(
-                                  color: const Color.fromARGB(255, 204, 49,
-                                      49)), // Cambia el color a rojo
-                            ),
-                            TextSpan(
-                              text: AppLocalizations.of(context)!.explanation5,
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

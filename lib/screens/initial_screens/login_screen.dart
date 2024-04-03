@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:unigo/screens/initial_screens/information.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import 'package:unigo/screens/navbar.dart';
@@ -29,9 +30,14 @@ void main() async {
   await dotenv.load();
 }
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     //Text editing controllers
@@ -315,40 +321,63 @@ class LoginScreen extends StatelessWidget {
                           onTap: logIn,
                         ),
                         const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "UNIGO! will",
-                              style: GoogleFonts.inter(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.color,
-                                fontSize: 12,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.bottomToTop,
+                                child: const InformationScreen(),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: GoogleFonts.inter(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.color,
+                                  fontSize: 12,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: AppLocalizations.of(context)!.faster1,
+                                    style: GoogleFonts.inter(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: AppLocalizations.of(context)!.faster2,
+                                    style: GoogleFonts.inter(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .displayLarge
+                                          ?.color,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: AppLocalizations.of(context)!.faster3,
+                                    style: GoogleFonts.inter(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Text(
-                              " remember you ",
-                              style: GoogleFonts.inter(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge
-                                    ?.color,
-                                fontSize: 12,
-                              ),
-                            ),
-                            Text(
-                              "for faster logins.",
-                              style: GoogleFonts.inter(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.color,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),

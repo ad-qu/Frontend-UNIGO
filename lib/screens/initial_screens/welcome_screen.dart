@@ -157,7 +157,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               AppLocalizations.of(context)!.have_account,
                               style: Theme.of(context).textTheme.labelMedium,
                             ),
-                            const SizedBox(width: 5),
+                            const SizedBox(width: 6),
                             Text(AppLocalizations.of(context)!.login,
                                 style:
                                     Theme.of(context).textTheme.displayLarge),
