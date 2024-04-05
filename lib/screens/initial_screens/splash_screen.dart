@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
+import 'package:unigo/screens/navbar.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
@@ -28,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigatetohome() async {
-    await Future.delayed(const Duration(milliseconds: 2000), () {});
+    await Future.delayed(const Duration(milliseconds: 1500), () {});
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString("idUser");
     String? email = prefs.getString("email");
@@ -52,7 +53,10 @@ class _SplashScreenState extends State<SplashScreen> {
       prefs.setString('name', u.name);
       prefs.setString('surname', u.surname);
       prefs.setString('username', u.username);
-      Navigator.pushNamed(context, '/navbar');
+      Navigator.pushReplacement(
+          context,
+          PageTransition(
+              type: PageTransitionType.rightToLeft, child: const NavBar()));
     }
   }
 

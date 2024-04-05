@@ -75,9 +75,9 @@
 
   "@---------------- NAVBAR ------------------": {
   },
-  "home": "Inici",
-  "chat": "Xat",
-  "discover": "Descobreix",
+  "map": "Mapa",
+  "markers": "Marcadors",
+  "entities": "Entitats",
   "profile": "Perfil",
   
   "@---------------- DISCOVER ------------------": {

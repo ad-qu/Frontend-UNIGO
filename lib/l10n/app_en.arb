@@ -77,9 +77,9 @@
   
   "@---------------- NAVBAR ------------------": {
   },
-  "home": "Home",
-  "chat": "Chat",
-  "discover": "Discover",
+  "map": "Map",
+  "markers": "Markers",
+  "entities": "Entities",
   "profile": "Profile",
 
   "@---------------- DISCOVER ------------------": {

@@ -505,7 +505,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isFollowersHighlighted ? _highlightedText : _normalText;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SizedBox(

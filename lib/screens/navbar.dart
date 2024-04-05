@@ -11,7 +11,7 @@ import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'entity_screens/list_chat_screen.dart';
 
 class NavBar extends StatefulWidget {
-  const NavBar({Key? key}) : super(key: key);
+  const NavBar({super.key});
 
   @override
   //ignore: library_private_types_in_public_api
@@ -38,7 +38,7 @@ class _NavBarState extends State<NavBar> {
         snackBar: SnackBar(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+          margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           content: const Text(
             'Tap back again to leave',
             textAlign: TextAlign.center,
@@ -49,45 +49,47 @@ class _NavBarState extends State<NavBar> {
         child: screens[_currentIndex],
       ),
       bottomNavigationBar: Container(
-        color: Theme.of(context).backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        margin: const EdgeInsets.all(5),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         child: GNav(
-            gap: 15,
-            backgroundColor: Theme.of(context).backgroundColor,
-            color: Theme.of(context).dividerColor,
-            activeColor: const Color.fromARGB(255, 242, 242, 242),
-            tabBackgroundColor: const Color.fromARGB(255, 222, 66, 66),
+            gap: 10,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            color: Theme.of(context).secondaryHeaderColor,
+            activeColor: Theme.of(context).secondaryHeaderColor,
+            tabBackgroundColor: Theme.of(context).splashColor,
+            duration: const Duration(milliseconds: 250),
             selectedIndex: _currentIndex,
             onTabChange: (index) => {setState(() => _currentIndex = index)},
-            padding: const EdgeInsets.fromLTRB(14, 8.5, 14, 8.5),
+            padding: const EdgeInsets.fromLTRB(12, 8.5, 8.5, 8.5),
             tabs: [
               GButton(
-                icon: Icons.home_filled,
+                icon: Icons.map_rounded,
                 iconSize: 25,
                 // text: 'Home',
-                text: AppLocalizations.of(context)!.home,
+                text: AppLocalizations.of(context)!.map,
               ),
               GButton(
-                icon: Icons.chat_bubble_rounded,
-                iconSize: 22,
-                text: AppLocalizations.of(context)!.chat,
+                icon: Icons.edit_location_alt_rounded,
+                iconSize: 25,
+                text: AppLocalizations.of(context)!.markers,
               ),
               GButton(
-                icon: Icons.manage_search_rounded,
-                iconSize: 27,
+                icon: Icons.view_agenda_rounded,
+                iconSize: 25,
                 // text: 'Discover',
-                text: AppLocalizations.of(context)!.discover,
+                text: AppLocalizations.of(context)!.entities,
               ),
               GButton(
                 icon: Icons.person_rounded,
-                iconSize: 24,
+                iconSize: 25,
                 // text: 'Profile',
                 text: AppLocalizations.of(context)!.profile,
               ),
             ]),
       ),
-      bottomSheet: const Divider(
-        color: Color.fromARGB(255, 52, 52, 52),
+      bottomSheet: Divider(
+        color: Theme.of(context).dividerColor,
         height: 0.05,
       ),
     );

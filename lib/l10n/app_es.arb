@@ -81,9 +81,9 @@
 
   "@---------------- NAVBAR ------------------": {
   },
-  "home": "Inicio",
-  "chat": "Chat",
-  "discover": "Descubre",
+  "map": "Mapa",
+  "markers": "Marcadores",
+  "entities": "Entidades",
   "profile": "Perfil",
 
   "@---------------- DISCOVER ------------------": {
