@@ -1,4 +1,6 @@
 // ignore_for_file: sort_child_properties_last, prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -27,10 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //en que porcentage de la pantalla se inicia el panel deslizante
     final panelHeightClosed = MediaQuery.of(context).size.height * 0.055;
-    //hasta que porcentage de la pantalla lega el panel
-    final panelHeightOpen = MediaQuery.of(context).size.height * 0.78;
+    final panelHeightOpen = MediaQuery.of(context).size.height * 0.851;
     return Scaffold(
         body: SlidingUpPanel(
       backdropOpacity: 0.5,

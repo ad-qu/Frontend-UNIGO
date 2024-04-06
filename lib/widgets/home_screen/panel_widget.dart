@@ -15,10 +15,10 @@ void main() async {
 
 class PanelWidget extends StatefulWidget {
   const PanelWidget({
-    Key? key,
+    super.key,
     required this.controller,
     required this.panelController,
-  }) : super(key: key);
+  });
 
   final ScrollController controller;
   final PanelController panelController;
@@ -34,6 +34,7 @@ class _PanelWidgetState extends State<PanelWidget> {
   dynamic controller;
   dynamic panelController;
   String? _idUser;
+
   @override
   void initState() {
     super.initState();
@@ -80,11 +81,30 @@ class _PanelWidgetState extends State<PanelWidget> {
     });
   }
 
+  Widget buildDragHandle(context) => GestureDetector(
+        onTap: togglePanel,
+        child: Center(
+          child: Container(
+            width: 150,
+            height: 3.75,
+            decoration: BoxDecoration(
+              color: Theme.of(context).secondaryHeaderColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      );
+
+  void togglePanel() => PanelController().isPanelOpen
+      ? PanelController().close()
+      : PanelController().open();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+        decoration:
+            BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
         child: Column(
           children: <Widget>[
             const SizedBox(height: 10),
@@ -143,7 +163,7 @@ Widget buildItinerario(BuildContext context, List<Itinerario> itinerarioList) {
                   attr2: itinerarioList[index].descr,
                   attr3: "",
                   attr4: "",
-                  attr5: [],
+                  attr5: const [],
                 ),
               );
             },
@@ -167,21 +187,3 @@ getChallengeInfo(String idChallenge) async {
       }));
   return response.data;
 }
-
-Widget buildDragHandle(context) => GestureDetector(
-      onTap: togglePanel,
-      child: Center(
-        child: Container(
-          width: 150,
-          height: 3.75,
-          decoration: BoxDecoration(
-            color: Theme.of(context).dividerColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      ),
-    );
-
-void togglePanel() => PanelController().isPanelOpen
-    ? PanelController().close()
-    : PanelController().open();

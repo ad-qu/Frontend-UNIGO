@@ -22,7 +22,6 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/widgets/language_widgets/language_button.dart';
 

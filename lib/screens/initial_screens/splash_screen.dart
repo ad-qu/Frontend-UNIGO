@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigatetohome() async {
-    await Future.delayed(const Duration(milliseconds: 1500), () {});
+    await Future.delayed(const Duration(milliseconds: 2000), () {});
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString("idUser");
     String? email = prefs.getString("email");

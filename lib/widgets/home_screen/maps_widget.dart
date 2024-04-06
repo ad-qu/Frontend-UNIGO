@@ -119,7 +119,7 @@ class MapsWidget extends State<MapScreen> {
             );
           },
           child: Image.asset(
-            'images/marker_advanced.png',
+            'images/marker.png',
           ),
         ),
       );
@@ -309,8 +309,8 @@ class MapsWidget extends State<MapScreen> {
     allmarkers.clear();
     if (showUserLocation && userLocation != null) {
       final userMarker = Marker(
-        height: 20,
-        width: 20,
+        height: 25,
+        width: 25,
         point: LatLng(userLocation!.latitude, userLocation!.longitude),
         // Utiliza 'child' para especificar el widget dentro del marcador
         // En este caso, una imagen
@@ -340,7 +340,7 @@ class MapsWidget extends State<MapScreen> {
           mapController: mapController,
           options: MapOptions(
             center: LatLng(41.27561, 1.98722),
-            zoom: 16.0,
+            zoom: 17,
             maxZoom: 18.25,
             maxBounds: LatLngBounds(
               LatLng(41, 1.65),

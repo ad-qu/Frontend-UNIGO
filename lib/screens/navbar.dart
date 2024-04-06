@@ -6,8 +6,6 @@ import 'package:unigo/screens/map_screens/home_screen.dart';
 import 'package:unigo/screens/profile_screens/profile_screen.dart';
 import 'package:unigo/screens/entity_screens/discover_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
-
 import 'entity_screens/list_chat_screen.dart';
 
 class NavBar extends StatefulWidget {
@@ -34,20 +32,7 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DoubleBackToCloseApp(
-        snackBar: SnackBar(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          content: const Text(
-            'Tap back again to leave',
-            textAlign: TextAlign.center,
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(milliseconds: 850),
-        ),
-        child: screens[_currentIndex],
-      ),
+      body: screens[_currentIndex],
       bottomNavigationBar: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         margin: const EdgeInsets.all(5),
@@ -61,7 +46,7 @@ class _NavBarState extends State<NavBar> {
             duration: const Duration(milliseconds: 250),
             selectedIndex: _currentIndex,
             onTabChange: (index) => {setState(() => _currentIndex = index)},
-            padding: const EdgeInsets.fromLTRB(12, 8.5, 8.5, 8.5),
+            padding: const EdgeInsets.fromLTRB(12, 8.5, 10, 8.5),
             tabs: [
               GButton(
                 icon: Icons.map_rounded,
