@@ -21,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final panelController = PanelController();
+  bool isPanelOpen = false;
 
   @override
   void initState() {
@@ -29,8 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final panelHeightClosed = MediaQuery.of(context).size.height * 0.055;
-    final panelHeightOpen = MediaQuery.of(context).size.height * 0.851;
+    const panelHeightClosed = 43.0;
+    final panelHeightOpen = MediaQuery.of(context).size.height * 0.785;
     return Scaffold(
         body: SlidingUpPanel(
       backdropOpacity: 0.5,
@@ -42,17 +43,22 @@ class _HomeScreenState extends State<HomeScreen> {
       backdropEnabled: true,
       panelBuilder: (controller) => ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(22.5),
+          topRight: Radius.circular(22.5),
         ),
         child: PanelWidget(
           controller: controller,
           panelController: panelController,
+          // onPanelStateChanged: (bool isOpen) {
+          //   setState(() {
+          //     isPanelOpen = isOpen;
+          //   });
+          // },
         ),
       ),
       borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
+        topLeft: Radius.circular(22.5),
+        topRight: Radius.circular(22.5),
       ),
       body: MapScreen(),
     ));

@@ -379,7 +379,7 @@ class MapsWidget extends State<MapScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
-              backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+              backgroundColor: Theme.of(context).splashColor,
               minimumSize: Size(60, 60), // Establece el ancho y alto del botón
             ),
             child: Ink(

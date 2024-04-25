@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:unigo/screens/map_screens/qr_screen.dart';
 
 class MyChallengeCard extends StatelessWidget {
@@ -11,153 +13,58 @@ class MyChallengeCard extends StatelessWidget {
   final List<String> attr5;
 
   const MyChallengeCard({
-    Key? key,
+    super.key,
     required this.index,
     required this.attr1, //name of the challenge
     required this.attr2, //description of the challenge
-    required this.attr3,
+    required this.attr3, //exp
     required this.attr4,
     required this.attr5,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(9, 20, 9, 4),
+      padding: const EdgeInsets.fromLTRB(6.5, 0, 6.5, 15),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 222, 66, 66),
-          borderRadius: BorderRadius.circular(16), // Agregar bordes redondeados
-        ),
-        child: Column(
-          children: [
-            Slidable(
-              startActionPane: ActionPane(
-                motion: const StretchMotion(),
-                extentRatio: 0.27,
-                children: [
-                  SlidableAction(
-                    onPressed: (BuildContext context) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyQR(
-                                  idChallenge: attr4,
-                                  questions: attr5,
-                                  expChallenge: attr3,
-                                )),
-                      );
-                    },
-                    backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                    icon: Icons.camera_alt_rounded,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      bottomLeft: Radius.circular(16),
-                    ),
-                  ),
-                ],
+            border: Border.all(
+                color: const Color.fromARGB(255, 30, 30, 30), width: 1),
+            color: const Color.fromARGB(255, 23, 23, 23),
+            borderRadius: BorderRadius.circular(344)),
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 15, 25, 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CircleAvatar(
+                radius: 17.5,
+                backgroundImage: attr4 != ""
+                    ? Image.network(attr4).image
+                    : const AssetImage('images/default.png'),
               ),
-              child: Container(
+              Text(
+                attr1,
+                style: GoogleFonts.inter(
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w400,
+                  color: const Color.fromARGB(255, 227, 227, 227),
+                  fontSize: 15,
+                ),
+              ),
+              Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.fromLTRB(30, 8, 8, 8),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const CircleAvatar(
-                            radius: 5,
-                            backgroundColor: Color.fromARGB(255, 248, 188, 6),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            attr3,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 25, 25, 25),
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            (index + 1).toString(),
-                            style: const TextStyle(
-                              fontStyle: FontStyle.normal,
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(255, 222, 66, 66),
-                              fontSize: 35,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(30, 17.5, 15, 17.5),
-                          child: Container(
-                            width: 1.35,
-                            height: 65,
-                            color: const Color.fromARGB(255, 222, 66, 66),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(5, 2.5, 5, 0),
-                                child: Text(
-                                  attr1,
-                                  style: const TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 25, 25, 25),
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
-                                child: Text(
-                                  attr2.length >= 60
-                                      ? '${attr2.substring(0, 60)}...'
-                                      : attr2,
-                                  style: const TextStyle(
-                                    fontStyle: FontStyle.normal,
-                                    color: Color.fromARGB(255, 25, 25, 25),
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(30)),
+                child: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Color.fromARGB(255, 227, 227, 227),
+                  size: 23,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

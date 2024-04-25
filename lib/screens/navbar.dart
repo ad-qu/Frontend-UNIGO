@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:unigo/screens/entity_screens/entity_screen.dart';
 
 //Screens
 import 'package:unigo/screens/map_screens/home_screen.dart';
@@ -23,8 +24,8 @@ final screens = [
   //const HubScreen(),
   // Chat(),
   // const MyApp(),
-  const MyChatList(),
   const DiscoverScreen(),
+  const EntityScreen(),
   const ProfileScreen(),
 ];
 

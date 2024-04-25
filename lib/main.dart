@@ -101,7 +101,10 @@ class _MyAppState extends State<MyApp> {
             fontSize: 14,
             color: const Color.fromARGB(255, 175, 175, 175),
           ),
+          //Tittle entities card
           titleSmall: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             color: const Color.fromARGB(255, 227, 227, 227),
           ),
           bodyLarge: GoogleFonts.inter(

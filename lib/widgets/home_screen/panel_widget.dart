@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'card_challenge_list_widget.dart';
 import 'package:unigo/models/challenge.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -109,7 +110,34 @@ class _PanelWidgetState extends State<PanelWidget> {
           children: <Widget>[
             const SizedBox(height: 10),
             buildDragHandle(context),
-            const SizedBox(height: 25), //AQUI IRÁ LOS MODOS
+            const SizedBox(height: 30),
+            Divider(
+              color: Theme.of(context).dividerColor,
+              height: 0.05,
+            ),
+            const SizedBox(height: 45),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Itinerarios ",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.titleSmall?.color,
+                    fontSize: 18,
+                  ),
+                ),
+                Text(
+                  "(3)",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.normal,
+                    color: Theme.of(context).textTheme.titleSmall?.color,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12.5),
             Expanded(
               // child: buildChallenges12(context, challengeList),
               child: buildItinerario(context, itinerarioList),
@@ -127,7 +155,7 @@ Widget buildItinerario(BuildContext context, List<Itinerario> itinerarioList) {
     // MediaQuery.of(context).size.height - 100,
     slivers: [
       SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         sliver: SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
