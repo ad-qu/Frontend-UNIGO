@@ -1,8 +1,10 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:unigo/screens/navbar.dart';
 import '../models/user.dart' as user_ea;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,7 @@ class AuthService {
       if (response.statusCode == 200) {
         Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
 
-        print('Token:' + payload.toString());
+        print('Token:$payload');
 
         user_ea.User u = user_ea.User.fromJson(payload);
         var data = json.decode(response.toString());
@@ -42,6 +44,7 @@ class AuthService {
     }
   }
 
+  // ignore: non_constant_identifier_names
   Future<bool> SignInViaGoogle(User user) async {
     try {
       var response = await Dio()
@@ -58,7 +61,7 @@ class AuthService {
         print('User registration successful');
         Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
 
-        print('Token:' + payload.toString());
+        print('Token:$payload');
 
         user_ea.User u = user_ea.User.fromJson(payload);
         var data = json.decode(response.toString());
@@ -89,15 +92,18 @@ class AuthService {
       // Empezamos el logIn con Google
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+
       // Obtenemos los detalles de la request
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
+
 
       // Obtenemos las credenciales del AuthProvider
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+
 
       // Hacemos SignIn con los credenciales que nos da google
       final UserCredential userCredential =
@@ -112,7 +118,11 @@ class AuthService {
       //Intentamos login en API
       final bool registerOK = await SignInViaGoogle(user!);
       if (registerOK) {
-        Navigator.pushNamed(context, '/navbar');
+        Navigator.push(
+            // ignore: use_build_context_synchronously
+            context,
+            PageTransition(
+                type: PageTransitionType.rightToLeft, child: const NavBar()));
       }
 
       return userCredential;

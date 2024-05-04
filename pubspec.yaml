@@ -62,12 +62,12 @@ dependencies:
   shared_preferences: ^2.1.0
   email_validator: ^2.1.17
   flutter_slidable: ^3.0.0
-  firebase_core: ^2.13.0
+  firebase_core: ^2.30.1
   firebase_auth: ^4.6.1
   google_sign_in: ^6.1.0
   qr_code_scanner: ^1.0.1
   flutter_dotenv: ^5.0.2
-  file_picker: ^6.1.1
+  file_picker: ^8.0.3
   flutter_chat_types: ^3.6.0
   flutter_chat_ui: ^1.6.6
   image_picker: ^1.0.7

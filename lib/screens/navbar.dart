@@ -56,9 +56,9 @@ class _NavBarState extends State<NavBar> {
                 text: AppLocalizations.of(context)!.map,
               ),
               GButton(
-                icon: Icons.edit_location_alt_rounded,
+                icon: Icons.forum_rounded,
                 iconSize: 25,
-                text: AppLocalizations.of(context)!.markers,
+                text: "Chats",
               ),
               GButton(
                 icon: Icons.view_agenda_rounded,

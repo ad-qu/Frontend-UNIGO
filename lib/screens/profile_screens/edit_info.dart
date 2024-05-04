@@ -229,7 +229,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
                     padding: const EdgeInsets.fromLTRB(25, 25, 0, 25),
                     child: FloatingActionButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.pop(
                             context,
                             PageTransition(
                                 type: PageTransitionType.leftToRight,

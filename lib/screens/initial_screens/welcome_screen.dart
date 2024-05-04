@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
+import 'package:unigo/services/auth_service.dart';
 import 'package:unigo/widgets/credential_screen/animated_background.dart';
 import 'package:unigo/widgets/input_widgets/apple_button.dart';
 import 'package:unigo/widgets/input_widgets/google_button.dart';
@@ -108,9 +109,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       onTap: signUp,
                     ),
                     const SizedBox(height: 10),
-                    GoogleButton(
-                      buttonText: AppLocalizations.of(context)!.google_login,
-                      onTap: logIn,
+                    GestureDetector(
+                      child: GoogleButton(
+                        buttonText: AppLocalizations.of(context)!.google_login,
+                        onTap: () => AuthService().signInWithGoogle(context),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     AppleButton(

@@ -29,51 +29,40 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigatetohome() async {
-    try {
-      // Esperar 2000 milisegundos (2 segundos)
-      await Future.delayed(const Duration(milliseconds: 2000), () {});
+    // Esperar 2000 milisegundos (2 segundos)
+    await Future.delayed(const Duration(milliseconds: 2000), () {});
 
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? username = prefs.getString("idUser");
-      String? email = prefs.getString("email");
-      String? password = prefs.getString("password");
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? username = prefs.getString("idUser");
+    String? email = prefs.getString("email");
+    String? password = prefs.getString("password");
 
-      if (username == null) {
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: const WelcomeScreen(),
-          ),
-        );
-      } else {
-        var response = await Dio().post(
-          'http://${dotenv.env['API_URL']}/auth/login',
-          data: {"email": email, "password": password},
-        );
-        Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
-        User u = User.fromJson(payload);
-        var data = json.decode(response.toString());
-        prefs.setString('token', data['token']);
-        prefs.setString('idUser', u.idUser);
-        prefs.setString('name', u.name);
-        prefs.setString('surname', u.surname);
-        prefs.setString('username', u.username);
-        Navigator.pushReplacement(
-          context,
-          PageTransition(
-            type: PageTransitionType.rightToLeft,
-            child: const NavBar(),
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error: $e');
+    if (username == null) {
       Navigator.pushReplacement(
         context,
         PageTransition(
           type: PageTransitionType.rightToLeft,
           child: const WelcomeScreen(),
+        ),
+      );
+    } else {
+      var response = await Dio().post(
+        'http://${dotenv.env['API_URL']}/auth/login',
+        data: {"email": email, "password": password},
+      );
+      Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
+      User u = User.fromJson(payload);
+      var data = json.decode(response.toString());
+      prefs.setString('token', data['token']);
+      prefs.setString('idUser', u.idUser);
+      prefs.setString('name', u.name);
+      prefs.setString('surname', u.surname);
+      prefs.setString('username', u.username);
+      Navigator.pushReplacement(
+        context,
+        PageTransition(
+          type: PageTransitionType.rightToLeft,
+          child: const NavBar(),
         ),
       );
     }

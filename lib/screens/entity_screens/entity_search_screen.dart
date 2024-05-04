@@ -1,10 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:unigo/models/entity.dart';
-import 'package:unigo/screens/entity_screens/entity_add_screen.dart';
-import 'package:unigo/screens/entity_screens/entity_search_screen.dart';
 import 'package:unigo/widgets/entity_screen/card_entity.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +14,17 @@ void main() async {
   await dotenv.load();
 }
 
-class EntityScreen extends StatefulWidget {
-  const EntityScreen({super.key});
+class EntitySearchScreen extends StatefulWidget {
+  const EntitySearchScreen({super.key});
 
   @override
-  State<EntityScreen> createState() => _EntityScreenState();
+  State<EntitySearchScreen> createState() => _EntitySearchScreenState();
 }
 
-class _EntityScreenState extends State<EntityScreen> {
+class _EntitySearchScreenState extends State<EntitySearchScreen> {
   List<Entity> entityList = [];
-  List<User> notFriendsList = [];
-  List<User> filteredUsers = [];
+  List<Entity> notFollowedEntityList = [];
+  List<Entity> filteredEntities = [];
   String? _idUser = "";
 
   @override
@@ -35,7 +32,7 @@ class _EntityScreenState extends State<EntityScreen> {
     super.initState();
     getUserInfo();
     getEntities();
-    //getNotFriends();
+    getNotFollowedEntities();
   }
 
   Future<void> getUserInfo() async {
@@ -80,11 +77,10 @@ class _EntityScreenState extends State<EntityScreen> {
     }
   }
 
-  Future getNotFriends() async {
+  Future getNotFollowedEntities() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path =
-        'http://${dotenv.env['API_URL']}/user/friends/unfollowing/$_idUser';
+    String path = 'http://${dotenv.env['API_URL']}/entity/unfollowing/$_idUser';
     try {
       var response = await Dio().get(
         path,
@@ -96,13 +92,13 @@ class _EntityScreenState extends State<EntityScreen> {
         ),
       );
 
-      var users = response.data as List;
+      var entities = response.data as List;
 
       setState(() {
-        notFriendsList = users.map((user) => User.fromJson2(user)).toList();
-        notFriendsList =
-            notFriendsList.where((user) => user.active == true).toList();
-        filteredUsers = notFriendsList;
+        notFollowedEntityList =
+            entities.map((entity) => Entity.fromJson2(entity)).toList();
+        notFollowedEntityList = notFollowedEntityList.toList();
+        filteredEntities = notFollowedEntityList + entityList;
       });
     } catch (e) {
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -120,10 +116,9 @@ class _EntityScreenState extends State<EntityScreen> {
 
   void _runFilter(String enteredKeyword) {
     setState(() {
-      filteredUsers = notFriendsList.where((user) {
+      filteredEntities = (notFollowedEntityList + entityList).where((entity) {
         final lowerCaseKeyword = enteredKeyword.toLowerCase();
-        return user.username.toLowerCase().startsWith(lowerCaseKeyword) &&
-            user.active == true;
+        return entity.name.toLowerCase().startsWith(lowerCaseKeyword);
       }).toList();
     });
   }
@@ -137,47 +132,32 @@ class _EntityScreenState extends State<EntityScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: const EntityAddScreen()));
-                      },
+                    Expanded(
                       child: Container(
-                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Icon(
-                          Icons.add,
-                          size: 30,
-                          color: Theme.of(context).secondaryHeaderColor,
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(100.0),
                         ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.fade,
-                                child: const EntitySearchScreen()));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Icon(
-                          Icons.search,
-                          size: 27,
-                          color: Theme.of(context).secondaryHeaderColor,
+                        child: TextFormField(
+                          onChanged: (value) => _runFilter(value),
+                          cursorColor: const Color.fromARGB(255, 222, 66, 66),
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 25, 25, 25)),
+                          decoration: InputDecoration(
+                            hintText: AppLocalizations.of(context)!.filter_box,
+                            hintStyle: TextStyle(
+                                color: Color.fromARGB(255, 146, 146, 146)),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.fromLTRB(18.5, 14, 0, 0),
+                            suffixIcon: Icon(
+                              Icons.search_rounded,
+                              color: Color.fromARGB(255, 222, 66, 66),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -198,20 +178,21 @@ class _EntityScreenState extends State<EntityScreen> {
                                     horizontal: 16.0),
                                 child: MyEntityCard(
                                   idUserSession: _idUser!,
-                                  idEntity: entityList[index].idEntity,
-                                  attr1:
-                                      entityList[index].imageURL?.toString() ??
-                                          '',
-                                  attr2: entityList[index].name,
-                                  attr3: entityList[index].description,
-                                  attr4: entityList[index].verified,
+                                  idEntity: filteredEntities[index].idEntity,
+                                  attr1: filteredEntities[index]
+                                          .imageURL
+                                          ?.toString() ??
+                                      '',
+                                  attr2: filteredEntities[index].name,
+                                  attr3: filteredEntities[index].description,
+                                  attr4: filteredEntities[index].verified,
                                 ),
                               );
                             } catch (e) {
                               return const SizedBox();
                             }
                           },
-                          childCount: entityList.length,
+                          childCount: filteredEntities.length,
                         ),
                       ),
                     ],

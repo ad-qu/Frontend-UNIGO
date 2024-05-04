@@ -27,7 +27,9 @@ void main() async {
   await Firebase.initializeApp(
     name: "Dev Project",
     options: DefaultFirebaseOptions.currentPlatform,
+    
   );
+  
   final fcmToken = await FirebaseMessaging.instance.getToken();
   debugPrint(fcmToken);
   await dotenv.load();
