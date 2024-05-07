@@ -1,21 +1,25 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/models/entity.dart';
-import 'package:unigo/widgets/entity_screen/card_entity.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../widgets/profile_screen/card_user_widget.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../models/user.dart';
+import '../../models/entity.dart';
+import '../../widgets/profile_screen/card_user_widget.dart';
+import '../../widgets/entity_screen/card_entity.dart';
+import 'entity_screen.dart';
 
 void main() async {
   await dotenv.load();
 }
 
 class EntitySearchScreen extends StatefulWidget {
-  const EntitySearchScreen({super.key});
+  const EntitySearchScreen({Key? key}) : super(key: key);
 
   @override
   State<EntitySearchScreen> createState() => _EntitySearchScreenState();
@@ -25,14 +29,13 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
   List<Entity> entityList = [];
   List<Entity> notFollowedEntityList = [];
   List<Entity> filteredEntities = [];
-  String? _idUser = "";
+  String? _idUser;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     getUserInfo();
-    getEntities();
-    getNotFollowedEntities();
+    fetchEntities();
   }
 
   Future<void> getUserInfo() async {
@@ -42,13 +45,17 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
     });
   }
 
-  Future getEntities() async {
+  Future<void> fetchEntities() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/entity/following/$_idUser';
+    String followingPath =
+        'http://${dotenv.env['API_URL']}/entity/following/$_idUser';
+    String unfollowingPath =
+        'http://${dotenv.env['API_URL']}/entity/unfollowing/$_idUser';
+
     try {
-      var response = await Dio().get(
-        path,
+      var followingResponse = await Dio().get(
+        followingPath,
         options: Options(
           headers: {
             "Content-Type": "application/json",
@@ -57,60 +64,28 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
         ),
       );
 
-      var following = response.data as List;
+      var unfollowingResponse = await Dio().get(
+        unfollowingPath,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      var following = followingResponse.data as List;
+      var unfollowing = unfollowingResponse.data as List;
 
       setState(() {
         entityList =
-            following.map((entities) => Entity.fromJson2(entities)).toList();
-      });
-    } catch (e) {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
-    }
-  }
-
-  Future getNotFollowedEntities() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/entity/unfollowing/$_idUser';
-    try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-
-      var entities = response.data as List;
-
-      setState(() {
+            following.map((entity) => Entity.fromJson2(entity)).toList();
         notFollowedEntityList =
-            entities.map((entity) => Entity.fromJson2(entity)).toList();
-        notFollowedEntityList = notFollowedEntityList.toList();
+            unfollowing.map((entity) => Entity.fromJson2(entity)).toList();
         filteredEntities = notFollowedEntityList + entityList;
       });
     } catch (e) {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
+      // Handle error
     }
   }
 
@@ -132,30 +107,77 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 15, 15, 15),
+                padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: const EntityScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Color.fromARGB(255, 227, 227, 227),
+                          size: 25,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 25),
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 255, 255, 255),
                           borderRadius: BorderRadius.circular(100.0),
                         ),
                         child: TextFormField(
                           onChanged: (value) => _runFilter(value),
                           cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 25, 25, 25)),
+                          cursorWidth: 1,
+                          style: Theme.of(context).textTheme.labelMedium,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)!.filter_box,
-                            hintStyle: TextStyle(
-                                color: Color.fromARGB(255, 146, 146, 146)),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.fromLTRB(18.5, 14, 0, 0),
-                            suffixIcon: Icon(
-                              Icons.search_rounded,
-                              color: Color.fromARGB(255, 222, 66, 66),
+                            hintStyle: const TextStyle(
+                              color: Color.fromARGB(255, 138, 138, 138),
+                              fontSize: 14,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(35)),
+                            ),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(20, 18, 17, 17),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(35)),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            fillColor: Theme.of(context).cardColor,
+                            filled: true,
+                            suffixIcon: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
+                              child: Icon(
+                                Icons.search_rounded,
+                                size: 27,
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
                             ),
                           ),
                         ),
@@ -173,19 +195,23 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                         delegate: SliverChildBuilderDelegate(
                           (BuildContext context, int index) {
                             try {
+                              final Entity currentEntity =
+                                  filteredEntities[index];
+                              final bool isFollowed = entityList.any((entity) =>
+                                  entity.idEntity == currentEntity.idEntity);
+
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0),
                                 child: MyEntityCard(
                                   idUserSession: _idUser!,
-                                  idEntity: filteredEntities[index].idEntity,
-                                  attr1: filteredEntities[index]
-                                          .imageURL
-                                          ?.toString() ??
-                                      '',
-                                  attr2: filteredEntities[index].name,
-                                  attr3: filteredEntities[index].description,
-                                  attr4: filteredEntities[index].verified,
+                                  idEntity: currentEntity.idEntity,
+                                  attr1:
+                                      currentEntity.imageURL?.toString() ?? '',
+                                  attr2: currentEntity.name,
+                                  attr3: currentEntity.description,
+                                  attr4: currentEntity.verified,
+                                  isFollowed: isFollowed,
                                 ),
                               );
                             } catch (e) {

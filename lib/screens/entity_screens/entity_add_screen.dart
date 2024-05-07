@@ -226,7 +226,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
           radius: 40,
           backgroundImage: imageURL != ""
               ? Image.network(imageURL).image
-              : AssetImage('images/default.png'),
+              : AssetImage('images/entity.png'),
         ),
         Positioned(
           bottom: 0,

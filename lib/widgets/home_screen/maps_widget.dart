@@ -372,26 +372,23 @@ class MapsWidget extends State<MapScreen> {
         Positioned(
           bottom: 152.5,
           right: 30.0,
-          child: ElevatedButton(
-            onPressed: onTapContainer,
-            style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              backgroundColor: Theme.of(context).splashColor,
-              minimumSize: Size(60, 60), // Establece el ancho y alto del botón
-            ),
-            child: Ink(
+          child: GestureDetector(
+            onTap: onTapContainer,
+            child: Container(
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
+                shape: BoxShape.circle,
+                color: Theme.of(context).splashColor,
               ),
-              child: Icon(
-                showUserLocation
-                    ? Icons.gps_fixed_rounded
-                    : Icons.gps_off_rounded,
-                color: Colors.white,
-                size: 29,
+              child: Center(
+                child: Icon(
+                  showUserLocation
+                      ? Icons.gps_fixed_rounded
+                      : Icons.gps_off_rounded,
+                  color: Colors.white,
+                  size: 29,
+                ),
               ),
             ),
           ),

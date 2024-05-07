@@ -166,7 +166,7 @@ class _EntityScreenState extends State<EntityScreen> {
                         Navigator.push(
                             context,
                             PageTransition(
-                                type: PageTransitionType.fade,
+                                type: PageTransitionType.rightToLeft,
                                 child: const EntitySearchScreen()));
                       },
                       child: Container(
@@ -205,6 +205,7 @@ class _EntityScreenState extends State<EntityScreen> {
                                   attr2: entityList[index].name,
                                   attr3: entityList[index].description,
                                   attr4: entityList[index].verified,
+                                  isFollowed: true,
                                 ),
                               );
                             } catch (e) {

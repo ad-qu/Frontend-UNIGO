@@ -18,6 +18,7 @@ class MyEntityCard extends StatefulWidget {
   final String attr2;
   final String attr3;
   final String? attr4;
+  final bool isFollowed;
 
   const MyEntityCard(
       {super.key,
@@ -26,7 +27,8 @@ class MyEntityCard extends StatefulWidget {
       required this.attr1, //photo url of the user
       required this.attr2, //username
       required this.attr3, //exp or level of the user
-      required this.attr4 //if true it means that the user is following the one it has started session
+      required this.attr4,
+      required this.isFollowed //if true it means that the user is following the one it has started session
       });
 
   @override
@@ -74,7 +76,7 @@ class _MyEntityCardState extends State<MyEntityCard> {
                         child: ClipOval(
                           child: widget.attr1 == ''
                               ? Image.asset(
-                                  'images/default.png',
+                                  'images/entity.png',
                                   fit: BoxFit.fill,
                                 )
                               : Image.network(
@@ -89,13 +91,13 @@ class _MyEntityCardState extends State<MyEntityCard> {
                         height: 75,
                         child: Center(
                           child: Padding(
-                            padding: const EdgeInsets.only(right: 60),
+                            padding: const EdgeInsets.only(left: 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   widget.attr2.length > 12
-                                      ? '${widget.attr2.substring(0, 12)}...'
+                                      ? '${widget.attr2.substring(0, 16)}...'
                                       : widget.attr2,
                                   style: Theme.of(context).textTheme.titleSmall,
                                   textAlign: TextAlign.center,
@@ -126,6 +128,27 @@ class _MyEntityCardState extends State<MyEntityCard> {
                         ),
                       ),
                     ),
+                    if (widget.isFollowed == true)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 25, 25, 25),
+                        child: Container(
+                          height: 5.5,
+                          decoration: const BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(7.5)),
+                            color: Colors.blue, // Color de fondo azul
+                          ),
+                          child: const Center(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              child: Text(
+                                "SIGUES",
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
