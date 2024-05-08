@@ -65,93 +65,151 @@ class _MyEntityCardState extends State<MyEntityCard> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      height: 75,
-                      width: 75,
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: ClipOval(
-                          child: widget.attr1 == ''
-                              ? Image.asset(
-                                  'images/entity.png',
-                                  fit: BoxFit.fill,
-                                )
-                              : Image.network(
-                                  widget.attr1,
-                                  fit: BoxFit.fill,
-                                ),
-                        ),
+                  child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: 75,
+                    width: 75,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: ClipOval(
+                        child: widget.attr1 == ''
+                            ? Image.asset(
+                                'images/entity.png',
+                                fit: BoxFit.fill,
+                              )
+                            : Image.network(
+                                widget.attr1,
+                                fit: BoxFit.fill,
+                              ),
                       ),
                     ),
+                  ),
+                  if (widget.isFollowed == false)
                     Expanded(
-                      child: SizedBox(
-                        height: 75,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  widget.attr2.length > 12
-                                      ? '${widget.attr2.substring(0, 16)}...'
-                                      : widget.attr2,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(
-                                    width:
-                                        8), // Espacio entre el texto y el icono
-                                if (widget.attr4 == "verified")
-                                  Container(
-                                    width: 17.5, // Ancho del contenedor
-                                    height: 17.5, // Alto del contenedor
-                                    decoration: const BoxDecoration(
-                                      color: Colors.blue, // Color de fondo azul
-                                      shape: BoxShape.circle, // Forma circular
-                                    ),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.check,
-                                        size: 12,
-                                        color: Colors
-                                            .white, // Color del tick blanco
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (widget.isFollowed == true)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 25, 25, 25),
-                        child: Container(
-                          height: 5.5,
-                          decoration: const BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(7.5)),
-                            color: Colors.blue, // Color de fondo azul
-                          ),
-                          child: const Center(
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
                               child: Text(
-                                "SIGUES",
-                                style: TextStyle(fontSize: 10),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                widget.attr2,
+                                style: Theme.of(context).textTheme.titleSmall,
+                                textAlign: TextAlign.center,
                               ),
                             ),
+                            const SizedBox(
+                                width: 8), // Espacio entre el texto y el icono
+                            if (widget.attr4 == "verified")
+                              Container(
+                                width: 16.5, // Ancho del contenedor
+                                height: 16.5, // Alto del contenedor
+                                decoration: const BoxDecoration(
+                                  color: Colors.blue, // Color de fondo azul
+                                  shape: BoxShape.circle, // Forma circular
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.check,
+                                    size: 12,
+                                    color:
+                                        Colors.white, // Color del tick blanco
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (widget.isFollowed == true)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                widget.attr2,
+                                style: Theme.of(context).textTheme.titleSmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(
+                                width: 8), // Espacio entre el texto y el icono
+                            if (widget.attr4 == "verified")
+                              Container(
+                                width: 16.5, // Ancho del contenedor
+                                height: 16.5, // Alto del contenedor
+                                decoration: const BoxDecoration(
+                                  color: Colors.blue, // Color de fondo azul
+                                  shape: BoxShape.circle, // Forma circular
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.check,
+                                    size: 12,
+                                    color:
+                                        Colors.white, // Color del tick blanco
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (widget.isFollowed == false)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 20.5, 20.5, 20.5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          color: Theme.of(context)
+                              .dividerColor, // Color de fondo azul
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                            child: Icon(
+                              Icons.add,
+                              size: 18,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
                           ),
                         ),
                       ),
-                  ],
-                ),
-              ),
+                    ),
+                  if (widget.isFollowed == true)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 25, 15, 25),
+                      child: Container(
+                        height: 5.5,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(7.5)),
+                          color: Theme.of(context)
+                              .cardColor, // Color de fondo azul
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                            child: Icon(
+                              Icons.add,
+                              size: 14,
+                              color: Theme.of(context).cardColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              )),
               SizedBox(
                 height: 125,
                 child: Padding(

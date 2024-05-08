@@ -370,13 +370,13 @@ class MapsWidget extends State<MapScreen> {
           ],
         ),
         Positioned(
-          bottom: 152.5,
-          right: 30.0,
+          bottom: 157.5,
+          right: 32,
           child: GestureDetector(
             onTap: onTapContainer,
             child: Container(
-              width: 60,
-              height: 60,
+              width: 57.5,
+              height: 57.5,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Theme.of(context).splashColor,
@@ -387,7 +387,7 @@ class MapsWidget extends State<MapScreen> {
                       ? Icons.gps_fixed_rounded
                       : Icons.gps_off_rounded,
                   color: Colors.white,
-                  size: 29,
+                  size: 28,
                 ),
               ),
             ),
