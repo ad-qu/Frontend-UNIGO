@@ -213,7 +213,7 @@ class _MyEntityCardState extends State<MyEntityCard> {
               SizedBox(
                 height: 125,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(40, 22.5, 40, 40),
+                  padding: const EdgeInsets.fromLTRB(40, 10, 40, 40),
                   child: Center(
                     child: RichText(
                       overflow: TextOverflow.ellipsis,
