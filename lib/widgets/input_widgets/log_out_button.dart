@@ -29,7 +29,7 @@ class LogOutButton extends StatelessWidget {
                     size: 20,
                     color: Theme.of(context).secondaryHeaderColor,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 17,
                   ),
                   Text(

@@ -1,27 +1,21 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_literals_to_create_immutables
-
+import 'dart:async';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/screens/initial_screens/terms_of_use_privacy_policy.dart';
-import 'package:unigo/screens/initial_screens/welcome_screen.dart';
-import 'package:unigo/widgets/credential_screen/description_textfield.dart';
-import 'package:unigo/widgets/entity_screen/card_entity.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:unigo/screens/entity_screens/entity_screen.dart';
 import '../../widgets/input_widgets/red_button.dart';
-import 'package:unigo/widgets/credential_screen/password_textfield.dart';
-import 'package:unigo/widgets/credential_screen/input_textfield.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:unigo/widgets/language_widgets/language_button.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/screens/initial_screens/welcome_screen.dart';
+import 'package:unigo/widgets/credential_screen/input_textfield.dart';
+import 'package:unigo/widgets/credential_screen/description_textfield.dart';
+import 'package:unigo/screens/initial_screens/terms_of_use_privacy_policy.dart';
 
 void main() async {
   await dotenv.load();
@@ -38,10 +32,34 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   String imageURL = "";
+  String? _idUser = "";
+  File? _tempImageFile;
 
   @override
   void initState() {
     super.initState();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _idUser = prefs.getString('idUser');
+    });
+  }
+
+  Future<void> pickAnImage(ImageSource source) async {
+    try {
+      final imagePicker = ImagePicker();
+      final pickedImage = await imagePicker.pickImage(source: source);
+      if (pickedImage != null) {
+        setState(() {
+          _tempImageFile = File(pickedImage.path);
+        });
+      }
+    } catch (e) {
+      print('Failed to pick the image: $e');
+    }
   }
 
   @override
@@ -53,7 +71,44 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    signUp() {}
+    Future createEntity() async {
+      if (_tempImageFile != null) {
+        await uploadImageToFirebase();
+      }
+      final prefs = await SharedPreferences.getInstance();
+      final String token = prefs.getString('token') ?? "";
+      try {
+        print(nameController);
+        print(descriptionController);
+        print(imageURL);
+        print(_idUser);
+
+        var response = await Dio().post(
+          'http://${dotenv.env['API_URL']}/entity/add',
+          data: {
+            "name": nameController.text,
+            "description": descriptionController.text,
+            "imageURL": imageURL,
+            "admins": _idUser,
+          },
+          options: Options(
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token",
+            },
+          ),
+        );
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          PageTransition(
+            type: PageTransitionType.topToBottom,
+            child: const EntityScreen(),
+          ),
+        );
+      } catch (e) {}
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -113,8 +168,8 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        imageProfile(),
-                        SizedBox(
+                        imageEntity(),
+                        const SizedBox(
                           height: 37.5,
                         ),
                         //Username textfield
@@ -130,49 +185,22 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                             controller: descriptionController,
                             labelText: "Descripción",
                             obscureText: false),
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 5, 10, 0),
-                            child: Text(
-                              style: GoogleFonts.inter(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.color,
-                                fontSize: 12,
-                              ),
-                              "0/250",
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.bottomToTop,
-                      child: const TermsScreen(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    //Sign up button
+                    RedButton(
+                      buttonText: "CREAR",
+                      onTap: createEntity,
                     ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      //Sign up button
-                      RedButton(
-                        buttonText: "CREAR",
-                        onTap: signUp(),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
               const SizedBox(height: 30),
@@ -219,19 +247,24 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     );
   }
 
-  Widget imageProfile() {
+  Widget imageEntity() {
     return Stack(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: imageURL != ""
-              ? Image.network(imageURL).image
-              : AssetImage('images/entity.png'),
-        ),
+        _tempImageFile != null
+            ? CircleAvatar(
+                radius: 40,
+                backgroundImage: FileImage(_tempImageFile!),
+              )
+            : const CircleAvatar(
+                radius: 40,
+                backgroundImage: AssetImage('images/entity.png'),
+              ),
         Positioned(
           bottom: 0,
           right: 0,
           child: InkWell(
+            highlightColor: Colors.transparent,
+            splashColor: Colors.transparent,
             onTap: () {
               showModalBottomSheet(
                 context: context,
@@ -246,7 +279,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
               child: const Padding(
                 padding: EdgeInsets.all(6),
                 child: Icon(
-                  Icons.camera_enhance_rounded,
+                  Icons.camera_alt,
                   color: Colors.white,
                   size: 20.0,
                 ),
@@ -260,64 +293,72 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
 
   Widget bottomSheet() {
     return Container(
-      height: 175,
+      height: 215,
       width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.fromLTRB(0, 35, 0, 0),
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(255, 25, 25, 25),
+      padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25.0),
+          topRight: Radius.circular(25.0),
+        ),
       ),
       child: Column(
         children: [
-          const Text(
-            "Choose a profile photo",
-            style: TextStyle(
-                fontSize: 18, color: Color.fromARGB(255, 242, 242, 242)),
+          Text(
+            "Choose an entity photo",
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
-            height: 35,
+            height: 45,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 222, 66, 66),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
                   onTap: () {
-                    pickImageFromGallery(ImageSource.camera);
+                    pickAnImage(ImageSource.camera);
+                    //pickImageFromGallery(ImageSource.camera);
                     Navigator.pop(context);
                   },
                   child: const Padding(
-                    padding: EdgeInsets.all(12.0),
+                    padding: EdgeInsets.all(15.0),
                     child: Icon(
                       Icons.camera_alt,
                       color: Colors.white,
-                      size: 22.0,
                     ),
                   ),
                 ),
               ),
               const SizedBox(
-                width: 35,
+                width: 40,
               ),
               Container(
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 222, 66, 66),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).dividerColor,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
                   onTap: () {
-                    pickImageFromGallery(ImageSource.gallery);
+                    pickAnImage(ImageSource.gallery);
+
+                    //pickImageFromGallery(ImageSource.gallery);
                     Navigator.pop(context);
                   },
                   child: const Padding(
-                    padding: EdgeInsets.all(12.0),
+                    padding: EdgeInsets.all(15.0),
                     child: Icon(
                       Icons.image,
                       color: Colors.white,
-                      size: 22.0,
                       semanticLabel: "Gallery",
                     ),
                   ),
@@ -330,39 +371,24 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     );
   }
 
-  Future<void> pickImageFromGallery(ImageSource source) async {
+  Future<void> uploadImageToFirebase() async {
     try {
       final _storage = FirebaseStorage.instance;
-      final imagePicker = ImagePicker();
-      final pickedImage = await imagePicker.pickImage(source: source);
-      if (pickedImage != null) {
-        var file = File(pickedImage.path);
-        var snapshot = await _storage
-            .ref()
-            .child('${nameController}/profilePic')
-            .putFile(file);
-        var downloadURL = await snapshot.ref.getDownloadURL();
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setString('imageURL', downloadURL);
-        final String token = prefs.getString('token') ?? "";
-        String path =
-            'http://${dotenv.env['API_URL']}/user/update/$downloadURL'; //HAY QUE CAMBIAR LA RUTA
-        var response = await Dio().post(path,
-            data: {"imageURL": downloadURL},
-            options: Options(
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer $token",
-              },
-            ));
-        print(response);
-        if (mounted) {
-          setState(() {
-            imageURL = downloadURL;
-          });
-        }
-        print(downloadURL);
+
+      var snapshot = await _storage
+          .ref()
+          .child('entities/${nameController}/picture')
+          .putFile(_tempImageFile!);
+      var downloadURL = await snapshot.ref.getDownloadURL();
+
+      if (mounted) {
+        setState(() {
+          imageURL = downloadURL;
+        });
       }
+      print(
+          "sdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffsfsfdsdfsfdsdfsdfd");
+      print(downloadURL);
     } on PlatformException catch (e) {
       print('Failed to pick the image: $e');
     }

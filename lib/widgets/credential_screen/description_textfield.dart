@@ -23,8 +23,10 @@ class _DescriptionTextFieldState extends State<DescriptionTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: widget.controller,
       textAlignVertical: TextAlignVertical.top,
       minLines: 3,
+      maxLength: 150,
       maxLines: 7,
       obscureText: widget.obscureText,
       cursorWidth: 1,

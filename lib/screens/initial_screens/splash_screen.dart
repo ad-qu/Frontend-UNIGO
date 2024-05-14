@@ -50,21 +50,32 @@ class _SplashScreenState extends State<SplashScreen> {
         'http://${dotenv.env['API_URL']}/auth/login',
         data: {"email": email, "password": password},
       );
-      Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
-      User u = User.fromJson(payload);
-      var data = json.decode(response.toString());
-      prefs.setString('token', data['token']);
-      prefs.setString('idUser', u.idUser);
-      prefs.setString('name', u.name);
-      prefs.setString('surname', u.surname);
-      prefs.setString('username', u.username);
-      Navigator.pushReplacement(
-        context,
-        PageTransition(
-          type: PageTransitionType.rightToLeft,
-          child: const NavBar(),
-        ),
-      );
+      if (response.toString() == "NOT_FOUND_USER") {
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: const WelcomeScreen(),
+          ),
+        );
+      } else {
+        Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
+        User u = User.fromJson(payload);
+        var data = json.decode(response.toString());
+        prefs.setString('token', data['token']);
+        prefs.setString('idUser', u.idUser);
+        prefs.setString('name', u.name);
+        prefs.setString('surname', u.surname);
+        prefs.setString('username', u.username);
+
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: const NavBar(),
+          ),
+        );
+      }
     }
   }
 

@@ -19,13 +19,14 @@ void main() async {
 }
 
 class EntitySearchScreen extends StatefulWidget {
-  const EntitySearchScreen({Key? key}) : super(key: key);
+  const EntitySearchScreen({super.key});
 
   @override
   State<EntitySearchScreen> createState() => _EntitySearchScreenState();
 }
 
 class _EntitySearchScreenState extends State<EntitySearchScreen> {
+  late bool _isLoading;
   List<Entity> entityList = [];
   List<Entity> notFollowedEntityList = [];
   List<Entity> filteredEntities = [];
@@ -33,6 +34,12 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
 
   @override
   void didChangeDependencies() {
+    _isLoading = true;
+    Future.delayed(const Duration(milliseconds: 750), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
     super.didChangeDependencies();
     getUserInfo();
     fetchEntities();
@@ -102,132 +109,244 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: _isLoading
+            ? Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: const EntityScreen(),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Color.fromARGB(255, 227, 227, 227),
+                              size: 25,
+                            ),
                           ),
-                        );
-                      },
+                          const SizedBox(width: 25),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100.0),
+                              ),
+                              child: TextFormField(
+                                onChanged: (value) => _runFilter(value),
+                                cursorColor:
+                                    const Color.fromARGB(255, 222, 66, 66),
+                                cursorWidth: 1,
+                                style: Theme.of(context).textTheme.labelMedium,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      AppLocalizations.of(context)!.filter_box,
+                                  hintStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 138, 138, 138),
+                                    fontSize: 14,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).dividerColor,
+                                      width: 1,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(35)),
+                                  ),
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(20, 18, 17, 17),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).dividerColor,
+                                      width: 1,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(35)),
+                                  ),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  fillColor: Theme.of(context).cardColor,
+                                  filled: true,
+                                  suffixIcon: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 12, 0),
+                                    child: Icon(
+                                      Icons.search_rounded,
+                                      size: 27,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 200,
                         decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
-                          size: 25,
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(37.5),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 25),
-                    Expanded(
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 200,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100.0),
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(37.5),
                         ),
-                        child: TextFormField(
-                          onChanged: (value) => _runFilter(value),
-                          cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                          cursorWidth: 1,
-                          style: Theme.of(context).textTheme.labelMedium,
-                          decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.filter_box,
-                            hintStyle: const TextStyle(
-                              color: Color.fromARGB(255, 138, 138, 138),
-                              fontSize: 14,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).dividerColor,
-                                width: 1,
+                      ),
+                    ),
+                  ],
+                ))
+            : Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: const EntityScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30),
                               ),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(35)),
-                            ),
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(20, 18, 17, 17),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).dividerColor,
-                                width: 1,
-                              ),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(35)),
-                            ),
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            fillColor: Theme.of(context).cardColor,
-                            filled: true,
-                            suffixIcon: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
-                              child: Icon(
-                                Icons.search_rounded,
-                                size: 27,
-                                color: Theme.of(context).secondaryHeaderColor,
+                              child: const Icon(
+                                Icons.arrow_back_ios_rounded,
+                                color: Color.fromARGB(255, 227, 227, 227),
+                                size: 25,
                               ),
                             ),
                           ),
+                          const SizedBox(width: 25),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100.0),
+                              ),
+                              child: TextFormField(
+                                onChanged: (value) => _runFilter(value),
+                                cursorColor:
+                                    const Color.fromARGB(255, 222, 66, 66),
+                                cursorWidth: 1,
+                                style: Theme.of(context).textTheme.labelMedium,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      AppLocalizations.of(context)!.filter_box,
+                                  hintStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 138, 138, 138),
+                                    fontSize: 14,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).dividerColor,
+                                      width: 1,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(35)),
+                                  ),
+                                  contentPadding:
+                                      const EdgeInsets.fromLTRB(20, 18, 17, 17),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).dividerColor,
+                                      width: 1,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(35)),
+                                  ),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  fillColor: Theme.of(context).cardColor,
+                                  filled: true,
+                                  suffixIcon: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 12, 0),
+                                    child: Icon(
+                                      Icons.search_rounded,
+                                      size: 27,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: CustomScrollView(
+                          slivers: [
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  try {
+                                    final Entity currentEntity =
+                                        filteredEntities[index];
+                                    final bool isFollowed = entityList.any(
+                                        (entity) =>
+                                            entity.idEntity ==
+                                            currentEntity.idEntity);
+
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: MyEntityCard(
+                                        idUserSession: _idUser!,
+                                        idEntity: currentEntity.idEntity,
+                                        attr1: currentEntity.imageURL
+                                                ?.toString() ??
+                                            '',
+                                        attr2: currentEntity.name,
+                                        attr3: currentEntity.description,
+                                        attr4: currentEntity.verified,
+                                        attr5: entityList[index].admins,
+                                        isFollowed: isFollowed,
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    return const SizedBox();
+                                  }
+                                },
+                                childCount: filteredEntities.length,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                            try {
-                              final Entity currentEntity =
-                                  filteredEntities[index];
-                              final bool isFollowed = entityList.any((entity) =>
-                                  entity.idEntity == currentEntity.idEntity);
-
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: MyEntityCard(
-                                  idUserSession: _idUser!,
-                                  idEntity: currentEntity.idEntity,
-                                  attr1:
-                                      currentEntity.imageURL?.toString() ?? '',
-                                  attr2: currentEntity.name,
-                                  attr3: currentEntity.description,
-                                  attr4: currentEntity.verified,
-                                  isFollowed: isFollowed,
-                                ),
-                              );
-                            } catch (e) {
-                              return const SizedBox();
-                            }
-                          },
-                          childCount: filteredEntities.length,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

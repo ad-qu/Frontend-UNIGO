@@ -19,6 +19,7 @@ class MyEntityCard extends StatefulWidget {
   final String attr3;
   final String? attr4;
   final bool isFollowed;
+  final String? attr5;
 
   const MyEntityCard(
       {super.key,
@@ -28,8 +29,8 @@ class MyEntityCard extends StatefulWidget {
       required this.attr2, //username
       required this.attr3, //exp or level of the user
       required this.attr4,
-      required this.isFollowed //if true it means that the user is following the one it has started session
-      });
+      required this.isFollowed, //if true it means that the user is following the one it has started session
+      required this.attr5});
 
   @override
   State<MyEntityCard> createState() => _MyEntityCardState();
@@ -50,7 +51,7 @@ class _MyEntityCardState extends State<MyEntityCard> {
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
       child: GestureDetector(
         onTap: () {
-          // Lógica a ejecutar al hacer clic en el Container
+          print("sdfsdfsdfsdf");
         },
         child: Container(
           height:
@@ -82,7 +83,7 @@ class _MyEntityCardState extends State<MyEntityCard> {
                               )
                             : Image.network(
                                 widget.attr1,
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                               ),
                       ),
                     ),
@@ -166,21 +167,26 @@ class _MyEntityCardState extends State<MyEntityCard> {
                       ),
                     ),
                   if (widget.isFollowed == false)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 20.5, 20.5, 20.5),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          color: Theme.of(context)
-                              .dividerColor, // Color de fondo azul
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
-                            child: Icon(
-                              Icons.add,
-                              size: 18,
-                              color: Theme.of(context).secondaryHeaderColor,
+                    GestureDetector(
+                      onTap: () {
+                        print("aaaaaaaaaaaaaa");
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 20.5, 20.5, 20.5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            color: Theme.of(context)
+                                .dividerColor, // Color de fondo azul
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                              child: Icon(
+                                Icons.add,
+                                size: 18,
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
                             ),
                           ),
                         ),

@@ -5,7 +5,7 @@ import 'package:unigo/screens/entity_screens/entity_screen.dart';
 //Screens
 import 'package:unigo/screens/map_screens/home_screen.dart';
 import 'package:unigo/screens/profile_screens/profile_screen.dart';
-import 'package:unigo/screens/entity_screens/discover_screen.dart';
+import 'package:unigo/screens/discover_screens/discover_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'entity_screens/list_chat_screen.dart';
 
@@ -56,10 +56,7 @@ class _NavBarState extends State<NavBar> {
                 text: AppLocalizations.of(context)!.map,
               ),
               GButton(
-                icon: Icons.forum_rounded,
-                iconSize: 25,
-                text: "Chats",
-              ),
+                  icon: Icons.polyline_rounded, iconSize: 25, text: "Discover"),
               GButton(
                 icon: Icons.view_agenda_rounded,
                 iconSize: 25,

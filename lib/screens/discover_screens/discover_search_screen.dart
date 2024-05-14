@@ -1,5 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:unigo/screens/discover_screens/discover_screen.dart';
+import 'package:unigo/screens/entity_screens/entity_add_screen.dart';
+import 'package:unigo/screens/entity_screens/entity_search_screen.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,14 +15,14 @@ void main() async {
   await dotenv.load();
 }
 
-class DiscoverScreen extends StatefulWidget {
-  const DiscoverScreen({super.key});
+class DiscoverSearchScreen extends StatefulWidget {
+  const DiscoverSearchScreen({super.key});
 
   @override
-  State<DiscoverScreen> createState() => _DiscoverScreenState();
+  State<DiscoverSearchScreen> createState() => _DiscoverSearchScreenState();
 }
 
-class _DiscoverScreenState extends State<DiscoverScreen> {
+class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
   List<User> friendsList = [];
   List<User> notFriendsList = [];
   List<User> filteredUsers = [];
@@ -126,35 +130,33 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(25, 35, 25, 35),
+                padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: const DiscoverScreen(),
+                          ),
+                        );
+                      },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(100.0),
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        child: TextFormField(
-                          onChanged: (value) => _runFilter(value),
-                          cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 25, 25, 25)),
-                          decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.filter_box,
-                            hintStyle: TextStyle(
-                                color: Color.fromARGB(255, 146, 146, 146)),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.fromLTRB(18.5, 14, 0, 0),
-                            suffixIcon: Icon(
-                              Icons.search_rounded,
-                              color: Color.fromARGB(255, 222, 66, 66),
-                            ),
-                          ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Color.fromARGB(255, 227, 227, 227),
+                          size: 25,
                         ),
                       ),
                     ),

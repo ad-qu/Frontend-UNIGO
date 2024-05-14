@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -22,22 +21,9 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  int _emojiIndex = 0;
-  final List<String> _emojis = ['🧭', '🤝', '📚', '🗺️', '👨‍🏫'];
-
   @override
   void initState() {
     super.initState();
-    _updateEmoji();
-  }
-
-  void _updateEmoji() {
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      setState(() {
-        _emojiIndex = (_emojiIndex + 1) % _emojis.length;
-      });
-      _updateEmoji();
-    });
   }
 
   void logIn() async {
@@ -86,7 +72,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(30, 0, 30, 25),
                         child: Text(
-                            '${AppLocalizations.of(context)!.slogan}  ${_emojis[_emojiIndex]}',
+                            '${AppLocalizations.of(context)!.slogan}  🧭',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleLarge),
                       ),
