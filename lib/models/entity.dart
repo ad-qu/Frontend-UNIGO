@@ -5,7 +5,7 @@ class Entity {
     required this.description,
     this.imageURL,
     this.verified,
-    required this.admins,
+    required this.admin,
   });
 
   final String idEntity;
@@ -13,14 +13,15 @@ class Entity {
   final String description;
   final String? imageURL;
   final String? verified;
-  final String? admins;
+  final String admin;
+
   factory Entity.fromJson(Map<String, dynamic> json) => Entity(
-        idEntity: json["idUser"],
+        idEntity: json["_id"],
         name: json["name"],
         description: json["description"],
         imageURL: json["imageURL"],
         verified: json["verified"],
-        admins: json["admin"],
+        admin: json["admin"],
       );
 
   factory Entity.fromJson2(Map<String, dynamic> json) => Entity(
@@ -29,7 +30,7 @@ class Entity {
         description: json["description"],
         imageURL: json["imageURL"],
         verified: json["verified"],
-        admins: json["admin"],
+        admin: json["admin"],
       );
 
   get foto => null;
@@ -38,10 +39,8 @@ class Entity {
         "_id": idEntity,
         "name": name,
         "description": description,
+        "imageURL": imageURL,
         "verified": verified,
-        "admin": admins,
-        // "username": username,
-        // "email": email,
-        // "password": password,
+        "admin": admin,
       };
 }

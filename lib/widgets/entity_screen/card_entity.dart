@@ -5,7 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/screens/entity_screens/entity_profile_screen.dart';
+import 'package:unigo/screens/profile_screens/profile_screen.dart';
 
 void main() async {
   await dotenv.load();
@@ -25,12 +28,12 @@ class MyEntityCard extends StatefulWidget {
       {super.key,
       required this.idUserSession, //the id in shared preferences
       required this.idEntity, //the id of the user that appears in the card
-      required this.attr1, //photo url of the user
+      required this.attr1, //photo url
       required this.attr2, //username
-      required this.attr3, //exp or level of the user
-      required this.attr4,
-      required this.isFollowed, //if true it means that the user is following the one it has started session
-      required this.attr5});
+      required this.attr3, //desc
+      required this.attr4, //verified
+      required this.isFollowed, //if true it means that the user is following
+      required this.attr5}); //admin
 
   @override
   State<MyEntityCard> createState() => _MyEntityCardState();
@@ -51,7 +54,30 @@ class _MyEntityCardState extends State<MyEntityCard> {
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
       child: GestureDetector(
         onTap: () {
-          print("sdfsdfsdfsdf");
+          if (widget.idUserSession == widget.attr5) {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: EntityProfileScreen(
+                  idEntity: widget.idEntity,
+                  attr1: widget.attr1,
+                  attr2: widget.attr2,
+                  attr3: widget.attr3,
+                  attr4: widget.attr4,
+                  attr5: widget.attr5,
+                ),
+              ),
+            );
+          } else {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: const ProfileScreen(),
+              ),
+            );
+          }
         },
         child: Container(
           height:
@@ -106,12 +132,13 @@ class _MyEntityCardState extends State<MyEntityCard> {
                             ),
                             const SizedBox(
                                 width: 8), // Espacio entre el texto y el icono
-                            if (widget.attr4 == "verified")
+                            if (widget.attr4 == "true")
                               Container(
                                 width: 16.5, // Ancho del contenedor
                                 height: 16.5, // Alto del contenedor
-                                decoration: const BoxDecoration(
-                                  color: Colors.blue, // Color de fondo azul
+                                decoration: BoxDecoration(
+                                  color: Colors
+                                      .blue.shade700, // Color de fondo azul
                                   shape: BoxShape.circle, // Forma circular
                                 ),
                                 child: const Center(
@@ -145,12 +172,13 @@ class _MyEntityCardState extends State<MyEntityCard> {
                             ),
                             const SizedBox(
                                 width: 8), // Espacio entre el texto y el icono
-                            if (widget.attr4 == "verified")
+                            if (widget.attr4 == "true")
                               Container(
                                 width: 16.5, // Ancho del contenedor
                                 height: 16.5, // Alto del contenedor
-                                decoration: const BoxDecoration(
-                                  color: Colors.blue, // Color de fondo azul
+                                decoration: BoxDecoration(
+                                  color: Colors
+                                      .blue.shade700, // Color de fondo azul
                                   shape: BoxShape.circle, // Forma circular
                                 ),
                                 child: const Center(
@@ -243,52 +271,52 @@ class _MyEntityCardState extends State<MyEntityCard> {
     );
   }
 }
-        // child: Row(
-          //   children: [
-          //     Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
-          //           child: CircleAvatar(
-          //             radius: 20,
-          //             backgroundColor: const Color.fromARGB(255, 242, 242, 242),
-          //             child: ClipOval(
-          //               child: widget.attr1 == ''
-          //                   ? Image.asset(
-          //                       'images/default.png',
-          //                       fit: BoxFit.fill,
-          //                       width: 40,
-          //                       height: 40,
-          //                     )
-          //                   : Image.network(
-          //                       widget.attr1,
-          //                       fit: BoxFit.fill,
-          //                       width: 40,
-          //                       height: 40,
-          //                     ),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //     Expanded(
-          //       child: Padding(
-          //         padding: const EdgeInsets.fromLTRB(0, 25, 55, 0),
-          //         child: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.center,
-          //           children: [
-          //             Text(
-          //                 widget.attr2.length > 12
-          //                     ? '${widget.attr2.substring(0, 12)}...'
-          //                     : widget.attr2,
-          //                 style: Theme.of(context).textTheme.labelMedium),
-          //             const SizedBox(height: 22.5),
-          //             Text('Level ${widget.attr3}',
-          //                 style: Theme.of(context).textTheme.labelMedium),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
+// child: Row(
+//   children: [
+//     Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
+//           child: CircleAvatar(
+//             radius: 20,
+//             backgroundColor: const Color.fromARGB(255, 242, 242, 242),
+//             child: ClipOval(
+//               child: widget.attr1 == ''
+//                   ? Image.asset(
+//                       'images/default.png',
+//                       fit: BoxFit.fill,
+//                       width: 40,
+//                       height: 40,
+//                     )
+//                   : Image.network(
+//                       widget.attr1,
+//                       fit: BoxFit.fill,
+//                       width: 40,
+//                       height: 40,
+//                     ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//     Expanded(
+//       child: Padding(
+//         padding: const EdgeInsets.fromLTRB(0, 25, 55, 0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Text(
+//                 widget.attr2.length > 12
+//                     ? '${widget.attr2.substring(0, 12)}...'
+//                     : widget.attr2,
+//                 style: Theme.of(context).textTheme.labelMedium),
+//             const SizedBox(height: 22.5),
+//             Text('Level ${widget.attr3}',
+//                 style: Theme.of(context).textTheme.labelMedium),
+//           ],
+//         ),
+//       ),
+//     ),
+//   ],
+// ),

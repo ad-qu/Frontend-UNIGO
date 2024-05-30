@@ -7,30 +7,29 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../models/user.dart';
-import '../../models/entity.dart';
-import '../../widgets/profile_screen/card_user_widget.dart';
-import '../../widgets/entity_screen/card_entity.dart';
-import 'entity_screen.dart';
+import 'package:unigo/models/new.dart';
+import 'package:unigo/screens/entity_screens/entity_screen.dart';
 
 void main() async {
   await dotenv.load();
 }
 
-class EntitySearchScreen extends StatefulWidget {
-  const EntitySearchScreen({super.key});
+class NewsScreen extends StatefulWidget {
+  final String idEntity;
+
+  const NewsScreen({
+    super.key,
+    required this.idEntity,
+  });
 
   @override
-  State<EntitySearchScreen> createState() => _EntitySearchScreenState();
+  State<NewsScreen> createState() => _NewsScreenState();
 }
 
-class _EntitySearchScreenState extends State<EntitySearchScreen> {
+class _NewsScreenState extends State<NewsScreen> {
   late bool _isLoading;
-  List<Entity> followingList = [];
-  List<Entity> unFollowingList = [];
-  List<Entity> filteredEntities = [];
-  String? _idUser;
+  List<New> newsList = [];
+  List<New> filteredNews = [];
 
   @override
   void didChangeDependencies() {
@@ -41,28 +40,15 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
       });
     });
     super.didChangeDependencies();
-    getUserInfo();
-    fetchEntities();
+    fetchNews();
   }
 
-  Future<void> getUserInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _idUser = prefs.getString('idUser');
-    });
-  }
-
-  Future<void> fetchEntities() async {
+  Future<void> fetchNews() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String followingPath =
-        'http://${dotenv.env['API_URL']}/entity/following/$_idUser';
-    String unfollowingPath =
-        'http://${dotenv.env['API_URL']}/entity/unfollowing/$_idUser';
-
     try {
-      var followingResponse = await Dio().get(
-        followingPath,
+      var newsResponse = await Dio().get(
+        'http://${dotenv.env['API_URL']}/new/get/entityNews/${widget.idEntity}',
         options: Options(
           headers: {
             "Content-Type": "application/json",
@@ -71,26 +57,12 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
         ),
       );
 
-      var unfollowingResponse = await Dio().get(
-        unfollowingPath,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-
-      var following = followingResponse.data as List;
-      var unfollowing = unfollowingResponse.data as List;
+      var news = newsResponse.data as List;
 
       setState(() {
         print("asdasdasdasdadadasdasdad");
-        followingList =
-            following.map((entity) => Entity.fromJson2(entity)).toList();
-        unFollowingList =
-            unfollowing.map((entity) => Entity.fromJson2(entity)).toList();
-        filteredEntities = unFollowingList + followingList;
+        newsList = news.map((news) => New.fromJson2(news)).toList();
+
         print("bbbbbbbbbbbbbbbbbbbbbbbbb");
       });
     } catch (e) {
@@ -100,9 +72,9 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
 
   void _runFilter(String enteredKeyword) {
     setState(() {
-      filteredEntities = (unFollowingList + followingList).where((entity) {
+      filteredNews = newsList.where((news) {
         final lowerCaseKeyword = enteredKeyword.toLowerCase();
-        return entity.name.toLowerCase().startsWith(lowerCaseKeyword);
+        return news.title.toLowerCase().startsWith(lowerCaseKeyword);
       }).toList();
     });
   }
@@ -312,33 +284,25 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                               delegate: SliverChildBuilderDelegate(
                                 (BuildContext context, int index) {
                                   try {
-                                    final Entity currentEntity =
-                                        filteredEntities[index];
-                                    final bool isFollowed = followingList.any(
-                                        (entity) =>
-                                            entity.idEntity ==
-                                            currentEntity.idEntity);
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: MyEntityCard(
-                                        idUserSession: _idUser!,
-                                        idEntity: currentEntity.idEntity,
-                                        attr1: currentEntity.imageURL
-                                                ?.toString() ??
-                                            '',
-                                        attr2: filteredEntities[index].name,
-                                        attr3: currentEntity.description,
-                                        attr4: currentEntity.verified,
-                                        attr5: currentEntity.admin,
-                                        isFollowed: isFollowed,
-                                      ),
-                                    );
+                                    // return Padding(
+                                    //   padding: const EdgeInsets.symmetric(
+                                    //       horizontal: 16.0),
+                                    //   child: MyNewCard(
+                                    //     idEntity: filteredNews.idEntity,
+                                    //     attr1:
+                                    //         filteredNews.imageURL?.toString() ??
+                                    //             '',
+                                    //     attr2: filteredNews[index].name,
+                                    //     attr3: filteredNews.description,
+                                    //     attr4: filteredNews.verified,
+                                    //     attr5: filteredNews.admin,
+                                    //   ),
+                                    // );
                                   } catch (e) {
                                     return const SizedBox();
                                   }
                                 },
-                                childCount: filteredEntities.length,
+                                childCount: filteredNews.length,
                               ),
                             ),
                           ],

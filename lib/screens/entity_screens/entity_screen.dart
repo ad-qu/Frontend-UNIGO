@@ -6,12 +6,9 @@ import 'package:unigo/models/entity.dart';
 import 'package:unigo/screens/entity_screens/entity_add_screen.dart';
 import 'package:unigo/screens/entity_screens/entity_search_screen.dart';
 import 'package:unigo/widgets/entity_screen/card_entity.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../widgets/profile_screen/card_user_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   await dotenv.load();
@@ -228,7 +225,7 @@ class _EntityScreenState extends State<EntityScreen> {
                                       attr2: entityList[index].name,
                                       attr3: entityList[index].description,
                                       attr4: entityList[index].verified,
-                                      attr5: entityList[index].admins,
+                                      attr5: entityList[index].admin,
                                       isFollowed: true,
                                     ),
                                   );

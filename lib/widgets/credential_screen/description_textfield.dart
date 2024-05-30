@@ -26,7 +26,7 @@ class _DescriptionTextFieldState extends State<DescriptionTextField> {
       controller: widget.controller,
       textAlignVertical: TextAlignVertical.top,
       minLines: 3,
-      maxLength: 150,
+      maxLength: 200,
       maxLines: 7,
       obscureText: widget.obscureText,
       cursorWidth: 1,

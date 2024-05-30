@@ -1,21 +1,20 @@
-import 'dart:async';
 import 'dart:io';
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/screens/entity_screens/entity_screen.dart';
 import '../../widgets/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/screens/entity_screens/entity_screen.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import 'package:unigo/widgets/credential_screen/input_textfield.dart';
 import 'package:unigo/widgets/credential_screen/description_textfield.dart';
-import 'package:unigo/screens/initial_screens/terms_of_use_privacy_policy.dart';
 
 void main() async {
   await dotenv.load();
@@ -31,14 +30,14 @@ class EntityAddScreen extends StatefulWidget {
 class _EntityAddScreenState extends State<EntityAddScreen> {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
-  String imageURL = "";
   String? _idUser = "";
+  String imageURL = "";
   File? _tempImageFile;
 
   @override
   void initState() {
-    super.initState();
     getUserInfo();
+    super.initState();
   }
 
   Future<void> getUserInfo() async {
@@ -58,6 +57,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
         });
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Failed to pick the image: $e');
     }
   }
@@ -78,18 +78,21 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
       final prefs = await SharedPreferences.getInstance();
       final String token = prefs.getString('token') ?? "";
       try {
-        print(nameController);
-        print(descriptionController);
-        print(imageURL);
-        print(_idUser);
-
-        var response = await Dio().post(
+        Navigator.pop(
+          // ignore: use_build_context_synchronously
+          context,
+          PageTransition(
+            type: PageTransitionType.topToBottom,
+            child: const EntityScreen(),
+          ),
+        );
+        await Dio().post(
           'http://${dotenv.env['API_URL']}/entity/add',
           data: {
             "name": nameController.text,
             "description": descriptionController.text,
             "imageURL": imageURL,
-            "admins": _idUser,
+            "admin": _idUser,
           },
           options: Options(
             headers: {
@@ -98,15 +101,10 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
             },
           ),
         );
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          PageTransition(
-            type: PageTransitionType.topToBottom,
-            child: const EntityScreen(),
-          ),
-        );
-      } catch (e) {}
+      } catch (e) {
+        // ignore: avoid_print
+        print(e);
+      }
     }
 
     return Scaffold(
@@ -142,7 +140,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                           context,
                           PageTransition(
                             type: PageTransitionType.topToBottom,
-                            child: const WelcomeScreen(),
+                            child: const EntityScreen(),
                           ),
                         );
                       },
@@ -373,11 +371,11 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
 
   Future<void> uploadImageToFirebase() async {
     try {
-      final _storage = FirebaseStorage.instance;
+      final storage = FirebaseStorage.instance;
 
-      var snapshot = await _storage
+      var snapshot = await storage
           .ref()
-          .child('entities/${nameController}/picture')
+          .child('entities/${nameController.text}/picture')
           .putFile(_tempImageFile!);
       var downloadURL = await snapshot.ref.getDownloadURL();
 
@@ -386,10 +384,8 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
           imageURL = downloadURL;
         });
       }
-      print(
-          "sdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffsfsfdsdfsfdsdfsdfd");
-      print(downloadURL);
     } on PlatformException catch (e) {
+      // ignore: avoid_print
       print('Failed to pick the image: $e');
     }
   }

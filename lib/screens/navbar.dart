@@ -7,7 +7,7 @@ import 'package:unigo/screens/map_screens/home_screen.dart';
 import 'package:unigo/screens/profile_screens/profile_screen.dart';
 import 'package:unigo/screens/discover_screens/discover_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'entity_screens/list_chat_screen.dart';
+import 'entity_screens/chat_screens/list_chat_screen.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});

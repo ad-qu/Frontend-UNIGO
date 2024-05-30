@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:page_transition/page_transition.dart';
 
-import '../../models/challenge.dart';
-import '../../widgets/chat_screen/chat_card_widget.dart';
+import '../../../models/challenge.dart';
+import '../../../widgets/chat_screen/chat_card_widget.dart';
 import 'chat_screen.dart';
 
 void main() async {

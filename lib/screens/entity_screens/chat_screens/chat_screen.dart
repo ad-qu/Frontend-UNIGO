@@ -7,9 +7,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import '../../models/challenge.dart';
-import '../../models/message.dart';
-import '../../widgets/chat_title_widget.dart';
+import '../../../models/challenge.dart';
+import '../../../models/message.dart';
+import '../../../widgets/chat_title_widget.dart';
 import 'chat_service.dart';
 
 void main() async {
@@ -22,11 +22,11 @@ class ChatWidget extends StatefulWidget {
   final Map<String, String>? roomNamesWidget;
 
   const ChatWidget({
-    Key? key,
+    super.key,
     this.roomNameWidget,
     this.socketWidget,
     this.roomNamesWidget,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
