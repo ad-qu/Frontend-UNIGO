@@ -92,61 +92,60 @@ class _MyEntityCardState extends State<MyEntityCard> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: 75,
-                    width: 75,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: ClipOval(
-                        child: widget.attr1.isEmpty
-                            ? Image.asset(
-                                'images/entity.png',
-                                fit: BoxFit.cover,
-                              )
-                            : Image.network(
-                                widget.attr1,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child; // La imagen ha terminado de cargar
-                                  } else {
-                                    return Container(
-                                      color: Theme.of(context)
-                                          .cardColor, // Fondo rojo mientras se carga la imagen
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                            backgroundColor:
-                                                Theme.of(context).hoverColor,
-                                            strokeCap: StrokeCap.round,
-                                            strokeWidth: 5,
-                                            valueColor: AlwaysStoppedAnimation<
-                                                Color>(Theme.of(
-                                                    context)
-                                                .splashColor)), // Indicador de progreso mientras se carga
-                                      ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      height: 75,
+                      width: 75,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: ClipOval(
+                          child: widget.attr1.isEmpty
+                              ? Image.asset(
+                                  'images/entity.png',
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  widget.attr1,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child; // La imagen ha terminado de cargar
+                                    } else {
+                                      return Container(
+                                        color: Theme.of(context)
+                                            .cardColor, // Fondo rojo mientras se carga la imagen
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                              backgroundColor:
+                                                  Theme.of(context).hoverColor,
+                                              strokeCap: StrokeCap.round,
+                                              strokeWidth: 5,
+                                              valueColor: AlwaysStoppedAnimation<
+                                                  Color>(Theme.of(
+                                                      context)
+                                                  .splashColor)), // Indicador de progreso mientras se carga
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  errorBuilder: (BuildContext context,
+                                      Object error, StackTrace? stackTrace) {
+                                    return Image.asset(
+                                      'images/entity.png',
+                                      fit: BoxFit.cover,
                                     );
-                                  }
-                                },
-                                errorBuilder: (BuildContext context,
-                                    Object error, StackTrace? stackTrace) {
-                                  return Image.asset(
-                                    'images/entity.png',
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              ),
+                                  },
+                                ),
+                        ),
                       ),
                     ),
-                  ),
-                  if (widget.isFollowed == false)
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 0, 62.5, 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -183,96 +182,9 @@ class _MyEntityCardState extends State<MyEntityCard> {
                         ),
                       ),
                     ),
-                  if (widget.isFollowed == true)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 7, 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                widget.attr2,
-                                style: Theme.of(context).textTheme.titleSmall,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            const SizedBox(
-                                width: 8), // Espacio entre el texto y el icono
-                            if (widget.attr4 == "true")
-                              Container(
-                                width: 16.5, // Ancho del contenedor
-                                height: 16.5, // Alto del contenedor
-                                decoration: BoxDecoration(
-                                  color: Colors
-                                      .blue.shade700, // Color de fondo azul
-                                  shape: BoxShape.circle, // Forma circular
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.check,
-                                    size: 12,
-                                    color:
-                                        Colors.white, // Color del tick blanco
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (widget.isFollowed == false)
-                    GestureDetector(
-                      onTap: () {
-                        print("aaaaaaaaaaaaaa");
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 20.5, 20.5, 20.5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            color: Theme.of(context)
-                                .dividerColor, // Color de fondo azul
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
-                              child: Icon(
-                                Icons.add,
-                                size: 18,
-                                color: Theme.of(context).secondaryHeaderColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (widget.isFollowed == true)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 25, 15, 25),
-                      child: Container(
-                        height: 5.5,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(7.5)),
-                          color: Theme.of(context)
-                              .cardColor, // Color de fondo azul
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                            child: Icon(
-                              Icons.add,
-                              size: 14,
-                              color: Theme.of(context).cardColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              )),
+                  ],
+                ),
+              ),
               SizedBox(
                 height: 77.5,
                 child: Padding(
