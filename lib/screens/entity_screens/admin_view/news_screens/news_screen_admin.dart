@@ -159,6 +159,18 @@ class _NewsScreenState extends State<NewsScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 25),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Color.fromARGB(255, 227, 227, 227),
+                              size: 25,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -191,7 +203,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -270,6 +282,18 @@ class _NewsScreenState extends State<NewsScreen> {
                                   ),
                                 ),
                               ),
+                            ),
+                          ),
+                          const SizedBox(width: 25),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Color.fromARGB(255, 227, 227, 227),
+                              size: 30,
                             ),
                           ),
                         ],

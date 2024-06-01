@@ -82,12 +82,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(30, 2.5, 30, 0),
+                        child: Text(AppLocalizations.of(context)!.hype,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleMedium),
+                      ),
                     ],
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                padding: const EdgeInsets.fromLTRB(30, 20, 30, 0),
                 child: Column(
                   children: [
                     RedButton(
@@ -100,11 +106,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         buttonText: AppLocalizations.of(context)!.google_login,
                         onTap: () => AuthService().signInWithGoogle(context),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    AppleButton(
-                      buttonText: AppLocalizations.of(context)!.apple_login,
-                      onTap: logIn,
                     ),
                   ],
                 ),

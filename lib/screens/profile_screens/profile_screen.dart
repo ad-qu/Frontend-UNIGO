@@ -1,4 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -88,11 +89,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget imageProfile() {
     return Stack(
       children: [
-        CircleAvatar(
-          radius: 32.5,
-          backgroundImage: imageURL != ""
-              ? Image.network(imageURL).image
-              : const AssetImage('images/default.png'),
+        SizedBox(
+          height: 65,
+          width: 65,
+          child: ClipOval(
+            child: imageURL.isEmpty
+                ? Image.asset(
+                    'images/default.png',
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    imageURL,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child; // La imagen ha terminado de cargar
+                      } else {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            color: Theme.of(context)
+                                .scaffoldBackgroundColor, // Fondo rojo mientras se carga la imagen
+                            child: CircularProgressIndicator(
+                                backgroundColor: Theme.of(context).hoverColor,
+                                strokeCap: StrokeCap.round,
+                                strokeWidth: 5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).splashColor)),
+                          ),
+                        );
+                      }
+                    },
+                    errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) {
+                      return Image.asset(
+                        'images/default.png',
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+          ),
         ),
         Positioned(
           bottom: 0,

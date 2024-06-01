@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/screens/entity_screens/entity_profile_screen.dart';
+import 'package:unigo/screens/entity_screens/admin_view/entity_profile_screen_admin.dart';
 import 'package:unigo/screens/profile_screens/profile_screen.dart';
 
 void main() async {
@@ -81,7 +81,7 @@ class _MyEntityCardState extends State<MyEntityCard> {
         },
         child: Container(
           height:
-              200, // Aumentamos la altura para dar espacio al nuevo contenedor azul
+              155, // Aumentamos la altura para dar espacio al nuevo contenedor azul
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).dividerColor, width: 1),
             color: Theme.of(context).cardColor,
@@ -94,7 +94,6 @@ class _MyEntityCardState extends State<MyEntityCard> {
               Expanded(
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
                     height: 75,
@@ -102,14 +101,44 @@ class _MyEntityCardState extends State<MyEntityCard> {
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: ClipOval(
-                        child: widget.attr1 == ''
+                        child: widget.attr1.isEmpty
                             ? Image.asset(
                                 'images/entity.png',
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                               )
                             : Image.network(
                                 widget.attr1,
                                 fit: BoxFit.cover,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child; // La imagen ha terminado de cargar
+                                  } else {
+                                    return Container(
+                                      color: Theme.of(context)
+                                          .cardColor, // Fondo rojo mientras se carga la imagen
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                            backgroundColor:
+                                                Theme.of(context).hoverColor,
+                                            strokeCap: StrokeCap.round,
+                                            strokeWidth: 5,
+                                            valueColor: AlwaysStoppedAnimation<
+                                                Color>(Theme.of(
+                                                    context)
+                                                .splashColor)), // Indicador de progreso mientras se carga
+                                      ),
+                                    );
+                                  }
+                                },
+                                errorBuilder: (BuildContext context,
+                                    Object error, StackTrace? stackTrace) {
+                                  return Image.asset(
+                                    'images/entity.png',
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                       ),
                     ),
@@ -245,13 +274,13 @@ class _MyEntityCardState extends State<MyEntityCard> {
                 ],
               )),
               SizedBox(
-                height: 125,
+                height: 77.5,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(40, 10, 40, 40),
+                  padding: const EdgeInsets.fromLTRB(35, 0, 35, 17.5),
                   child: Center(
                     child: RichText(
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
+                      maxLines: 2,
                       text: TextSpan(
                         style: Theme.of(context).textTheme.labelMedium,
                         children: [
@@ -271,52 +300,3 @@ class _MyEntityCardState extends State<MyEntityCard> {
     );
   }
 }
-// child: Row(
-//   children: [
-//     Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.fromLTRB(15, 15, 0, 0),
-//           child: CircleAvatar(
-//             radius: 20,
-//             backgroundColor: const Color.fromARGB(255, 242, 242, 242),
-//             child: ClipOval(
-//               child: widget.attr1 == ''
-//                   ? Image.asset(
-//                       'images/default.png',
-//                       fit: BoxFit.fill,
-//                       width: 40,
-//                       height: 40,
-//                     )
-//                   : Image.network(
-//                       widget.attr1,
-//                       fit: BoxFit.fill,
-//                       width: 40,
-//                       height: 40,
-//                     ),
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//     Expanded(
-//       child: Padding(
-//         padding: const EdgeInsets.fromLTRB(0, 25, 55, 0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             Text(
-//                 widget.attr2.length > 12
-//                     ? '${widget.attr2.substring(0, 12)}...'
-//                     : widget.attr2,
-//                 style: Theme.of(context).textTheme.labelMedium),
-//             const SizedBox(height: 22.5),
-//             Text('Level ${widget.attr3}',
-//                 style: Theme.of(context).textTheme.labelMedium),
-//           ],
-//         ),
-//       ),
-//     ),
-//   ],
-// ),

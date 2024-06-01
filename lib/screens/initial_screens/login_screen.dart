@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/screens/initial_screens/information.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import 'package:unigo/screens/navbar.dart';
@@ -284,30 +283,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 15),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: PageTransitionType.leftToRight,
-                            child: const LoginScreen()));
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(17.5)),
-                    child: Text(
-                      AppLocalizations.of(context)!.forgot_password,
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).textTheme.titleLarge?.color,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
@@ -320,61 +295,50 @@ class _LoginScreenState extends State<LoginScreen> {
                           onTap: logIn,
                         ),
                         const SizedBox(height: 30),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.bottomToTop,
-                                child: const InformationScreen(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.color,
+                                fontSize: 12,
                               ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                style: GoogleFonts.inter(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.color,
-                                  fontSize: 12,
+                              children: [
+                                TextSpan(
+                                  text: AppLocalizations.of(context)!.faster1,
+                                  style: GoogleFonts.inter(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                                children: [
-                                  TextSpan(
-                                    text: AppLocalizations.of(context)!.faster1,
-                                    style: GoogleFonts.inter(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.color,
-                                      fontSize: 12,
-                                    ),
+                                TextSpan(
+                                  text: AppLocalizations.of(context)!.faster2,
+                                  style: GoogleFonts.inter(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge
+                                        ?.color,
+                                    fontSize: 12,
                                   ),
-                                  TextSpan(
-                                    text: AppLocalizations.of(context)!.faster2,
-                                    style: GoogleFonts.inter(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .displayLarge
-                                          ?.color,
-                                      fontSize: 12,
-                                    ),
+                                ),
+                                TextSpan(
+                                  text: AppLocalizations.of(context)!.faster3,
+                                  style: GoogleFonts.inter(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color,
+                                    fontSize: 12,
                                   ),
-                                  TextSpan(
-                                    text: AppLocalizations.of(context)!.faster3,
-                                    style: GoogleFonts.inter(
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.color,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

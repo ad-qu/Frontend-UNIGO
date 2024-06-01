@@ -194,7 +194,7 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 200,
+                        height: 155,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),
@@ -205,7 +205,7 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 200,
+                        height: 155,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),
