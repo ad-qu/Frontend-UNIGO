@@ -21,9 +21,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Circular-Loading-Animation',
-      theme: ThemeData(
-        backgroundColor: Theme.of(context).backgroundColor,
-      ),
       home: const LoadingCircle(),
     );
   }
@@ -96,7 +93,7 @@ class _LoadingCircleState extends State<LoadingCircle>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context)
-          .backgroundColor, // Utiliza el color de fondo del tema
+          .scaffoldBackgroundColor, // Utiliza el color de fondo del tema
       body: Center(
         child: SizedBox(
           height: 100,

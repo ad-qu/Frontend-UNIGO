@@ -95,7 +95,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
       return Container(
         height: 485,
         decoration: BoxDecoration(
-          color: Theme.of(context).textTheme.headline5?.color,
+          color: Theme.of(context).textTheme.headlineMedium?.color,
           shape: BoxShape.rectangle,
           borderRadius: const BorderRadius.all(Radius.circular(20)),
         ),
@@ -104,7 +104,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Theme.of(context).textTheme.headline3?.color,
+                color: Theme.of(context).textTheme.headlineMedium?.color,
                 shape: BoxShape.rectangle,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -162,7 +162,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
               _name ?? '',
               style: TextStyle(
                 fontSize: 20,
-                color: Theme.of(context).textTheme.bodyText1?.color,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -172,7 +172,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
               child: Text(
                 _descr ?? '',
                 style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyText1?.color),
+                    color: Theme.of(context).textTheme.bodyMedium?.color),
                 textAlign: TextAlign.justify,
               ),
             ),

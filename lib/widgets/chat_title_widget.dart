@@ -15,13 +15,14 @@ class MyChatTitleCard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+          decoration:
+              BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
           padding: const EdgeInsets.fromLTRB(17.5, 18.5, 17.5, 18.5),
           child: Container(
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.fromLTRB(0, 8, 0, 11),
             decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -55,7 +56,7 @@ class MyChatTitleCard extends StatelessWidget {
                     style: TextStyle(
                       fontStyle: FontStyle.normal,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.bodyText1?.color,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 23,
                     ),
                   ),

@@ -167,7 +167,7 @@ class _MyQRState extends State<MyQR> {
                 ),
                 const SizedBox(height: 35),
               ],
-              backgroundColor: Theme.of(context).backgroundColor,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
                     30.0), // Ajusta el valor para controlar el nivel de redondez
@@ -250,7 +250,7 @@ class _MyQRState extends State<MyQR> {
                 ),
                 const SizedBox(height: 35),
               ],
-              backgroundColor: Theme.of(context).backgroundColor,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
                     30.0), // Ajusta el valor para controlar el nivel de redondez
@@ -330,7 +330,7 @@ class _MyQRState extends State<MyQR> {
                 ),
                 const SizedBox(height: 35),
               ],
-              backgroundColor: Theme.of(context).backgroundColor,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
                     30.0), // Ajusta el valor para controlar el nivel de redondez
@@ -580,7 +580,7 @@ class _MyQRState extends State<MyQR> {
                       child: Container(
                         height: 475,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).backgroundColor,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           shape: BoxShape.rectangle,
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),

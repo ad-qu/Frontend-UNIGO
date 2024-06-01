@@ -220,7 +220,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             children: [
               Row(
@@ -296,7 +296,7 @@ class _EditInfoScreenState extends State<EditInfoScreen> {
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .textTheme
-                                              .bodyText1
+                                              .bodyMedium
                                               ?.color,
                                           fontSize: 11,
                                         ),

@@ -95,7 +95,8 @@ class _MyChatListState extends State<MyChatList> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+          decoration:
+              BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
           child: Column(
             children: <Widget>[
               Expanded(

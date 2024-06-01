@@ -800,7 +800,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                     style: TextStyle(
                                       color: Theme.of(context)
                                           .textTheme
-                                          .bodyText1
+                                          .bodyMedium
                                           ?.color,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 15,
@@ -843,7 +843,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                     style: TextStyle(
                                       color: Theme.of(context)
                                           .textTheme
-                                          .bodyText1
+                                          .bodyMedium
                                           ?.color,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 15,
@@ -887,7 +887,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                                 style: TextStyle(
                                                     color: Theme.of(context)
                                                         .textTheme
-                                                        .bodyText1
+                                                        .bodyMedium
                                                         ?.color)),
                                             const SizedBox(height: 45),
                                             Padding(
@@ -913,7 +913,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                                   filled: true,
                                                   fillColor: Theme.of(context)
                                                       .textTheme
-                                                      .headline1
+                                                      .bodyMedium
                                                       ?.color,
                                                   hintText: _username,
                                                   hintStyle: const TextStyle(
@@ -1038,7 +1038,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                     style: TextStyle(
                                       color: Theme.of(context)
                                           .textTheme
-                                          .bodyText1
+                                          .bodyMedium
                                           ?.color,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 15,
@@ -1085,7 +1085,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                     style: TextStyle(
                                       color: Theme.of(context)
                                           .textTheme
-                                          .bodyText1
+                                          .bodyMedium
                                           ?.color,
                                       fontWeight: FontWeight.w500,
                                       fontSize: 15,

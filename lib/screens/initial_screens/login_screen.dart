@@ -197,20 +197,23 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-            showCloseIcon: true,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-            content: const Text(
-              'Empty credentials. Please, try again',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
+            backgroundColor: Theme.of(context).splashColor,
+            showCloseIcon: false,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.5)),
+            margin: const EdgeInsets.fromLTRB(30, 0, 30, 12),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: Text(
+                AppLocalizations.of(context)!.empty_fields,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
               ),
             ),
             behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
+            duration: const Duration(seconds: 2),
           ),
         );
       }

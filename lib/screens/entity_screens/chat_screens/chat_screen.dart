@@ -137,7 +137,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                 message.senderName,
                 style: TextStyle(
                   fontSize: 16.0,
-                  color: Theme.of(context).textTheme.headline4?.color,
+                  color: Theme.of(context).textTheme.headlineMedium?.color,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -199,7 +199,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     } else {
       return Scaffold(
         body: Container(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: SafeArea(
             child: Column(
               children: [

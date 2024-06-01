@@ -1,6 +1,9 @@
 // ignore_for_file: library_private_types_in_public_api
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,12 +14,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/screens/initial_screens/welcome_screen.dart';
 import 'package:unigo/widgets/input_widgets/delete_account_button.dart';
 import 'package:unigo/widgets/input_widgets/edit_account_button.dart';
 import 'package:unigo/widgets/input_widgets/edit_password_button.dart';
 import 'package:unigo/widgets/input_widgets/grey_button.dart';
 import 'package:unigo/widgets/input_widgets/history_button.dart';
 import 'package:unigo/widgets/input_widgets/log_out_button.dart';
+import 'package:unigo/widgets/language_widgets/language_button.dart';
+import 'package:unigo/widgets/theme/theme_provider.dart';
 import '../../models/user.dart' as user_ea;
 import '../../widgets/profile_screen/card_user_widget.dart';
 import 'package:page_transition/page_transition.dart';
@@ -322,6 +328,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error in the counting of friends: $e');
     }
+  }
+
+  Future logOut() async {
+    auth.signOut();
+    GoogleSignIn().signOut();
+    clearInfo();
+    Navigator.pushReplacement(
+      context,
+      PageTransition(
+        type: PageTransitionType.leftToRight,
+        child: const WelcomeScreen(),
+      ),
+    );
   }
 
   Future getInsignias() async {
@@ -667,29 +686,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             Row(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
+                                GestureDetector(
+                                  onTap: () {
+                                    Provider.of<ThemeProvider>(context,
+                                            listen: false)
+                                        .toggleTheme();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(15),
+                                    decoration: BoxDecoration(
                                       color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: Icon(
-                                    Icons.light_mode_rounded,
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Icon(
+                                      Icons.light_mode_rounded,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 5),
-                                Container(
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: Icon(
-                                    Icons.language_rounded,
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
-                                  ),
-                                ),
+                                const LanguageButton(),
                               ],
                             ),
                           ],
@@ -942,8 +959,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     padding:
                                         const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                     child: LogOutButton(
-                                        buttonText: "Log out",
-                                        onTap: getInsignias),
+                                        buttonText: "Log out", onTap: logOut),
                                   ),
                                 ],
                               ),

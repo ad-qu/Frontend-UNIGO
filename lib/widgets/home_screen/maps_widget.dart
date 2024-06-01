@@ -339,15 +339,17 @@ class MapsWidget extends State<MapScreen> {
         FlutterMap(
           mapController: mapController,
           options: MapOptions(
-            center: LatLng(41.27561, 1.98722),
-            zoom: 17,
+            initialCenter: const LatLng(41.27561, 1.98722),
+            initialZoom: 17,
             maxZoom: 18.25,
-            maxBounds: LatLngBounds(
-              LatLng(41, 1.65),
-              LatLng(41.6, 2.35),
+            cameraConstraint: CameraConstraint.contain(
+              bounds: LatLngBounds(
+                LatLng(41, 1.65),
+                LatLng(41.6, 2.35),
+              ),
             ),
           ),
-          nonRotatedChildren: [
+          children: [
             RichAttributionWidget(
               attributions: [
                 TextSourceAttribution(
@@ -358,8 +360,6 @@ class MapsWidget extends State<MapScreen> {
                 ),
               ],
             ),
-          ],
-          children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.app',

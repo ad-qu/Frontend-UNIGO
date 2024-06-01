@@ -24,6 +24,7 @@
   "faster1": "UNIGO! will ",
   "faster2": "remember you",
   "faster3": " for faster logins.",
+  "empty_fields": "Check that the fields are not empty",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -35,6 +36,12 @@
   "characters": "Contains at least 8 characters",
   "number": "Contains at least 1 number",
   "match": "Both passwords match",
+  "password_rules": "Check password rules",
+  "account_created": "Account successfully created",
+  "invalid_email": "Invalid email address",
+  "used_email": "Email already in use",
+  "valid_values": "Check that there are valid values",
+  "unable_to_proceed": "Unable to proceed. Try again later",
   "i_accept": "I accept the ",
   "terms": "Terms of Use and Privacy Policy",
   "signup_button": "SIGN UP",
@@ -56,7 +63,6 @@
   "followers": "Followers",
   "level": "Level",
   "edit_warning": "Once the account updates, you will have to log in again",
-  "empty_fields": "Check that the fields are not empty",
   
   "@---------------- SNACKBARS ------------------": {
   },

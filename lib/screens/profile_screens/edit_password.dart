@@ -296,7 +296,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
     return Scaffold(
       body: SafeArea(
         child: Container(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             children: [
               Row(
@@ -353,7 +353,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .textTheme
-                                                .bodyText2
+                                                .bodyMedium
                                                 ?.color,
                                             fontSize: 17),
                                         decoration: InputDecoration(
@@ -439,7 +439,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .textTheme
-                                              .bodyText1
+                                              .bodyMedium
                                               ?.color,
                                           fontSize: 14),
                                     ),
@@ -472,7 +472,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .textTheme
-                                              .bodyText1
+                                              .bodyMedium
                                               ?.color,
                                           fontSize: 11,
                                         ),

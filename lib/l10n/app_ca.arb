@@ -23,6 +23,7 @@
   "faster1": "UNIGO! ",
   "faster2": "et recordarà",
   "faster3": " per a iniciar sessió.",
+  "empty_fields": "Comproveu que no hi hagi camps buits",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -34,6 +35,12 @@
   "characters": "Conté almenys 8 caràcters",
   "number": "Conté almenys 1 número",
   "match": "Les dues contrasenyes coincideixen",
+  "password_rules": "Comprova les regles de contrasenya",
+  "account_created": "Compte creat correctament",
+  "invalid_email": "Correu electrònic invàlid",
+  "used_email": "Correu electrònic ja en ús",
+  "valid_values": "Comprova que hi ha valors vàlids",
+  "unable_to_proceed": "No s'ha pogut continuar. Prova més tard",
   "i_accept": "Accepto els ",
   "terms": "Termes d'Ús i les Polítiques de Privacitat",
   "signup_button": "REGISTRA'T",
@@ -55,7 +62,6 @@
   "followers": "Seguidors",
   "level": "Nivell",
   "edit_warning": "Una vegada hagi fet els canvis, haurà d'iniciar sessió de nou",
-  "empty_fields": "Revisa que els camps no estiguin buits",
   
   "@---------------- SNACKBARS ------------------": {
   },

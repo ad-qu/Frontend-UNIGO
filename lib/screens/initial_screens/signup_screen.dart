@@ -1,19 +1,18 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_literals_to_create_immutables
 
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:unigo/screens/initial_screens/login_screen.dart';
+import '../../widgets/input_widgets/red_button.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unigo/screens/initial_screens/terms_of_use_privacy_policy.dart';
 import 'package:unigo/screens/initial_screens/welcome_screen.dart';
-import '../../widgets/input_widgets/red_button.dart';
-import 'package:unigo/widgets/credential_screen/password_textfield.dart';
-import 'package:unigo/widgets/credential_screen/input_textfield.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:unigo/widgets/language_widgets/language_button.dart';
+import 'package:unigo/widgets/credential_screen/input_textfield.dart';
+import 'package:unigo/screens/initial_screens/terms_of_use_privacy_policy.dart';
 
 void main() async {
   await dotenv.load();
@@ -33,9 +32,6 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passControllerVerify = TextEditingController();
-  final textController = TextEditingController();
-  bool _isChecked = false;
-  bool _isStrong = false;
 
   double strength = 0;
   RegExp numReg = RegExp(r".*[0-9].*");
@@ -58,8 +54,13 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    passwordController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    //Sign up method
     void signUp() async {
       try {
         if ((nameController.text == '') ||
@@ -70,180 +71,154 @@ class _SignupScreenState extends State<SignupScreen> {
             (passControllerVerify.text == '')) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-              showCloseIcon: true,
+              backgroundColor: Theme.of(context).splashColor,
+              showCloseIcon: false,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: const Text(
-                'Check that there are no empty fields',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(17.5)),
+              margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
+              content: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: Text(
+                  AppLocalizations.of(context)!.empty_fields,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
                 ),
               ),
               behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
+              duration: const Duration(seconds: 2),
             ),
           );
         } else if (!EmailValidator.validate(emailController.text)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: Colors.amber,
-              showCloseIcon: true,
+              backgroundColor: const Color.fromARGB(255, 196, 150, 11),
+              showCloseIcon: false,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: const Text(
-                'Invalid email address',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(17.5)),
+              margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
+              content: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: Text(
+                  AppLocalizations.of(context)!.invalid_email,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                  ),
                 ),
               ),
-              closeIconColor: Colors.black,
               behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
+              duration: const Duration(seconds: 2),
             ),
           );
-        } else if (!_isStrong) {
+        } else if (!_isPasswordEightCharacters ||
+            !_hasPasswordOneNumber ||
+            !_bothPasswordMatch) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: Colors.amber,
-              showCloseIcon: true,
+              backgroundColor: const Color.fromARGB(255, 196, 150, 11),
+              showCloseIcon: false,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: const Text(
-                'The password is not strong enough',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(17.5)),
+              margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
+              content: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: Text(
+                  AppLocalizations.of(context)!.password_rules,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                  ),
                 ),
               ),
-              closeIconColor: Colors.black,
               behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        } else if (passControllerVerify.text != passwordController.text) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.amber,
-              showCloseIcon: true,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: const Text(
-                'Passwords don\'t match',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              closeIconColor: Colors.black,
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        } else if (!_isChecked) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.amber,
-              showCloseIcon: true,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: const Text(
-                'The terms of use and privacy policy must be accepted',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              ),
-              closeIconColor: Colors.black,
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
+              duration: const Duration(seconds: 2),
             ),
           );
         } else {
-          var response = await Dio()
-              .post("http://${dotenv.env['API_URL']}/auth/register", data: {
-            "name": nameController.text,
-            "surname": surnameController.text,
-            "username": usernameController.text,
-            "email": emailController.text,
-            "password": passwordController.text,
-          });
+          var response = await Dio().post(
+            "http://${dotenv.env['API_URL']}/auth/register",
+            data: {
+              "name": nameController.text,
+              "surname": surnameController.text,
+              "username": usernameController.text,
+              "email": emailController.text,
+              "password": passwordController.text,
+            },
+          );
           if (response.statusCode == 200) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                backgroundColor: Colors.green,
+                backgroundColor: const Color.fromARGB(255, 56, 142, 60),
+                showCloseIcon: false,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      // ignore: prefer_const_constructors
-                      child: Text(
-                        'Account successfully created',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                    borderRadius: BorderRadius.circular(17.5)),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 12),
+                content: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                  child: Text(
+                    AppLocalizations.of(context)!.empty_fields,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
-                    Icon(
-                      Icons.check,
-                      color: Colors.white,
-                    ),
-                  ],
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-
-            Navigator.pushNamed(context, '/login_screen');
-          } else if (response.statusCode == 220) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                showCloseIcon: true,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Text(
-                  'Email address not available. Try another one',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
                   ),
                 ),
                 behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: const LoginScreen(),
+              ),
+            );
+          } else if (response.statusCode == 220) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Theme.of(context).splashColor,
+                showCloseIcon: false,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(17.5)),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
+                content: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                  child: Text(
+                    AppLocalizations.of(context)!.used_email,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                ),
+                behavior: SnackBarBehavior.floating,
+                duration: const Duration(seconds: 2),
               ),
             );
           } else if (response.statusCode == 400) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                showCloseIcon: true,
+                backgroundColor: Theme.of(context).splashColor,
+                showCloseIcon: false,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Text(
-                  'Check that there are valid values',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(17.5)),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
+                content: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                  child: Text(
+                    AppLocalizations.of(context)!.valid_values,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
                   ),
                 ),
                 behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
+                duration: const Duration(seconds: 2),
               ),
             );
           }
@@ -251,20 +226,23 @@ class _SignupScreenState extends State<SignupScreen> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-            showCloseIcon: true,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-            content: const Text(
-              'Unable to create an account. Try again later',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
+            backgroundColor: Theme.of(context).splashColor,
+            showCloseIcon: false,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.5)),
+            margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: Text(
+                AppLocalizations.of(context)!.unable_to_proceed,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
               ),
             ),
             behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -297,6 +275,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -510,148 +489,152 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
 
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 30, 0, 0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 100),
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: _isPasswordEightCharacters
-                                            ? const Color.fromARGB(
-                                                255, 51, 151, 67)
-                                            : Colors.transparent,
-                                        border: _isPasswordEightCharacters
-                                            ? Border.all(
-                                                color: Colors.transparent)
-                                            : Border.all(
-                                                color: const Color.fromARGB(
-                                                    255, 138, 138, 138)),
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.check,
-                                        color: _isPasswordEightCharacters
-                                            ? const Color.fromARGB(
-                                                255, 227, 227, 227)
-                                            : const Color.fromARGB(
-                                                255, 138, 138, 138),
-                                        size: 15,
+                        if (passwordController.text != "")
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 30, 0, 0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 100),
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                          color: _isPasswordEightCharacters
+                                              ? const Color.fromARGB(
+                                                  255, 51, 151, 67)
+                                              : Colors.transparent,
+                                          border: _isPasswordEightCharacters
+                                              ? Border.all(
+                                                  color: Colors.transparent)
+                                              : Border.all(
+                                                  color: const Color.fromARGB(
+                                                      255, 138, 138, 138)),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: _isPasswordEightCharacters
+                                              ? const Color.fromARGB(
+                                                  255, 227, 227, 227)
+                                              : const Color.fromARGB(
+                                                  255, 138, 138, 138),
+                                          size: 15,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    AppLocalizations.of(context)!.characters,
-                                    style: GoogleFonts.inter(
-                                        color: _isPasswordEightCharacters
-                                            ? const Color.fromARGB(
-                                                255, 227, 227, 227)
-                                            : const Color.fromARGB(
-                                                255, 138, 138, 138)),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              Row(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 100),
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: _hasPasswordOneNumber
-                                            ? const Color.fromARGB(
-                                                255, 51, 151, 67)
-                                            : Colors.transparent,
-                                        border: _hasPasswordOneNumber
-                                            ? Border.all(
-                                                color: Colors.transparent)
-                                            : Border.all(
-                                                color: const Color.fromARGB(
-                                                    255, 138, 138, 138)),
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.check,
-                                        color: _hasPasswordOneNumber
-                                            ? const Color.fromARGB(
-                                                255, 227, 227, 227)
-                                            : const Color.fromARGB(
-                                                255, 138, 138, 138),
-                                        size: 15,
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      AppLocalizations.of(context)!.characters,
+                                      style: GoogleFonts.inter(
+                                          color: _isPasswordEightCharacters
+                                              ? const Color.fromARGB(
+                                                  255, 227, 227, 227)
+                                              : const Color.fromARGB(
+                                                  255, 138, 138, 138)),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 15),
+                                Row(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 100),
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                          color: _hasPasswordOneNumber
+                                              ? const Color.fromARGB(
+                                                  255, 51, 151, 67)
+                                              : Colors.transparent,
+                                          border: _hasPasswordOneNumber
+                                              ? Border.all(
+                                                  color: Colors.transparent)
+                                              : Border.all(
+                                                  color: const Color.fromARGB(
+                                                      255, 138, 138, 138)),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: _hasPasswordOneNumber
+                                              ? const Color.fromARGB(
+                                                  255, 227, 227, 227)
+                                              : const Color.fromARGB(
+                                                  255, 138, 138, 138),
+                                          size: 15,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    AppLocalizations.of(context)!.number,
-                                    style: GoogleFonts.inter(
-                                        color: _hasPasswordOneNumber
-                                            ? const Color.fromARGB(
-                                                255, 227, 227, 227)
-                                            : const Color.fromARGB(
-                                                255, 138, 138, 138)),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              Row(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 100),
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: _bothPasswordMatch
-                                            ? const Color.fromARGB(
-                                                255, 51, 151, 67)
-                                            : Colors.transparent,
-                                        border: _bothPasswordMatch
-                                            ? Border.all(
-                                                color: Colors.transparent)
-                                            : Border.all(
-                                                color: const Color.fromARGB(
-                                                    255, 138, 138, 138)),
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.check,
-                                        color: _bothPasswordMatch
-                                            ? const Color.fromARGB(
-                                                255, 227, 227, 227)
-                                            : const Color.fromARGB(
-                                                255, 138, 138, 138),
-                                        size: 15,
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      AppLocalizations.of(context)!.number,
+                                      style: GoogleFonts.inter(
+                                          color: _hasPasswordOneNumber
+                                              ? const Color.fromARGB(
+                                                  255, 227, 227, 227)
+                                              : const Color.fromARGB(
+                                                  255, 138, 138, 138)),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 15),
+                                Row(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 100),
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                          color: _bothPasswordMatch
+                                              ? const Color.fromARGB(
+                                                  255, 51, 151, 67)
+                                              : Colors.transparent,
+                                          border: _bothPasswordMatch
+                                              ? Border.all(
+                                                  color: Colors.transparent)
+                                              : Border.all(
+                                                  color: const Color.fromARGB(
+                                                      255, 138, 138, 138)),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.check,
+                                          color: _bothPasswordMatch
+                                              ? const Color.fromARGB(
+                                                  255, 227, 227, 227)
+                                              : const Color.fromARGB(
+                                                  255, 138, 138, 138),
+                                          size: 15,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    AppLocalizations.of(context)!.match,
-                                    style: GoogleFonts.inter(
-                                        color: _bothPasswordMatch
-                                            ? const Color.fromARGB(
-                                                255, 227, 227, 227)
-                                            : const Color.fromARGB(
-                                                255, 138, 138, 138)),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      AppLocalizations.of(context)!.match,
+                                      style: GoogleFonts.inter(
+                                          color: _bothPasswordMatch
+                                              ? const Color.fromARGB(
+                                                  255, 227, 227, 227)
+                                              : const Color.fromARGB(
+                                                  255, 138, 138, 138)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),

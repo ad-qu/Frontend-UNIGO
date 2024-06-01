@@ -23,6 +23,7 @@
   "faster1": "UNIGO! ",
   "faster2": "te recordará",
   "faster3": " para iniciar sesión.",
+  "empty_fields": "Verifique que no haya campos vacíos",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -31,9 +32,15 @@
   "surname": "Apellido",
   "username": "Nombre de usuario",
   "repeat_password": "Repita la contraseña",
-  "characters": "Contiene al menos 8 letras",
+  "characters": "Contiene al menos 8 carácteres",
   "number": "Contiene al menos 1 número",
   "match": "Las dos contraseñas coinciden",
+  "password_rules": "Comprueba las reglas de contraseña",
+  "account_created": "Cuenta creada correctamente",
+  "invalid_email": "Correo electrónico inválido",
+  "used_email": "Correo electrónico ya en uso",
+  "valid_values": "Comprueba que hay valores válidos",
+  "unable_to_proceed": "No se ha podido continuar. Prueba más tarde",
   "i_accept": "Acepto los ",
   "terms": "Términos de Uso y Políticas de Privacidad",
   "signup_button": "REGÍSTRATE",
@@ -55,7 +62,6 @@
   "followers": "Seguidores",
   "level": "Nivel",
   "edit_warning": "Una vez haya realizado los cambios, deberá iniciar sesión de nuevo",
-  "empty_fields": "Revisa que los campos no esten vacios",
   
   "@---------------- SNACKBARS ------------------": {
   },

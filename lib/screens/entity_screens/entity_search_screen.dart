@@ -55,22 +55,11 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
   Future<void> fetchEntities() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String followingPath =
-        'http://${dotenv.env['API_URL']}/entity/following/$_idUser';
+
     String unfollowingPath =
         'http://${dotenv.env['API_URL']}/entity/unfollowing/$_idUser';
 
     try {
-      var followingResponse = await Dio().get(
-        followingPath,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-
       var unfollowingResponse = await Dio().get(
         unfollowingPath,
         options: Options(
@@ -81,16 +70,12 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
         ),
       );
 
-      var following = followingResponse.data as List;
       var unfollowing = unfollowingResponse.data as List;
 
       setState(() {
-        print("asdasdasdasdadadasdasdad");
-        followingList =
-            following.map((entity) => Entity.fromJson2(entity)).toList();
         unFollowingList =
             unfollowing.map((entity) => Entity.fromJson2(entity)).toList();
-        filteredEntities = unFollowingList + followingList;
+        filteredEntities = unFollowingList;
         print("bbbbbbbbbbbbbbbbbbbbbbbbb");
       });
     } catch (e) {
@@ -100,7 +85,7 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
 
   void _runFilter(String enteredKeyword) {
     setState(() {
-      filteredEntities = (unFollowingList + followingList).where((entity) {
+      filteredEntities = (unFollowingList).where((entity) {
         final lowerCaseKeyword = enteredKeyword.toLowerCase();
         return entity.name.toLowerCase().startsWith(lowerCaseKeyword);
       }).toList();
