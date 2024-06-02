@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/screens/discover_screens/discover_search_screen.dart';
 import 'package:unigo/screens/entity_screens/entity_add_screen.dart';
@@ -23,11 +24,18 @@ class DiscoverScreen extends StatefulWidget {
 }
 
 class _DiscoverScreenState extends State<DiscoverScreen> {
+  late bool _isLoading;
   List<User> followingList = [];
   String? _idUser = "";
 
   @override
   void initState() {
+    _isLoading = true;
+    Future.delayed(const Duration(milliseconds: 750), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
     super.initState();
     getUserInfo();
     getFriends();
@@ -74,83 +82,198 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
+  Future<void> _refreshFriends() async {
+    setState(() {
+      followingList = [];
+    });
+    await getFriends();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+        child: _isLoading
+            ? Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.rightToLeft,
-                            child: const DiscoverSearchScreen(),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 16.5, 15, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.search,
+                              size: 27,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
-                        padding: const EdgeInsets.all(15),
+                        width: MediaQuery.of(context).size.width,
+                        height: 65,
                         decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(30),
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(37.5),
                         ),
-                        child: Icon(
-                          Icons.search,
-                          size: 27,
-                          color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 65,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(37.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ))
+            : Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 16.5, 15, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: const DiscoverSearchScreen(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Icon(
+                                Icons.search,
+                                size: 27,
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        displacement: 0,
+                        backgroundColor: Theme.of(context).cardColor,
+                        color: Theme.of(context).secondaryHeaderColor,
+                        onRefresh: _refreshFriends,
+                        child: CustomScrollView(
+                          slivers: [
+                            if (followingList.isNotEmpty)
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (BuildContext context, int index) {
+                                    try {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0,
+                                        ),
+                                        child: MyUserCard(
+                                          idUserSession: _idUser!,
+                                          idCardUser:
+                                              followingList[index].idUser,
+                                          attr1: followingList[index]
+                                                  .imageURL
+                                                  ?.toString() ??
+                                              '',
+                                          attr2: followingList[index].username,
+                                          attr3: followingList[index]
+                                              .level
+                                              .toString(),
+                                          following: true,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  childCount: followingList.length,
+                                ),
+                              )
+                            else
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  height:
+                                      100, // Ajusta la altura según sea necesario
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: GoogleFonts.inter(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'No accounts you follow were found\nPress ',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                              WidgetSpan(
+                                                child: Icon(
+                                                  Icons.search,
+                                                  size:
+                                                      16, // Ajusta el tamaño del ícono según sea necesario
+                                                  color: Theme.of(context)
+                                                      .secondaryHeaderColor,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    ' to find accounts to follow',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index) {
-                            try {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: MyUserCard(
-                                  idUserSession: _idUser!,
-                                  idCardUser: followingList[index].idUser,
-                                  attr1: followingList[index]
-                                          .imageURL
-                                          ?.toString() ??
-                                      '',
-                                  attr2: followingList[index].username,
-                                  attr3: followingList[index].level.toString(),
-                                  following: false,
-                                ),
-                              );
-                            } catch (e) {
-                              return const SizedBox();
-                            }
-                          },
-                          childCount: followingList.length,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

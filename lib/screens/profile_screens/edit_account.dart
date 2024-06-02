@@ -16,14 +16,14 @@ void main() async {
   await dotenv.load();
 }
 
-class EditInfoScreen extends StatefulWidget {
-  const EditInfoScreen({super.key});
+class EditAccountScreen extends StatefulWidget {
+  const EditAccountScreen({super.key});
 
   @override
-  State<EditInfoScreen> createState() => _EditInfoScreenState();
+  State<EditAccountScreen> createState() => _EditAccountScreenState();
 }
 
-class _EditInfoScreenState extends State<EditInfoScreen> {
+class _EditAccountScreenState extends State<EditAccountScreen> {
   final nameController = TextEditingController();
   final surnameController = TextEditingController();
   final usernameController = TextEditingController();

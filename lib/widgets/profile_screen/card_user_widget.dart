@@ -44,20 +44,17 @@ class _MyUserCardState extends State<MyUserCard> {
 
   void setFollowingState() {
     isFollowing = widget.following;
-    buttonText = isFollowing ? "Following" : "Follow";
   }
 
   Future<void> followOrUnfollow() async {
-    setState(() {
-      isFollowing = !isFollowing;
-      buttonText = isFollowing ? "Following" : "Follow";
-    });
-
-    if (isFollowing) {
+    if (!isFollowing) {
       await startFollowing();
     } else {
       await stopFollowing();
     }
+    setState(() {
+      isFollowing = !isFollowing;
+    });
   }
 
   Future<void> startFollowing() async {
@@ -75,9 +72,6 @@ class _MyUserCardState extends State<MyUserCard> {
           },
         ),
       );
-      setState(() {
-        buttonText = "Following";
-      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -115,9 +109,6 @@ class _MyUserCardState extends State<MyUserCard> {
           },
         ),
       );
-      setState(() {
-        buttonText = "Follow";
-      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -143,7 +134,7 @@ class _MyUserCardState extends State<MyUserCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
       child: Stack(
         children: <Widget>[
           GestureDetector(
@@ -151,17 +142,19 @@ class _MyUserCardState extends State<MyUserCard> {
               // Lógica a ejecutar al hacer clic en el Container
             },
             child: Container(
-              height: 70,
+              height: 65,
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 255, 255, 255),
-                borderRadius: BorderRadius.circular(16),
+                color: Theme.of(context).cardColor,
+                border:
+                    Border.all(color: Theme.of(context).dividerColor, width: 1),
+                borderRadius: BorderRadius.circular(35),
               ),
               width: MediaQuery.of(context).size.width,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 18.5, right: 8.5),
+                    padding: const EdgeInsets.only(left: 14, right: 8.5),
                     child: CircleAvatar(
                       radius: 20,
                       backgroundColor: const Color.fromARGB(255, 242, 242, 242),
@@ -183,36 +176,20 @@ class _MyUserCardState extends State<MyUserCard> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
-                    child: Container(
-                      width: 0.75,
-                      height: 47.5,
-                      color: const Color.fromARGB(255, 222, 66, 66),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
-                    child: Column(
+                    padding: const EdgeInsets.fromLTRB(7, 8, 8, 8),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           widget.attr2.length > 12
                               ? '${widget.attr2.substring(0, 12)}...'
                               : widget.attr2,
-                          style: const TextStyle(
-                            fontStyle: FontStyle.normal,
-                            color: Color.fromARGB(255, 25, 25, 25),
-                            fontSize: 22.5,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Level ${widget.attr3}',
-                          style: const TextStyle(
-                            fontStyle: FontStyle.normal,
-                            color: Color.fromARGB(255, 25, 25, 25),
-                            fontSize: 13.5,
-                          ),
+                          '  ·  Level ${widget.attr3}',
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ],
                     ),
@@ -228,19 +205,21 @@ class _MyUserCardState extends State<MyUserCard> {
                             height: 30,
                             width: 30,
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 222, 66, 66),
+                              color: Theme.of(context).dividerColor,
                               borderRadius: BorderRadius.circular(30),
                             ),
                             child: Center(
                               child: isFollowing
-                                  ? const Icon(
+                                  ? Icon(
                                       Icons.check,
-                                      color: Color.fromARGB(255, 242, 242, 242),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       size: 20,
                                     )
-                                  : const Icon(
+                                  : Icon(
                                       Icons.add,
-                                      color: Color.fromARGB(255, 242, 242, 242),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       size: 20,
                                     ),
                             ),

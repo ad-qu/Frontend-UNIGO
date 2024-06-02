@@ -26,7 +26,7 @@ import 'package:unigo/widgets/theme/theme_provider.dart';
 import '../../models/user.dart' as user_ea;
 import '../../widgets/profile_screen/card_user_widget.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:unigo/screens/profile_screens/edit_info.dart';
+import 'package:unigo/screens/profile_screens/edit_account.dart';
 import 'package:unigo/screens/profile_screens/edit_password.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -98,43 +98,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
         SizedBox(
           height: 65,
           width: 65,
-          child: ClipOval(
-            child: imageURL.isEmpty
-                ? Image.asset(
-                    'images/default.png',
-                    fit: BoxFit.cover,
-                  )
-                : Image.network(
-                    imageURL,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child; // La imagen ha terminado de cargar
-                      } else {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            color: Theme.of(context)
-                                .scaffoldBackgroundColor, // Fondo rojo mientras se carga la imagen
-                            child: CircularProgressIndicator(
-                                backgroundColor: Theme.of(context).hoverColor,
-                                strokeCap: StrokeCap.round,
-                                strokeWidth: 5,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).splashColor)),
-                          ),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Theme.of(context).dividerColor,
+                width: 1,
+              ),
+            ),
+            child: ClipOval(
+              child: imageURL.isEmpty
+                  ? Image.asset(
+                      'images/default.png',
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      imageURL,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child; // La imagen ha terminado de cargar
+                        } else {
+                          return Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Container(
+                              color: Theme.of(context)
+                                  .scaffoldBackgroundColor, // Fondo mientras se carga la imagen
+                              child: CircularProgressIndicator(
+                                  backgroundColor: Theme.of(context).hoverColor,
+                                  strokeCap: StrokeCap.round,
+                                  strokeWidth: 5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Theme.of(context).splashColor)),
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        return Image.asset(
+                          'images/default.png',
+                          fit: BoxFit.cover,
                         );
-                      }
-                    },
-                    errorBuilder: (BuildContext context, Object error,
-                        StackTrace? stackTrace) {
-                      return Image.asset(
-                        'images/default.png',
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  ),
+                      },
+                    ),
+            ),
           ),
         ),
         Positioned(
@@ -150,8 +159,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             child: Container(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 228, 174, 12),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 196, 150, 11),
                 shape: BoxShape.circle,
               ),
               child: const Padding(
@@ -248,13 +257,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> pickImageFromGallery(ImageSource source) async {
     try {
-      final _storage = FirebaseStorage.instance;
+      final storage = FirebaseStorage.instance;
       final imagePicker = ImagePicker();
       final pickedImage = await imagePicker.pickImage(source: source);
       if (pickedImage != null) {
         var file = File(pickedImage.path);
         var snapshot =
-            await _storage.ref().child('users/$_username/avatar').putFile(file);
+            await storage.ref().child('users/$_username/avatar').putFile(file);
         var downloadURL = await snapshot.ref.getDownloadURL();
         final prefs = await SharedPreferences.getInstance();
         prefs.setString('imageURL', downloadURL);
@@ -268,15 +277,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 "Authorization": "Bearer $token",
               },
             ));
+        // ignore: avoid_print
         print(response);
         if (mounted) {
           setState(() {
             imageURL = downloadURL;
           });
         }
-        print(downloadURL);
       }
     } on PlatformException catch (e) {
+      // ignore: avoid_print
       print('Failed to pick the image: $e');
     }
   }
@@ -439,7 +449,143 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  deleteUser() async {
+  editAccount() async {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.rightToLeft,
+        child: const EditAccountScreen(),
+      ),
+    );
+  }
+
+  editPassword() async {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.leftToRight,
+        child: const EditPasswordScreen(),
+      ),
+    );
+  }
+
+  showDisableConfirmation() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Stack(children: [
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+            child: Container(),
+          ),
+          AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+            title: const Text('Eliminar cuenta'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                    '¿Estás seguro de que quieres eliminar tu cuenta? \n\nAl eliminar tu cuenta, esta quedará inaccesible y no podrás utilizarla. \n\nPara reactivarla, será necesario contactar con nuestro equipo de soporte. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación. \n\n\nEscribe tu nombre de usuario para confirmar:',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color)),
+                const SizedBox(height: 45),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  child: TextField(
+                    onChanged: (value) {
+                      if (mounted) {
+                        setState(() {
+                          _deleteUsername = value;
+                        });
+                      }
+                    },
+                    cursorColor: const Color.fromARGB(255, 222, 66, 66),
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 25, 25, 25),
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Theme.of(context).textTheme.bodyMedium?.color,
+                      hintText: _username,
+                      hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 146, 146, 146),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(100.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all<Color>(
+                    const Color.fromARGB(255, 222, 66, 66),
+                  ),
+                ),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_username == _deleteUsername) {
+                    disableAccount();
+                    auth.signOut();
+                    GoogleSignIn().signOut();
+                    clearInfo();
+                    Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.leftToRight,
+                            child: const LoginScreen()));
+                  } else {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.amber,
+                        showCloseIcon: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                        content: const Text(
+                          'Nombre de usuario incorrecto',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                        closeIconColor: Colors.black,
+                        behavior: SnackBarBehavior.floating,
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                },
+                style: ButtonStyle(
+                  foregroundColor: MaterialStateProperty.all<Color>(
+                    const Color.fromARGB(255, 222, 66, 66),
+                  ),
+                ),
+                child: const Text('Confirmar'),
+              ),
+            ],
+          )
+        ]);
+      },
+    );
+  }
+
+  disableAccount() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     String path = 'http://${dotenv.env['API_URL']}/user/disable/$_idUser';
@@ -463,9 +609,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-            content: Row(
+            content: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Expanded(
                   child: Text(
                     'Account successfully deleted',
@@ -529,7 +675,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Widget insigniasPodium() {
+  Widget showBadges() {
     print("Estic al podium");
 
     if (insigniasList.isEmpty) {
@@ -778,7 +924,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           const EdgeInsets.only(right: 2.0),
                                       child: Align(
                                         alignment: Alignment.centerRight,
-                                        child: insigniasPodium(),
+                                        child: showBadges(),
                                       ),
                                     ),
                                   ],
@@ -795,7 +941,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       value: _exp.toDouble() / 100,
                                       backgroundColor: Theme.of(context)
                                           .secondaryHeaderColor,
-                                      color: Colors.amber,
+                                      color: const Color.fromARGB(
+                                          255, 196, 150, 11),
                                     ),
                                   ),
                                 ),
@@ -936,25 +1083,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                     child: EditAccountButton(
                                         buttonText: "Edit account",
-                                        onTap: getInsignias),
+                                        onTap: editAccount),
                                   ),
-                                  SizedBox(height: 12),
+                                  const SizedBox(height: 12),
                                   Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                     child: EditPasswordButton(
                                         buttonText: "Edit password",
-                                        onTap: getInsignias),
+                                        onTap: editPassword),
                                   ),
-                                  SizedBox(height: 38),
+                                  const SizedBox(height: 38),
                                   Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                     child: DeleteAccountButton(
                                         buttonText: "Disable account",
-                                        onTap: getInsignias),
+                                        onTap: showDisableConfirmation),
                                   ),
-                                  SizedBox(height: 12),
+                                  const SizedBox(height: 12),
                                   Padding(
                                     padding:
                                         const EdgeInsets.fromLTRB(12, 0, 12, 0),

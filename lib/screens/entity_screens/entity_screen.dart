@@ -81,6 +81,10 @@ class _EntityScreenState extends State<EntityScreen> {
     }
   }
 
+  Future<void> _refreshEntities() async {
+    await getEntities();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,38 +209,96 @@ class _EntityScreenState extends State<EntityScreen> {
                       ),
                     ),
                     Expanded(
-                      child: CustomScrollView(
-                        slivers: [
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (BuildContext context, int index) {
-                                try {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                    ),
-                                    child: MyEntityCard(
-                                      idUserSession: _idUser!,
-                                      idEntity: entityList[index].idEntity,
-                                      attr1: entityList[index]
-                                              .imageURL
-                                              ?.toString() ??
-                                          '',
-                                      attr2: entityList[index].name,
-                                      attr3: entityList[index].description,
-                                      attr4: entityList[index].verified,
-                                      attr5: entityList[index].admin,
-                                      isFollowed: true,
-                                    ),
-                                  );
-                                } catch (e) {
-                                  return const SizedBox();
-                                }
-                              },
-                              childCount: entityList.length,
-                            ),
-                          ),
-                        ],
+                      child: RefreshIndicator(
+                        displacement: 0,
+                        backgroundColor: Theme.of(context).cardColor,
+                        color: Theme.of(context).secondaryHeaderColor,
+                        onRefresh: _refreshEntities,
+                        child: CustomScrollView(
+                          slivers: [
+                            if (entityList.isNotEmpty)
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (BuildContext context, int index) {
+                                    try {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0,
+                                        ),
+                                        child: MyEntityCard(
+                                          idUserSession: _idUser!,
+                                          idEntity: entityList[index].idEntity,
+                                          attr1: entityList[index]
+                                                  .imageURL
+                                                  ?.toString() ??
+                                              '',
+                                          attr2: entityList[index].name,
+                                          attr3: entityList[index].description,
+                                          attr4: entityList[index].verified,
+                                          attr5: entityList[index].admin,
+                                          isFollowed: true,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  childCount: entityList.length,
+                                ),
+                              )
+                            else
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  height:
+                                      100, // Ajusta la altura según sea necesario
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: GoogleFonts.inter(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'No entities you follow were found\nPress ',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                              WidgetSpan(
+                                                child: Icon(
+                                                  Icons.search,
+                                                  size:
+                                                      16, // Ajusta el tamaño del ícono según sea necesario
+                                                  color: Theme.of(context)
+                                                      .secondaryHeaderColor,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    ' to find entities to follow',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

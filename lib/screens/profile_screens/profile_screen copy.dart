@@ -16,7 +16,7 @@ import 'package:unigo/widgets/input_widgets/grey_button.dart';
 import '../../models/user.dart' as user_ea;
 import '../../widgets/profile_screen/card_user_widget.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:unigo/screens/profile_screens/edit_info.dart';
+import 'package:unigo/screens/profile_screens/edit_account.dart';
 import 'package:unigo/screens/profile_screens/edit_password.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -776,7 +776,7 @@ class _ProfiletScreenState extends State<ProfiletScreen> {
                                     context,
                                     PageTransition(
                                         type: PageTransitionType.rightToLeft,
-                                        child: const EditInfoScreen()));
+                                        child: const EditAccountScreen()));
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,

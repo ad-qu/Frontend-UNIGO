@@ -14,7 +14,7 @@ import 'package:unigo/screens/navbar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:unigo/screens/profile_screens/edit_info.dart';
+import 'package:unigo/screens/profile_screens/edit_account.dart';
 import 'package:unigo/screens/profile_screens/edit_password.dart';
 import 'package:unigo/screens/initial_screens/login_screen.dart';
 import 'package:unigo/screens/initial_screens/signup_screen.dart';

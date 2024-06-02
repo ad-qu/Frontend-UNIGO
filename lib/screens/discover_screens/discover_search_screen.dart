@@ -32,7 +32,6 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
   void initState() {
     super.initState();
     getUserInfo();
-    getFriends();
     getNotFriends();
   }
 
@@ -41,40 +40,6 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
     setState(() {
       _idUser = prefs.getString('idUser');
     });
-  }
-
-  Future getFriends() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/user/friends/$_idUser';
-    try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-
-      var users = response.data as List;
-
-      setState(() {
-        friendsList = users.map((user) => User.fromJson2(user)).toList();
-      });
-    } catch (e) {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
-    }
   }
 
   Future getNotFriends() async {
