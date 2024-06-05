@@ -1,48 +1,64 @@
-import 'dart:convert';
-import 'package:unigo/models/user.dart';
-
-List<Challenge> subjectFromJson(String str) =>
-    List<Challenge>.from(json.decode(str).map((x) => Challenge.fromJson(x)));
-
-String subjectToJson(List<Challenge> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class Challenge {
   Challenge({
-    required this.id,
+    required this.idChallenge,
     required this.name,
-    required this.descr,
-    required this.exp,
-    required this.users,
-    required this.questions,
-    this.lat = "0",
-    this.long = "0",
+    required this.description,
+    required this.latitude,
+    required this.longitude,
+    this.question,
+    required this.experience,
+    required this.itinerary,
   });
 
-  final String id;
+  final String idChallenge;
   final String name;
-  final String descr;
-  final int exp;
-  final List<User> users;
-  final String lat;
-  final List<String> questions;
-  final String long;
+  final String description;
+  final String latitude;
+  final String longitude;
+  final List<String>? question;
+  final int experience;
+  final String itinerary;
 
   factory Challenge.fromJson(Map<String, dynamic> json) => Challenge(
-      id: json["_id"],
-      name: json["name"],
-      descr: json["descr"],
-      exp: json["exp"],
-      users: List<User>.from(json["users"].map((x) => User.fromJson(x))),
-      questions: List<String>.from(json["questions"].map((x) => x.toString())),
-      lat: json["lat"],
-      long: json["long"]);
+        idChallenge: json["_id"],
+        name: json["name"],
+        description: json["description"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+        question: List<String>.from(
+          json["question"].map(
+            (x) => x.toString(),
+          ),
+        ),
+        experience: json["experience"],
+        itinerary: json["itinerary"],
+      );
+
+  factory Challenge.fromJson2(Map<String, dynamic> json) => Challenge(
+        idChallenge: json["_id"],
+        name: json["name"],
+        description: json["description"],
+        latitude: json["latitude"],
+        longitude: json["longitude"],
+        question: List<String>.from(
+          json["question"].map(
+            (x) => x.toString(),
+          ),
+        ),
+        experience: json["experience"],
+        itinerary: json["itinerary"],
+      );
+
+  get foto => null;
 
   Map<String, dynamic> toJson() => {
-        "_id": id,
+        "_id": idChallenge,
         "name": name,
-        "descr": descr,
-        "exp": exp,
-        "users": List<dynamic>.from(users.map((x) => x.toJson())),
+        "description": description,
+        "latitude": latitude,
+        "longitude": longitude,
+        "question": question,
+        "experience": experience,
+        "itinerary": itinerary,
       };
 }

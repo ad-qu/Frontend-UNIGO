@@ -86,7 +86,7 @@
   "@---------------- NAVBAR ------------------": {
   },
   "map": "Map",
-  "markers": "Markers",
+  "discover": "Discover",
   "entities": "Entities",
   "profile": "Profile",
 

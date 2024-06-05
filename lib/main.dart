@@ -1,25 +1,15 @@
-import 'dart:ui';
-
+import 'services/firebase.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/widgets/theme/theme.dart';
-import 'package:unigo/widgets/theme/theme_provider.dart';
-import 'screens/entity_screens/chat_screens/chat_screen.dart';
-import 'services/firebase_service.dart';
+import 'package:unigo/pages/startup/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/screens/navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/components/theme/theme_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:unigo/screens/profile_screens/edit_account.dart';
-import 'package:unigo/screens/profile_screens/edit_password.dart';
-import 'package:unigo/screens/initial_screens/login_screen.dart';
-import 'package:unigo/screens/initial_screens/signup_screen.dart';
-import 'package:unigo/screens/initial_screens/splash_screen.dart';
-import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
