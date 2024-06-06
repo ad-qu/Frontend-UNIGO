@@ -42,8 +42,8 @@ class _ChallengeAddState extends State<ChallengeAdd> {
   );
   int selectedAnswerIndex = -1;
 
-  String longitudeController = "";
-  String latitudeController = "";
+  String longitude = "";
+  String latitude = "";
 
   @override
   void initState() {
@@ -165,14 +165,16 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Row(
                             children: [
-                              Text(
-                                "Recuerda que habrán 3 posibles respuestas.\nSolo una será la correcta.",
-                                style: GoogleFonts.inter(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.color,
-                                  fontSize: 12,
+                              Flexible(
+                                child: Text(
+                                  "Recuerda que habrán 3 posibles respuestas.\nSolo una será la correcta.",
+                                  style: GoogleFonts.inter(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ],
@@ -213,27 +215,58 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             );
                           }),
                         ),
+                        const SizedBox(height: 30),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  "A continuación, deberá seleccionar la ubicación del reto en el mapa.",
+                                  style: GoogleFonts.inter(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            final result = await Navigator.push(
                               context,
-                              PageTransition(
-                                type: PageTransitionType.topToBottom,
-                                child: const ChallengeLocationPicker(),
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ChallengeLocationPicker(),
                               ),
                             );
+
+                            if (result != null) {
+                              setState(() {
+                                latitude = result['latitude'].toString();
+                                longitude = result['longitude'].toString();
+                              });
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(30)),
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                             child: Icon(
-                              Icons.arrow_back_ios_new_rounded,
+                              Icons.map_outlined,
                               color: Theme.of(context).secondaryHeaderColor,
                             ),
                           ),
                         ),
+                        const SizedBox(height: 15),
+                        Text("Latitud: $latitude"),
+                        Text("Longitud: $longitude"),
                       ],
                     ),
                   ),

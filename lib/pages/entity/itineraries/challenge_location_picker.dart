@@ -24,10 +24,10 @@ class ChallengeLocationPicker extends StatelessWidget {
           onError: (e) => print(e),
           selectLocationButtonLeadingIcon: const Icon(Icons.check),
           onPicked: (pickedData) {
-            print(pickedData.latLong.latitude);
-            print(pickedData.latLong.longitude);
-            print(pickedData.address);
-            print(pickedData.addressData);
+            Navigator.pop(context, {
+              'latitude': pickedData.latLong.latitude,
+              'longitude': pickedData.latLong.longitude,
+            });
           },
           onChanged: (pickedData) {
             print(pickedData.latLong.latitude);
