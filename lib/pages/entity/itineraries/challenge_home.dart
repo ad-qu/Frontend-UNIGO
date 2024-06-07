@@ -188,7 +188,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                                 PageTransition(
                                   type: PageTransitionType.bottomToTop,
                                   child: ChallengeAdd(
-                                      idEntity: widget.idItinerary),
+                                      idItinerary: widget.idItinerary),
                                 ),
                               );
                             },

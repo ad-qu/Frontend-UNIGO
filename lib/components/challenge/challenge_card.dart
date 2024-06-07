@@ -89,33 +89,38 @@ class _ChallengeCardState extends State<ChallengeCard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 4, 0, 0),
-                  child: Container(
-                    width: 65,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(17.5),
-                      ),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(2, 2, 8, 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: const Color.fromARGB(255, 247, 199, 18),
-                            size: 12.5,
+                  padding: const EdgeInsets.fromLTRB(0, 4, 24, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 65,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(15),
                           ),
-                          SizedBox(width: 7.5),
-                          Text(
-                            "${widget.experience}",
-                            style: Theme.of(context).textTheme.titleMedium,
+                          color: Theme.of(context).cardColor,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(2, 2, 0, 6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Color.fromARGB(255, 247, 199, 18),
+                                size: 12.5,
+                              ),
+                              SizedBox(width: 7.5),
+                              Text(
+                                "${widget.experience}",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ],
