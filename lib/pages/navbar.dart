@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 
 //Screens
-import 'package:unigo/pages/map/home_screen.dart';
+import 'package:unigo/pages/map/map.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 import 'package:unigo/pages/discover/discover_home.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,7 +20,7 @@ class NavBar extends StatefulWidget {
 int _currentIndex = 0;
 
 final screens = [
-  const HomeScreen(),
+  const Map(),
   const DiscoverScreen(),
   const EntityScreen(),
   const ProfileScreen(),

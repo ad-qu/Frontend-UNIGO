@@ -1,8 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/pages/discover/discover_home.dart';
 import 'package:unigo/pages/entity/entity_add.dart';
+import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/pages/entity/entity_profile.dart';
 import 'package:unigo/pages/entity/entity_search.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
@@ -15,16 +18,21 @@ void main() async {
   await dotenv.load();
 }
 
-class DiscoverSearchScreen extends StatefulWidget {
-  const DiscoverSearchScreen({super.key});
+class EntityPeople extends StatefulWidget {
+  final String idEntity;
+
+  const EntityPeople({
+    super.key,
+    required this.idEntity,
+  });
 
   @override
-  State<DiscoverSearchScreen> createState() => _DiscoverSearchScreenState();
+  State<EntityPeople> createState() => _EntityPeopleState();
 }
 
-class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
+class _EntityPeopleState extends State<EntityPeople> {
   late bool _isLoading;
-  List<User> notFriendsList = [];
+  List<User> peopleList = [];
   List<User> filteredUsers = [];
   String? _idUser = "";
 
@@ -38,7 +46,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
     });
     super.initState();
     getUserInfo();
-    getNotFriends();
+    getFollowingPeople();
   }
 
   Future<void> getUserInfo() async {
@@ -48,11 +56,11 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
     });
   }
 
-  Future getNotFriends() async {
+  Future getFollowingPeople() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     String path =
-        'http://${dotenv.env['API_URL']}/user/friends/unfollowing/$_idUser';
+        'http://${dotenv.env['API_URL']}/entity/get/followingPeople/${widget.idEntity}';
     try {
       var response = await Dio().get(
         path,
@@ -67,10 +75,9 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
       var users = response.data as List;
 
       setState(() {
-        notFriendsList = users.map((user) => User.fromJson2(user)).toList();
-        notFriendsList =
-            notFriendsList.where((user) => user.active == true).toList();
-        filteredUsers = notFriendsList;
+        peopleList = users.map((user) => User.fromJson2(user)).toList();
+        peopleList = peopleList.where((user) => user.active == true).toList();
+        filteredUsers = peopleList;
       });
     } catch (e) {
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -88,7 +95,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
 
   void _runFilter(String enteredKeyword) {
     setState(() {
-      filteredUsers = notFriendsList.where((user) {
+      filteredUsers = peopleList.where((user) {
         final lowerCaseKeyword = enteredKeyword.toLowerCase();
         return user.username.toLowerCase().startsWith(lowerCaseKeyword) &&
             user.active == true;
@@ -217,8 +224,8 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                               Navigator.pop(
                                 context,
                                 PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const DiscoverScreen(),
+                                  type: PageTransitionType.topToBottom,
+                                  child: const EntityScreen(),
                                 ),
                               );
                             },
@@ -297,34 +304,87 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         child: CustomScrollView(
                           slivers: [
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  try {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: MyUserCard(
-                                        idUserSession: _idUser!,
-                                        idCardUser: filteredUsers[index].idUser,
-                                        attr1: notFriendsList[index]
-                                                .imageURL
-                                                ?.toString() ??
-                                            '',
-                                        attr2: filteredUsers[index].username,
-                                        attr3: filteredUsers[index]
-                                            .level
-                                            .toString(),
-                                        following: false,
+                            if (peopleList.isNotEmpty)
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (BuildContext context, int index) {
+                                    try {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: MyUserCard(
+                                          idUserSession: _idUser!,
+                                          idCardUser:
+                                              filteredUsers[index].idUser,
+                                          attr1: peopleList[index]
+                                                  .imageURL
+                                                  ?.toString() ??
+                                              '',
+                                          attr2: filteredUsers[index].username,
+                                          attr3: filteredUsers[index]
+                                              .level
+                                              .toString(),
+                                          following: false,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  childCount: filteredUsers.length,
+                                ),
+                              )
+                            else
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  height:
+                                      100, // Ajusta la altura según sea necesario
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: GoogleFonts.inter(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: 'Sorry... ',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                              WidgetSpan(
+                                                child: Icon(
+                                                  Icons
+                                                      .sentiment_dissatisfied_rounded,
+                                                  size:
+                                                      16, // Ajusta el tamaño del ícono según sea necesario
+                                                  color: Theme.of(context)
+                                                      .secondaryHeaderColor,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    '\nThis entity has no followers',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    );
-                                  } catch (e) {
-                                    return const SizedBox();
-                                  }
-                                },
-                                childCount: filteredUsers.length,
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

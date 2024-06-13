@@ -10,7 +10,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/startup/welcome.dart';
-import 'package:unigo/components/language_widgets/language_button.dart';
+import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/credential_screen/input_textfield.dart';
 import 'package:unigo/pages/startup/terms_of_use_privacy_policy.dart';
 

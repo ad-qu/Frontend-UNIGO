@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/pages/entity/entity_people.dart';
 import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
 import 'package:unigo/pages/entity/news/news_home.dart';
 
@@ -130,14 +131,25 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Icon(
-                          Icons.people_alt_rounded,
-                          color: Theme.of(context).secondaryHeaderColor,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: EntityPeople(idEntity: widget.idEntity),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Icon(
+                            Icons.people_alt_rounded,
+                            color: Theme.of(context).secondaryHeaderColor,
+                          ),
                         ),
                       ),
                     ],
@@ -153,7 +165,7 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                           imageProfile(),
                           const SizedBox(height: 37.5),
                           Container(
-                            height: 153.5,
+                            height: 172.5,
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: Theme.of(context).dividerColor,
@@ -167,27 +179,30 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        20, 20, 20, 0),
-                                    child: RichText(
-                                      textAlign: TextAlign.start,
-                                      text: TextSpan(
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelMedium,
-                                        children: [
-                                          TextSpan(
-                                            text: "${widget.attr2}.\n\n",
-                                          ),
-                                          TextSpan(
-                                            text: widget.attr3,
-                                          ),
-                                        ],
+                                  child: SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          20, 20, 20, 0),
+                                      child: RichText(
+                                        textAlign: TextAlign.start,
+                                        text: TextSpan(
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelMedium,
+                                          children: [
+                                            TextSpan(
+                                              text: "${widget.attr2}.\n\n",
+                                            ),
+                                            TextSpan(
+                                              text: widget.attr3,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
+                                const SizedBox(height: 20),
                               ],
                             ),
                           ),

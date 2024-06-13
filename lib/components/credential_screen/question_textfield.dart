@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class InputTextField extends StatefulWidget {
+class QuestionTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final bool obscureText;
   final Function(String)? function;
 
-  const InputTextField({
+  const QuestionTextField({
     super.key,
     required this.controller,
     required this.labelText,
@@ -16,17 +16,17 @@ class InputTextField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _InputTextFieldState createState() => _InputTextFieldState();
+  _QuestionTextFieldState createState() => _QuestionTextFieldState();
 }
 
-class _InputTextFieldState extends State<InputTextField> {
+class _QuestionTextFieldState extends State<QuestionTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
       obscureText: widget.obscureText,
       cursorWidth: 1,
-      maxLength: 12,
+      maxLength: 100,
       style: Theme.of(context).textTheme.labelMedium,
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(

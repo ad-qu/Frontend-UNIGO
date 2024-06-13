@@ -58,7 +58,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           },
         ),
       );
-
       var users = response.data as List;
 
       setState(() {
@@ -81,9 +80,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   }
 
   Future<void> _refreshFriends() async {
-    setState(() {
-      followingList = [];
-    });
     await getFriends();
   }
 

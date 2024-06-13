@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class DescriptionTextField extends StatefulWidget {
+class DescriptionShortTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final bool obscureText;
   final Function(String)? function;
 
-  const DescriptionTextField({
+  const DescriptionShortTextField({
     super.key,
     required this.controller,
     required this.labelText,
@@ -16,18 +16,18 @@ class DescriptionTextField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _DescriptionTextFieldState createState() => _DescriptionTextFieldState();
+  _DescriptionShortTextFieldState createState() =>
+      _DescriptionShortTextFieldState();
 }
 
-class _DescriptionTextFieldState extends State<DescriptionTextField> {
+class _DescriptionShortTextFieldState extends State<DescriptionShortTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
       textAlignVertical: TextAlignVertical.top,
-      minLines: 3,
-      maxLength: 200,
-      maxLines: 7,
+      maxLength: 100,
+      maxLines: 3,
       obscureText: widget.obscureText,
       cursorWidth: 1,
       style: Theme.of(context).textTheme.labelMedium,
@@ -52,6 +52,7 @@ class _DescriptionTextFieldState extends State<DescriptionTextField> {
         fillColor: Theme.of(context).cardColor,
         filled: true,
         alignLabelWithHint: true,
+        counterText: '',
       ),
     );
   }

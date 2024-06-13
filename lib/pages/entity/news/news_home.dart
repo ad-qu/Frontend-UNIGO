@@ -7,8 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/models/new.dart';
+import 'package:unigo/components/new/new_card.dart';
+import 'package:unigo/models/news.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/pages/entity/news/news_add.dart';
 
 void main() async {
   await dotenv.load();
@@ -47,7 +49,7 @@ class _NewsScreenState extends State<NewsScreen> {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     try {
-      var newsResponse = await Dio().get(
+      var response = await Dio().get(
         'http://${dotenv.env['API_URL']}/new/get/entityNews/${widget.idEntity}',
         options: Options(
           headers: {
@@ -56,17 +58,18 @@ class _NewsScreenState extends State<NewsScreen> {
           },
         ),
       );
+      print(response.data);
 
-      var news = newsResponse.data as List;
-
+      var list = response.data as List;
+      print(list);
       setState(() {
         print("asdasdasdasdadadasdasdad");
-        newsList = news.map((news) => New.fromJson2(news)).toList();
-
+        newsList = list.map((news) => New.fromJson2(news)).toList();
+        filteredNews = newsList;
         print("bbbbbbbbbbbbbbbbbbbbbbbbb");
       });
     } catch (e) {
-      print("ccccc");
+      print(e);
     }
   }
 
@@ -89,7 +92,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -101,7 +104,6 @@ class _NewsScreenState extends State<NewsScreen> {
                             child: const Icon(
                               Icons.arrow_back_ios_rounded,
                               color: Color.fromARGB(255, 227, 227, 227),
-                              size: 25,
                             ),
                           ),
                           const SizedBox(width: 25),
@@ -117,8 +119,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                 cursorWidth: 1,
                                 style: Theme.of(context).textTheme.labelMedium,
                                 decoration: InputDecoration(
-                                  hintText:
-                                      AppLocalizations.of(context)!.filter_box,
+                                  hintText: "Busca una noticia...",
                                   hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 138, 138, 138),
                                     fontSize: 14,
@@ -168,7 +169,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             child: const Icon(
                               Icons.add,
                               color: Color.fromARGB(255, 227, 227, 227),
-                              size: 25,
+                              size: 30,
                             ),
                           ),
                         ],
@@ -225,7 +226,6 @@ class _NewsScreenState extends State<NewsScreen> {
                               child: const Icon(
                                 Icons.arrow_back_ios_rounded,
                                 color: Color.fromARGB(255, 227, 227, 227),
-                                size: 25,
                               ),
                             ),
                           ),
@@ -242,8 +242,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                 cursorWidth: 1,
                                 style: Theme.of(context).textTheme.labelMedium,
                                 decoration: InputDecoration(
-                                  hintText:
-                                      AppLocalizations.of(context)!.filter_box,
+                                  hintText: "Busca una noticia...",
                                   hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 138, 138, 138),
                                     fontSize: 14,
@@ -285,15 +284,27 @@ class _NewsScreenState extends State<NewsScreen> {
                             ),
                           ),
                           const SizedBox(width: 25),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Color.fromARGB(255, 227, 227, 227),
-                              size: 30,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.bottomToTop,
+                                  child:
+                                      NewsAddScreen(idEntity: widget.idEntity),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color.fromARGB(255, 227, 227, 227),
+                                size: 30,
+                              ),
                             ),
                           ),
                         ],
@@ -308,20 +319,21 @@ class _NewsScreenState extends State<NewsScreen> {
                               delegate: SliverChildBuilderDelegate(
                                 (BuildContext context, int index) {
                                   try {
-                                    // return Padding(
-                                    //   padding: const EdgeInsets.symmetric(
-                                    //       horizontal: 16.0),
-                                    //   child: MyNewCard(
-                                    //     idEntity: filteredNews.idEntity,
-                                    //     attr1:
-                                    //         filteredNews.imageURL?.toString() ??
-                                    //             '',
-                                    //     attr2: filteredNews[index].name,
-                                    //     attr3: filteredNews.description,
-                                    //     attr4: filteredNews.verified,
-                                    //     attr5: filteredNews.admin,
-                                    //   ),
-                                    // );
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: NewCard(
+                                        idNew: filteredNews[index].idNew,
+                                        title: filteredNews[index].title,
+                                        description:
+                                            filteredNews[index].description,
+                                        imageURL: filteredNews[index]
+                                                .imageURL
+                                                ?.toString() ??
+                                            '',
+                                        date: filteredNews[index].date,
+                                      ),
+                                    );
                                   } catch (e) {
                                     return const SizedBox();
                                   }

@@ -4,22 +4,22 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import '../../components/home_screen/maps_widget.dart';
+import '../../components/map/map_gps.dart';
 import '../../components/home_screen/panel_widget.dart';
 
 void main() async {
   await dotenv.load();
 }
 
-class HomeScreen extends StatefulWidget {
+class Map extends StatefulWidget {
   //const LoginScreen({super.key, required String title});
-  const HomeScreen({super.key});
+  const Map({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<Map> createState() => _MapState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MapState extends State<Map> {
   final panelController = PanelController();
   bool isPanelOpen = false;
 
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
         topLeft: Radius.circular(22.5),
         topRight: Radius.circular(22.5),
       ),
-      body: MapScreen(),
+      body: MapGPS(),
     ));
   }
 }

@@ -23,7 +23,7 @@ class New {
 
   factory New.fromJson2(Map<String, dynamic> json) => New(
         idNew: json["_id"],
-        title: json["name"],
+        title: json["title"],
         description: json["description"],
         imageURL: json["imageURL"],
         date: json["date"],
@@ -33,7 +33,7 @@ class New {
 
   Map<String, dynamic> toJson() => {
         "_id": idNew,
-        "name": title,
+        "title": title,
         "description": description,
         "imageURL": imageURL,
         "date": date,

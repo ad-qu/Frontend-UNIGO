@@ -82,7 +82,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
           radius: 32.5,
           backgroundImage: imageURL != ""
               ? Image.network(imageURL).image
-              : AssetImage('images/default.png'),
+              : const AssetImage('images/default.png'),
         ),
         Positioned(
           bottom: 0,
@@ -95,7 +95,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
               );
             },
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 228, 174, 12),
                 shape: BoxShape.circle,
               ),

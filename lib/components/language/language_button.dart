@@ -1,6 +1,6 @@
 import 'package:popover/popover.dart';
 import 'package:flutter/material.dart';
-import 'package:unigo/components/language_widgets/language_menu.dart';
+import 'package:unigo/components/language/language_menu.dart';
 
 class LanguageButton extends StatelessWidget {
   const LanguageButton({super.key});

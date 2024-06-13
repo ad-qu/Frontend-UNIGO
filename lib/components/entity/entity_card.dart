@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unigo/pages/entity/entity_profile.dart';
+import 'package:unigo/pages/entity/entity_viewer.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 
 void main() async {
@@ -74,14 +75,23 @@ class _EntityCardState extends State<EntityCard> {
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: const ProfileScreen(),
+                child: EntityProfileViewer(
+                  idUserSession: widget.idUserSession,
+                  idEntity: widget.idEntity,
+                  attr1: widget.attr1,
+                  attr2: widget.attr2,
+                  attr3: widget.attr3,
+                  attr4: widget.attr4,
+                  attr5: widget.attr5,
+                  isFollowed: widget.isFollowed,
+                ),
               ),
             );
           }
         },
         child: Container(
           height:
-              155, // Aumentamos la altura para dar espacio al nuevo contenedor azul
+              175, // Aumentamos la altura para dar espacio al nuevo contenedor azul
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).dividerColor, width: 1),
             color: Theme.of(context).cardColor,
@@ -186,13 +196,13 @@ class _EntityCardState extends State<EntityCard> {
                 ),
               ),
               SizedBox(
-                height: 77.5,
+                height: 97.5,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(35, 0, 35, 17.5),
                   child: Center(
                     child: RichText(
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 3,
                       text: TextSpan(
                         style: Theme.of(context).textTheme.labelMedium,
                         children: [

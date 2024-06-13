@@ -31,7 +31,7 @@ class PanelWidget extends StatefulWidget {
 class _PanelWidgetState extends State<PanelWidget> {
   ChallengeD? challenge;
   List<ChallengeD> challengeList = <ChallengeD>[];
-  List<Itinerary> itinerarioList = <Itinerary>[];
+  List<Itinerary> itineraryList = <Itinerary>[];
   dynamic controller;
   dynamic panelController;
   String? _idUser;
@@ -67,7 +67,8 @@ class _PanelWidgetState extends State<PanelWidget> {
   Future getItinerarios() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/itinerario/get/all';
+    String path =
+        'http://${dotenv.env['API_URL']}/itinerary/get/userItineraries/$_idUser';
     var response = await Dio().get(path,
         options: Options(headers: {
           "Content-Type": "application/json",
@@ -75,10 +76,10 @@ class _PanelWidgetState extends State<PanelWidget> {
         }));
     var registros = response.data as List;
     for (var sub in registros) {
-      itinerarioList.add(Itinerary.fromJson(sub));
+      itineraryList.add(Itinerary.fromJson(sub));
     }
     setState(() {
-      itinerarioList = itinerarioList;
+      itineraryList = itineraryList;
     });
   }
 

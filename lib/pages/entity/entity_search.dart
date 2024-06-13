@@ -296,26 +296,23 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                               delegate: SliverChildBuilderDelegate(
                                 (BuildContext context, int index) {
                                   try {
-                                    final Entity currentEntity =
-                                        filteredEntities[index];
-                                    final bool isFollowed =
-                                        filteredEntities.any((entity) =>
-                                            entity.idEntity ==
-                                            currentEntity.idEntity);
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 16.0),
                                       child: EntityCard(
                                         idUserSession: _idUser!,
-                                        idEntity: currentEntity.idEntity,
-                                        attr1: currentEntity.imageURL
+                                        idEntity:
+                                            filteredEntities[index].idEntity,
+                                        attr1: filteredEntities[index]
+                                                .imageURL
                                                 ?.toString() ??
                                             '',
                                         attr2: filteredEntities[index].name,
-                                        attr3: currentEntity.description,
-                                        attr4: currentEntity.verified,
-                                        attr5: currentEntity.admin,
-                                        isFollowed: isFollowed,
+                                        attr3:
+                                            filteredEntities[index].description,
+                                        attr4: filteredEntities[index].verified,
+                                        attr5: filteredEntities[index].admin,
+                                        isFollowed: false,
                                       ),
                                     );
                                   } catch (e) {

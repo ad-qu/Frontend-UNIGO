@@ -126,7 +126,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 65,
+                        height: 257.5,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),
@@ -137,7 +137,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 65,
+                        height: 257.5,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),

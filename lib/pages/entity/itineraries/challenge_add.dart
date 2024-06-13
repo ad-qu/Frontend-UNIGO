@@ -6,6 +6,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:unigo/components/credential_screen/description_short_textfield.dart';
+import 'package:unigo/components/credential_screen/question_textfield.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +15,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/itineraries/challenge_location_picker.dart';
 import 'package:unigo/components/credential_screen/input_textfield.dart';
-import 'package:unigo/components/credential_screen/description_textfield.dart';
+import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
 void main() async {
   await dotenv.load();
@@ -183,12 +185,12 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         const SizedBox(height: 15),
 
                         //Descripción del reto
-                        DescriptionTextField(
+                        DescriptionShortTextField(
                           controller: descriptionController,
                           labelText: "Descripción",
                           obscureText: false,
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: 35),
 
                         // Instrucciones sobre las respuestas
                         Padding(
@@ -213,7 +215,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         const SizedBox(height: 15),
 
                         // Pregunta del reto
-                        InputTextField(
+                        QuestionTextField(
                           controller: questionController,
                           labelText: "Pregunta",
                           obscureText: false,
@@ -251,7 +253,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             );
                           }),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 25),
 
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
@@ -348,50 +350,49 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             ],
                           )
                         else
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              const MiniMap(
-                                latitude: 41.27561,
-                                longitude: 1.98722,
-                              ),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(17),
-                                child: Container(
-                                  height: 101,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(17),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.45),
-                                        spreadRadius: 1,
-                                        blurRadius: 15,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () async {
-                                          final result = await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ChallengeLocationPicker(),
-                                            ),
-                                          );
+                          GestureDetector(
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: const ChallengeLocationPicker(),
+                                ),
+                              );
 
-                                          if (result != null) {
-                                            setState(() {
-                                              latitude =
-                                                  result['latitude'].toString();
-                                              longitude = result['longitude']
-                                                  .toString();
-                                            });
-                                          }
-                                        },
-                                        child: Container(
+                              if (result != null) {
+                                setState(() {
+                                  latitude = result['latitude'].toString();
+                                  longitude = result['longitude'].toString();
+                                });
+                              }
+                            },
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                const MiniMap(
+                                  latitude: 41.27561,
+                                  longitude: 1.98722,
+                                ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(17),
+                                  child: Container(
+                                    height: 101,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(17),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.45),
+                                          spreadRadius: 1,
+                                          blurRadius: 15,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
                                           padding: const EdgeInsets.all(15),
                                           decoration: BoxDecoration(
                                             color: Theme.of(context).cardColor,
@@ -405,12 +406,12 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                                             size: 20,
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         const SizedBox(height: 30),
                       ],

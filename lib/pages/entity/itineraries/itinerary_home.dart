@@ -237,8 +237,6 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                           idItinerary:
                                               itineraryList[index].idItinerary,
                                           name: itineraryList[index].name,
-                                          description:
-                                              itineraryList[index].description,
                                           imageURL: itineraryList[index]
                                                   .imageURL
                                                   ?.toString() ??

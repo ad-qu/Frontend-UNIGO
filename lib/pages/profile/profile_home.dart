@@ -21,7 +21,7 @@ import 'package:unigo/components/input_widgets/edit_password_button.dart';
 import 'package:unigo/components/input_widgets/grey_button.dart';
 import 'package:unigo/components/input_widgets/history_button.dart';
 import 'package:unigo/components/input_widgets/log_out_button.dart';
-import 'package:unigo/components/language_widgets/language_button.dart';
+import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/theme/theme_provider.dart';
 import '../../models/user.dart' as user_ea;
 import '../../components/profile_screen/card_user_widget.dart';

@@ -21,7 +21,6 @@ class ItineraryCard extends StatefulWidget {
   final String? entityAdmin;
   final String idItinerary;
   final String name;
-  final String description;
   final String imageURL;
   final int number;
 
@@ -31,7 +30,6 @@ class ItineraryCard extends StatefulWidget {
     required this.entityAdmin,
     required this.idItinerary,
     required this.name,
-    required this.description,
     required this.imageURL,
     required this.number,
   });
@@ -134,11 +132,13 @@ class _ItineraryCardState extends State<ItineraryCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.name.length > 12
-                            ? '${widget.name.substring(0, 12)}...'
-                            : widget.name,
-                        style: Theme.of(context).textTheme.titleSmall,
+                      Flexible(
+                        child: Text(
+                          widget.name.length > 12
+                              ? '${widget.name.substring(0, 12)}...'
+                              : widget.name,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
                       widget.number == 1
                           ? Text(

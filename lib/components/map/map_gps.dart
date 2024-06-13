@@ -16,14 +16,14 @@ void main() async {
   await dotenv.load();
 }
 
-class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+class MapGPS extends StatefulWidget {
+  const MapGPS({super.key});
 
   @override
-  State<MapScreen> createState() => MapsWidget();
+  State<MapGPS> createState() => _MapGPSState();
 }
 
-class MapsWidget extends State<MapScreen> {
+class _MapGPSState extends State<MapGPS> {
   String? _idUser;
 
   ChallengeD? challenge;
@@ -239,7 +239,7 @@ class MapsWidget extends State<MapScreen> {
                   Navigator.of(context).pop();
                 },
                 style: ButtonStyle(
-                  overlayColor: MaterialStateColor.resolveWith(
+                  overlayColor: WidgetStateColor.resolveWith(
                     (states) =>
                         const Color.fromARGB(255, 222, 66, 66).withOpacity(0.2),
                   ),

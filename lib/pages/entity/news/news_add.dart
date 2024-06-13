@@ -6,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
+import 'package:unigo/components/credential_screen/description_very_big_textfield.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/credential_screen/input_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
@@ -20,18 +21,16 @@ void main() async {
   await dotenv.load();
 }
 
-class ItineraryAdd extends StatefulWidget {
+class NewsAddScreen extends StatefulWidget {
   final String idEntity;
-  const ItineraryAdd({
-    super.key,
-    required this.idEntity,
-  });
+
+  const NewsAddScreen({super.key, required this.idEntity});
 
   @override
-  State<ItineraryAdd> createState() => _ItineraryAddState();
+  State<NewsAddScreen> createState() => _NewsAddScreenState();
 }
 
-class _ItineraryAddState extends State<ItineraryAdd> {
+class _NewsAddScreenState extends State<NewsAddScreen> {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   String imageURL = "";
@@ -57,6 +56,11 @@ class _ItineraryAddState extends State<ItineraryAdd> {
     }
   }
 
+  String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    return formatter.format(date);
+  }
+
   @override
   void dispose() {
     nameController.dispose();
@@ -66,10 +70,14 @@ class _ItineraryAddState extends State<ItineraryAdd> {
 
   @override
   Widget build(BuildContext context) {
-    Future createEntity() async {
+    Future createNew() async {
       if (_tempImageFile != null) {
         await uploadImageToFirebase();
       }
+
+      DateTime now = DateTime.now();
+      String formattedDate = formatDate(now);
+
       final prefs = await SharedPreferences.getInstance();
       final String token = prefs.getString('token') ?? "";
       try {
@@ -82,12 +90,12 @@ class _ItineraryAddState extends State<ItineraryAdd> {
           ),
         );
         await Dio().post(
-          'http://${dotenv.env['API_URL']}/itinerary/add/${widget.idEntity}',
+          'http://${dotenv.env['API_URL']}/new/add/${widget.idEntity}',
           data: {
-            "name": nameController.text,
+            "title": nameController.text,
             "description": descriptionController.text,
             "imageURL": imageURL,
-            "number": 0,
+            "date": formattedDate,
           },
           options: Options(
             headers: {
@@ -118,7 +126,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                         padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
                         child: Center(
                           child: Text(
-                            "Crear itinerario",
+                            "Crear noticia",
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -143,7 +151,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                         child: const Icon(
                           Icons.close_rounded,
                           color: Color.fromARGB(255, 227, 227, 227),
-                          size: 25,
+                          size: 27.5,
                         ),
                       ),
                     ),
@@ -156,15 +164,23 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        imageItinerary(),
-                        const SizedBox(
-                          height: 37.5,
-                        ),
                         //Username textfield
                         InputTextField(
                             controller: nameController,
-                            labelText: "Nombre",
+                            labelText: "Titular",
                             obscureText: false),
+
+                        const SizedBox(height: 15),
+
+                        //Email address textfield
+                        DescriptionVeryBigTextField(
+                            controller: descriptionController,
+                            labelText: "Descripción de la noticia",
+                            obscureText: false),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        imageNew(),
                       ],
                     ),
                   ),
@@ -177,8 +193,8 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                   children: [
                     //Sign up button
                     RedButton(
-                      buttonText: "CREAR",
-                      onTap: createEntity,
+                      buttonText: "PUBLICAR",
+                      onTap: createNew,
                     ),
                   ],
                 ),
@@ -194,9 +210,9 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                       fontSize: 12,
                     ),
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text:
-                            "Recuerda que el itinerario que crees deberá cumplir los ",
+                            "Recuerda que la noticia que crees deberá cumplir los ",
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation2,
@@ -213,7 +229,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                             color: const Color.fromARGB(
                                 255, 204, 49, 49)), // Cambia el color a rojo
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text: " de UNIGO!",
                       ),
                     ],
@@ -227,21 +243,37 @@ class _ItineraryAddState extends State<ItineraryAdd> {
     );
   }
 
-  Widget imageItinerary() {
+  Widget imageNew() {
     return Stack(
       children: [
         _tempImageFile != null
-            ? CircleAvatar(
-                radius: 40,
-                backgroundImage: FileImage(_tempImageFile!),
+            ? Container(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: FileImage(_tempImageFile!),
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(17.5), // Radio de los bordes
+                ),
               )
-            : const CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/images/itinerary.png'),
+            : Container(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                    image: AssetImage('images/new.png'),
+                    fit: BoxFit.cover,
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(17.5), // Radio de los bordes
+                ),
               ),
         Positioned(
-          bottom: 0,
-          right: 0,
+          bottom: 2,
+          right: 2,
           child: InkWell(
             highlightColor: Colors.transparent,
             splashColor: Colors.transparent,
@@ -252,16 +284,16 @@ class _ItineraryAddState extends State<ItineraryAdd> {
               );
             },
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.amber,
-                shape: BoxShape.circle,
+                borderRadius: BorderRadius.circular(17.5),
               ),
               child: const Padding(
-                padding: EdgeInsets.all(6),
+                padding: EdgeInsets.fromLTRB(13, 13, 12, 12),
                 child: Icon(
                   Icons.camera_alt,
                   color: Colors.white,
-                  size: 20.0,
+                  size: 30,
                 ),
               ),
             ),
@@ -286,7 +318,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
       child: Column(
         children: [
           Text(
-            "Choose an itinerary photo",
+            "Choose an entity photo",
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
@@ -357,7 +389,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
 
       var snapshot = await storage
           .ref()
-          .child('itineraries/${nameController.text}/picture')
+          .child('news/${nameController.text}/picture')
           .putFile(_tempImageFile!);
       var downloadURL = await snapshot.ref.getDownloadURL();
 

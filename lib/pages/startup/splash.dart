@@ -101,11 +101,12 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             CircularProgressIndicator(
-                backgroundColor: Theme.of(context).hoverColor,
-                strokeCap: StrokeCap.round,
-                strokeWidth: 5,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).splashColor)),
+              backgroundColor: Theme.of(context).hoverColor,
+              strokeCap: StrokeCap.round,
+              strokeWidth: 5,
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(Theme.of(context).splashColor),
+            ),
             const Spacer(),
           ],
         ),

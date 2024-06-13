@@ -8,7 +8,7 @@ import 'package:unigo/components/credential_screen/animated_background.dart';
 import 'package:unigo/components/input_widgets/apple_button.dart';
 import 'package:unigo/components/input_widgets/google_button.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
-import 'package:unigo/components/language_widgets/language_button.dart';
+import 'package:unigo/components/language/language_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

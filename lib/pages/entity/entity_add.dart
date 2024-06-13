@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/credential_screen/input_textfield.dart';
-import 'package:unigo/components/credential_screen/description_textfield.dart';
+import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
 void main() async {
   await dotenv.load();
@@ -174,7 +174,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         const SizedBox(height: 15),
 
                         //Email address textfield
-                        DescriptionTextField(
+                        DescriptionBigTextField(
                             controller: descriptionController,
                             labelText: "Descripción",
                             obscureText: false),
@@ -310,7 +310,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).dividerColor,
+                  color: Theme.of(context).splashColor,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(
@@ -335,7 +335,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).dividerColor,
+                  color: Theme.of(context).splashColor,
                   shape: BoxShape.circle,
                 ),
                 child: InkWell(

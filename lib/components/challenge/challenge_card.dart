@@ -35,7 +35,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
       child: Container(
-        height: 256,
+        height: 277.5,
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           color: Theme.of(context).cardColor,
@@ -46,7 +46,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(27.5, 20, 27.5, 20),
+              padding: const EdgeInsets.fromLTRB(27.5, 25, 27.5, 17.5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -68,11 +68,11 @@ class _ChallengeCardState extends State<ChallengeCard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(27.5, 0, 27.5, 20),
+                    padding: const EdgeInsets.fromLTRB(27.5, 2.5, 27.5, 17.5),
                     child: Text(
                       widget.description,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      maxLines: 3,
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ),
@@ -89,7 +89,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 4, 24, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 8, 28, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -98,20 +98,23 @@ class _ChallengeCardState extends State<ChallengeCard> {
                         decoration: BoxDecoration(
                           borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(15),
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                            bottomRight: Radius.circular(15),
                           ),
                           color: Theme.of(context).cardColor,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(2, 2, 0, 6),
+                          padding: const EdgeInsets.fromLTRB(2, 4, 3.5, 5),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(
-                                Icons.star,
+                                Icons.star_rate_rounded,
                                 color: Color.fromARGB(255, 247, 199, 18),
-                                size: 12.5,
+                                size: 14.5,
                               ),
-                              SizedBox(width: 7.5),
+                              const SizedBox(width: 5.5),
                               Text(
                                 "${widget.experience}",
                                 style: Theme.of(context).textTheme.titleMedium,
