@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/itineraries/challenge_location_picker.dart';
-import 'package:unigo/components/credential_screen/input_textfield.dart';
+import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
 void main() async {
@@ -177,7 +177,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                     child: Column(
                       children: [
                         //Nombre del reto
-                        InputTextField(
+                        InputShortTextField(
                           controller: nameController,
                           labelText: "Nombre",
                           obscureText: false,
@@ -231,7 +231,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: InputTextField(
+                                    child: InputShortTextField(
                                       controller: answerControllers[index],
                                       labelText: "Respuesta ${index + 1}",
                                       obscureText: false,

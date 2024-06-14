@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:unigo/pages/navbar.dart';
@@ -14,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:unigo/components/language/language_button.dart';
-import 'package:unigo/components/credential_screen/input_textfield.dart';
+import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/password_textfield.dart';
 
 void main() async {
@@ -261,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     children: [
                       // Email address textfield
-                      InputTextField(
+                      InputBigTextField(
                         controller: emailController,
                         labelText: AppLocalizations.of(context)!.email,
                         obscureText: false,

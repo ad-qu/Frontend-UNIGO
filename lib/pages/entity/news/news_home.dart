@@ -17,11 +17,15 @@ void main() async {
 }
 
 class NewsScreen extends StatefulWidget {
+  final String idUserSession;
   final String idEntity;
+  final String admin;
 
   const NewsScreen({
     super.key,
+    required this.idUserSession,
     required this.idEntity,
+    required this.admin,
   });
 
   @override
@@ -58,15 +62,11 @@ class _NewsScreenState extends State<NewsScreen> {
           },
         ),
       );
-      print(response.data);
-
       var list = response.data as List;
-      print(list);
       setState(() {
-        print("asdasdasdasdadadasdasdad");
         newsList = list.map((news) => New.fromJson2(news)).toList();
         filteredNews = newsList;
-        print("bbbbbbbbbbbbbbbbbbbbbbbbb");
+        print(filteredNews.length);
       });
     } catch (e) {
       print(e);
@@ -160,18 +160,21 @@ class _NewsScreenState extends State<NewsScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 25),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(30),
+                          if (widget.idUserSession == widget.admin)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  size: 30,
+                                ),
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Color.fromARGB(255, 227, 227, 227),
-                              size: 30,
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -179,18 +182,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(37.5),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 200,
+                        height: 390,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),
@@ -283,30 +275,33 @@ class _NewsScreenState extends State<NewsScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 25),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child:
-                                      NewsAddScreen(idEntity: widget.idEntity),
+                          if (widget.idUserSession == widget.admin)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child: NewsAddScreen(
+                                        idEntity: widget.idEntity),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Color.fromARGB(255, 227, 227, 227),
+                                    size: 30,
+                                  ),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Color.fromARGB(255, 227, 227, 227),
-                                size: 30,
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -315,32 +310,78 @@ class _NewsScreenState extends State<NewsScreen> {
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         child: CustomScrollView(
                           slivers: [
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  try {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: NewCard(
-                                        idNew: filteredNews[index].idNew,
-                                        title: filteredNews[index].title,
-                                        description:
-                                            filteredNews[index].description,
-                                        imageURL: filteredNews[index]
-                                                .imageURL
-                                                ?.toString() ??
-                                            '',
-                                        date: filteredNews[index].date,
+                            if (filteredNews.isNotEmpty)
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  (BuildContext context, int index) {
+                                    try {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: NewCard(
+                                          idNew: filteredNews[index].idNew,
+                                          title: filteredNews[index].title,
+                                          description:
+                                              filteredNews[index].description,
+                                          imageURL: filteredNews[index]
+                                                  .imageURL
+                                                  ?.toString() ??
+                                              '',
+                                          date: filteredNews[index].date,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  childCount: filteredNews.length,
+                                ),
+                              )
+                            else
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  height:
+                                      100, // Ajusta la altura según sea necesario
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: GoogleFonts.inter(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'Esta entidad no tiene noticias ',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                              WidgetSpan(
+                                                child: Icon(
+                                                  Icons
+                                                      .sentiment_dissatisfied_rounded,
+                                                  size:
+                                                      16, // Ajusta el tamaño del ícono según sea necesario
+                                                  color: Theme.of(context)
+                                                      .secondaryHeaderColor,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    );
-                                  } catch (e) {
-                                    return const SizedBox();
-                                  }
-                                },
-                                childCount: filteredNews.length,
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

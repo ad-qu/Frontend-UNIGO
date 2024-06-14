@@ -8,13 +8,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:unigo/components/credential_screen/description_very_big_textfield.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/components/credential_screen/input_textfield.dart';
+import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
 void main() async {
@@ -165,7 +166,7 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                     child: Column(
                       children: [
                         //Username textfield
-                        InputTextField(
+                        InputBigTextField(
                             controller: nameController,
                             labelText: "Titular",
                             obscureText: false),

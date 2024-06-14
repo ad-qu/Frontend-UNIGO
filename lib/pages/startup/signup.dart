@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 import 'package:unigo/pages/startup/login.dart';
 import '../../components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
@@ -11,7 +12,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/language/language_button.dart';
-import 'package:unigo/components/credential_screen/input_textfield.dart';
+import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/pages/startup/terms_of_use_privacy_policy.dart';
 
 void main() async {
@@ -330,7 +331,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
-                              child: InputTextField(
+                              child: InputShortTextField(
                                 controller: nameController,
                                 labelText: AppLocalizations.of(context)!.name,
                                 obscureText: false,
@@ -338,7 +339,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             const SizedBox(width: 15),
                             Flexible(
-                              child: InputTextField(
+                              child: InputShortTextField(
                                 controller: surnameController,
                                 labelText:
                                     AppLocalizations.of(context)!.surname,
@@ -351,7 +352,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         const SizedBox(height: 15),
 
                         //Username textfield
-                        InputTextField(
+                        InputShortTextField(
                             controller: usernameController,
                             labelText: AppLocalizations.of(context)!.username,
                             obscureText: false),
@@ -359,7 +360,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         const SizedBox(height: 15),
 
                         //Email address textfield
-                        InputTextField(
+                        InputBigTextField(
                             controller: emailController,
                             labelText: AppLocalizations.of(context)!.email,
                             obscureText: false),

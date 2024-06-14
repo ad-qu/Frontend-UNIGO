@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/components/itinerary/itinerary_more_button.dart';
 import 'package:unigo/pages/entity/entity_profile.dart';
 import 'package:unigo/pages/entity/itineraries/challenge_home.dart';
 import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
@@ -132,27 +133,26 @@ class _ItineraryCardState extends State<ItineraryCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
-                        child: Text(
-                          widget.name.length > 12
-                              ? '${widget.name.substring(0, 12)}...'
-                              : widget.name,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            widget.name.length > 12
+                                ? '${widget.name.substring(0, 12)}...'
+                                : widget.name,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            '(${widget.number})',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
                       ),
-                      widget.number == 1
-                          ? Text(
-                              '${widget.number} challenge',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            )
-                          : Text(
-                              '${widget.number} challenges',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
                     ],
                   ),
                 ),
               ),
+              const ItineraryMoreButton(),
             ],
           ),
         ),

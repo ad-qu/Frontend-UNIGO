@@ -61,6 +61,7 @@ class _EntityCardState extends State<EntityCard> {
               PageTransition(
                 type: PageTransitionType.rightToLeft,
                 child: EntityProfileScreen(
+                  idUserSession: widget.idUserSession,
                   idEntity: widget.idEntity,
                   attr1: widget.attr1,
                   attr2: widget.attr2,

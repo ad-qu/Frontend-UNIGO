@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class DescriptionVeryBigTextField extends StatefulWidget {
+class InputBigTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final bool obscureText;
   final Function(String)? function;
 
-  const DescriptionVeryBigTextField({
+  const InputBigTextField({
     super.key,
     required this.controller,
     required this.labelText,
@@ -17,20 +16,14 @@ class DescriptionVeryBigTextField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _DescriptionVeryBigTextFieldState createState() =>
-      _DescriptionVeryBigTextFieldState();
+  _InputBigTextFieldState createState() => _InputBigTextFieldState();
 }
 
-class _DescriptionVeryBigTextFieldState
-    extends State<DescriptionVeryBigTextField> {
+class _InputBigTextFieldState extends State<InputBigTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
-      textAlignVertical: TextAlignVertical.top,
-      minLines: 3,
-      maxLines: 5,
-      expands: false,
       obscureText: widget.obscureText,
       cursorWidth: 1,
       style: Theme.of(context).textTheme.labelMedium,
@@ -54,7 +47,7 @@ class _DescriptionVeryBigTextFieldState
         floatingLabelBehavior: FloatingLabelBehavior.never,
         fillColor: Theme.of(context).cardColor,
         filled: true,
-        alignLabelWithHint: true,
+        counterText: '',
       ),
     );
   }

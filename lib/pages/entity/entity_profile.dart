@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:unigo/pages/entity/entity_edit.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/entity_people.dart';
 import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 
 class EntityProfileScreen extends StatefulWidget {
+  final String idUserSession;
   final String idEntity;
   final String attr1;
   final String attr2;
@@ -24,6 +26,7 @@ class EntityProfileScreen extends StatefulWidget {
 
   const EntityProfileScreen({
     super.key,
+    required this.idUserSession,
     required this.idEntity,
     required this.attr1,
     required this.attr2,
@@ -137,7 +140,9 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                             context,
                             PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: EntityPeople(idEntity: widget.idEntity),
+                              child: EntityPeople(
+                                  idEntity: widget.idEntity,
+                                  admin: widget.attr5!),
                             ),
                           );
                         },
@@ -215,8 +220,10 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                     context,
                                     PageTransition(
                                       type: PageTransitionType.rightToLeft,
-                                      child:
-                                          NewsScreen(idEntity: widget.idEntity),
+                                      child: NewsScreen(
+                                          idUserSession: widget.idUserSession,
+                                          idEntity: widget.idEntity,
+                                          admin: widget.attr5!),
                                     ),
                                   );
                                 },
@@ -381,40 +388,62 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Theme.of(context).dividerColor, width: 1),
-                        color: Theme.of(context).dividerColor,
-                        borderRadius: BorderRadius.circular(17.5)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(1),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.settings,
-                                size: 20,
-                                color: Theme.of(context).secondaryHeaderColor,
-                              ),
-                              const SizedBox(
-                                width: 17,
-                              ),
-                              Text(
-                                "Ajustes",
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                            ],
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.bottomToTop,
+                            child: EntityEditScreen(
+                              idEntity: widget.idEntity,
+                              name: widget.attr2,
+                              description: widget.attr3,
+                              imageURL: widget.attr1,
+                            ),
                           ),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 18,
-                            color: Theme.of(context).secondaryHeaderColor,
-                          ),
-                        ],
+                        );
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Theme.of(context).dividerColor, width: 0),
+                          color: Theme.of(context).dividerColor,
+                          borderRadius: BorderRadius.circular(17.5)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 30, 0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.settings,
+                                    size: 20,
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                  ),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Text(
+                                    "Ajustes",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color.fromARGB(
+                                          255, 227, 227, 227),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

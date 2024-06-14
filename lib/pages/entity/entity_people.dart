@@ -20,10 +20,12 @@ void main() async {
 
 class EntityPeople extends StatefulWidget {
   final String idEntity;
+  final String admin;
 
   const EntityPeople({
     super.key,
     required this.idEntity,
+    required this.admin,
   });
 
   @override
@@ -71,15 +73,19 @@ class _EntityPeopleState extends State<EntityPeople> {
           },
         ),
       );
-
+      print("asd");
       var users = response.data as List;
-
+      print(users);
       setState(() {
         peopleList = users.map((user) => User.fromJson2(user)).toList();
         peopleList = peopleList.where((user) => user.active == true).toList();
+        peopleList.removeWhere((user) => user.idUser == widget.admin);
+
         filteredUsers = peopleList;
       });
     } catch (e) {
+      print("111111");
+
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       //   elevation: 0,
       //   behavior: SnackBarBehavior.floating,
@@ -355,7 +361,8 @@ class _EntityPeopleState extends State<EntityPeople> {
                                             ),
                                             children: [
                                               TextSpan(
-                                                text: 'Sorry... ',
+                                                text:
+                                                    'This entity has no followers ',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .titleMedium,
@@ -369,13 +376,6 @@ class _EntityPeopleState extends State<EntityPeople> {
                                                   color: Theme.of(context)
                                                       .secondaryHeaderColor,
                                                 ),
-                                              ),
-                                              TextSpan(
-                                                text:
-                                                    '\nThis entity has no followers',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
                                               ),
                                             ],
                                           ),

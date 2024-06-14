@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class InputTextField extends StatefulWidget {
+class InputShortTextField extends StatefulWidget {
   final TextEditingController controller;
   final String labelText;
   final bool obscureText;
   final Function(String)? function;
 
-  const InputTextField({
+  const InputShortTextField({
     super.key,
     required this.controller,
     required this.labelText,
@@ -16,10 +16,10 @@ class InputTextField extends StatefulWidget {
 
   @override
   // ignore: library_private_types_in_public_api
-  _InputTextFieldState createState() => _InputTextFieldState();
+  _InputShortTextFieldState createState() => _InputShortTextFieldState();
 }
 
-class _InputTextFieldState extends State<InputTextField> {
+class _InputShortTextFieldState extends State<InputShortTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(

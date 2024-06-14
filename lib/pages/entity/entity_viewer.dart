@@ -10,7 +10,7 @@ import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
 import 'package:unigo/pages/entity/news/news_home.dart';
 
 class EntityProfileViewer extends StatefulWidget {
-  final String? idUserSession;
+  final String idUserSession;
   final String idEntity;
   final String attr1;
   final String attr2;
@@ -61,15 +61,6 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
   Future followOrUnfollow() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    print("aaa");
-
-    print(widget.idUserSession);
-    print("aaa");
-
-    print(widget.idEntity);
-    print("aaa");
-
-    print(followParameter);
     try {
       if (followParameter == true) {
         await Dio().post(
@@ -191,8 +182,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.rightToLeft,
-                                    child:
-                                        EntityPeople(idEntity: widget.idEntity),
+                                    child: EntityPeople(
+                                        idEntity: widget.idEntity,
+                                        admin: widget.attr5!),
                                   ),
                                 );
                               },
@@ -274,7 +266,10 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                             type:
                                                 PageTransitionType.rightToLeft,
                                             child: NewsScreen(
-                                                idEntity: widget.idEntity),
+                                                idUserSession:
+                                                    widget.idUserSession,
+                                                idEntity: widget.idEntity,
+                                                admin: widget.attr5!),
                                           ),
                                         );
                                       },

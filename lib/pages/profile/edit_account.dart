@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 
 import 'package:unigo/pages/navbar.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/input_widgets/red_button.dart';
-import 'package:unigo/components/credential_screen/input_textfield.dart';
+import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -256,7 +257,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                 child: Column(
                                   children: [
                                     //Name textfield
-                                    InputTextField(
+                                    InputBigTextField(
                                         controller: nameController,
                                         labelText: "$_name",
                                         obscureText: false),
@@ -264,7 +265,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                     const SizedBox(height: 10),
 
                                     //Surname textfield
-                                    InputTextField(
+                                    InputBigTextField(
                                         controller: surnameController,
                                         labelText: "$_surname",
                                         obscureText: false),
@@ -272,7 +273,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                                     const SizedBox(height: 10),
 
                                     //Username textfield
-                                    InputTextField(
+                                    InputBigTextField(
                                         controller: usernameController,
                                         labelText: "$_username",
                                         obscureText: false),

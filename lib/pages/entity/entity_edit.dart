@@ -12,7 +12,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
@@ -20,14 +19,24 @@ void main() async {
   await dotenv.load();
 }
 
-class EntityAddScreen extends StatefulWidget {
-  const EntityAddScreen({super.key});
+class EntityEditScreen extends StatefulWidget {
+  final String idEntity;
+  final String name;
+  final String description;
+  final String? imageURL;
+  const EntityEditScreen({
+    super.key,
+    required this.idEntity,
+    required this.name,
+    required this.description,
+    required this.imageURL,
+  });
 
   @override
-  State<EntityAddScreen> createState() => _EntityAddScreenState();
+  State<EntityEditScreen> createState() => _EntityEditScreenState();
 }
 
-class _EntityAddScreenState extends State<EntityAddScreen> {
+class _EntityEditScreenState extends State<EntityEditScreen> {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   String? _idUser = "";
@@ -87,12 +96,11 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
           ),
         );
         await Dio().post(
-          'http://${dotenv.env['API_URL']}/entity/add',
+          'http://${dotenv.env['API_URL']}/entity/update/${widget.idEntity}',
           data: {
             "name": nameController.text,
             "description": descriptionController.text,
             "imageURL": imageURL,
-            "admin": _idUser,
           },
           options: Options(
             headers: {
@@ -123,7 +131,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
                         child: Center(
                           child: Text(
-                            "Crear entidad",
+                            "Editar entidad",
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -168,7 +176,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         //Username textfield
                         InputShortTextField(
                             controller: nameController,
-                            labelText: "Nombre",
+                            labelText: widget.name,
                             obscureText: false),
 
                         const SizedBox(height: 15),
@@ -176,7 +184,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         //Email address textfield
                         DescriptionBigTextField(
                             controller: descriptionController,
-                            labelText: "Descripción",
+                            labelText: widget.description,
                             obscureText: false),
                       ],
                     ),
@@ -190,7 +198,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                   children: [
                     //Sign up button
                     RedButton(
-                      buttonText: "CREAR",
+                      buttonText: "MODIFICAR",
                       onTap: createEntity,
                     ),
                   ],
@@ -208,8 +216,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                     ),
                     children: [
                       TextSpan(
-                        text:
-                            "Recuerda que la entidad que crees deberá cumplir los ",
+                        text: "La entidad que modifiques deberá cumplir los ",
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation2,
@@ -248,9 +255,11 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                 radius: 40,
                 backgroundImage: FileImage(_tempImageFile!),
               )
-            : const CircleAvatar(
+            : CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('images/entity.png'),
+                backgroundImage: widget.imageURL != ""
+                    ? Image.network(widget.imageURL!).image
+                    : const AssetImage('images/entity.png'),
               ),
         Positioned(
           bottom: 0,
