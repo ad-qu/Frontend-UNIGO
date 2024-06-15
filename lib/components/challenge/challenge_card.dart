@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:unigo/components/challenge/challenge_menu.dart';
+import 'package:unigo/components/challenge/challenge_more_button.dart';
+import 'package:unigo/components/itinerary/itinerary_menu.dart';
 
 class ChallengeCard extends StatefulWidget {
   final String idChallenge;
@@ -35,7 +38,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
       child: Container(
-        height: 277.5,
+        height: 300.5,
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           color: Theme.of(context).cardColor,
@@ -46,11 +49,13 @@ class _ChallengeCardState extends State<ChallengeCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(27.5, 25, 27.5, 17.5),
+              padding: const EdgeInsets.fromLTRB(50.5, 7.5, 5.5, 0),
+
+              //  padding: const EdgeInsets.fromLTRB(27.5, 25, 27.5, 17.5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Flexible(
+                  Expanded(
                     child: Text(
                       widget.name,
                       overflow: TextOverflow.ellipsis,
@@ -59,6 +64,8 @@ class _ChallengeCardState extends State<ChallengeCard> {
                       textAlign: TextAlign.center,
                     ),
                   ),
+                  const ChallengeMoreButton(),
+                  // const ChallengeMoreButton(),
                 ],
               ),
             ),

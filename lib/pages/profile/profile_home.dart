@@ -126,11 +126,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: Theme.of(context)
                                   .scaffoldBackgroundColor, // Fondo mientras se carga la imagen
                               child: CircularProgressIndicator(
-                                  backgroundColor: Theme.of(context).hoverColor,
-                                  strokeCap: StrokeCap.round,
-                                  strokeWidth: 5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).splashColor)),
+                                backgroundColor: Theme.of(context).hoverColor,
+                                strokeCap: StrokeCap.round,
+                                strokeWidth: 5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).splashColor),
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
                             ),
                           );
                         }

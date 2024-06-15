@@ -29,8 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigatetohome() async {
-    // Esperar 2000 milisegundos (2 segundos)
-    await Future.delayed(const Duration(milliseconds: 2000), () {});
+    await Future.delayed(const Duration(milliseconds: 1500), () {});
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString("idUser");

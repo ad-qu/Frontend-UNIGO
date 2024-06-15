@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../components/map/map_gps.dart';
-import '../../components/home_screen/panel_widget.dart';
+import '../../components/home_screen/sliding_up_panel.dart';
 
 void main() async {
   await dotenv.load();
@@ -21,7 +21,6 @@ class Map extends StatefulWidget {
 
 class _MapState extends State<Map> {
   final panelController = PanelController();
-  bool isPanelOpen = false;
 
   @override
   void initState() {
@@ -46,14 +45,8 @@ class _MapState extends State<Map> {
           topLeft: Radius.circular(22.5),
           topRight: Radius.circular(22.5),
         ),
-        child: PanelWidget(
+        child: SlidingUpPanelWidget(
           controller: controller,
-          panelController: panelController,
-          // onPanelStateChanged: (bool isOpen) {
-          //   setState(() {
-          //     isPanelOpen = isOpen;
-          //   });
-          // },
         ),
       ),
       borderRadius: const BorderRadius.only(

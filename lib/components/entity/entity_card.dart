@@ -131,14 +131,22 @@ class _EntityCardState extends State<EntityCard> {
                                             .cardColor, // Fondo rojo mientras se carga la imagen
                                         child: Center(
                                           child: CircularProgressIndicator(
-                                              backgroundColor:
-                                                  Theme.of(context).hoverColor,
-                                              strokeCap: StrokeCap.round,
-                                              strokeWidth: 5,
-                                              valueColor: AlwaysStoppedAnimation<
-                                                  Color>(Theme.of(
-                                                      context)
-                                                  .splashColor)), // Indicador de progreso mientras se carga
+                                            backgroundColor:
+                                                Theme.of(context).hoverColor,
+                                            strokeCap: StrokeCap.round,
+                                            strokeWidth: 5,
+                                            valueColor: AlwaysStoppedAnimation<
+                                                    Color>(
+                                                Theme.of(context).splashColor),
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes!
+                                                : null,
+                                          ), // Indicador de progreso mientras se carga
                                         ),
                                       );
                                     }

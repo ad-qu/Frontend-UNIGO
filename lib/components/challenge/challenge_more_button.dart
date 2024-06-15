@@ -1,9 +1,11 @@
 import 'package:popover/popover.dart';
 import 'package:flutter/material.dart';
+import 'package:unigo/components/challenge/challenge_menu.dart';
 import 'package:unigo/components/itinerary/itinerary_menu.dart';
+import 'package:unigo/components/language/language_menu.dart';
 
-class ItineraryMoreButton extends StatelessWidget {
-  const ItineraryMoreButton({super.key});
+class ChallengeMoreButton extends StatelessWidget {
+  const ChallengeMoreButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +14,9 @@ class ItineraryMoreButton extends StatelessWidget {
         onTap: () {
           showPopover(
             context: context,
-            bodyBuilder: (context) => const ItineraryMenu(),
-            width: 100,
-            height: 81,
+            bodyBuilder: (context) => const ChallengeMenu(),
+            width: 125,
+            height: 122,
             direction: PopoverDirection.bottom,
             contentDyOffset: -7.5,
             arrowHeight: 10,
@@ -30,7 +32,7 @@ class ItineraryMoreButton extends StatelessWidget {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(30)),
           child: Icon(
-            Icons.more_vert_rounded,
+            Icons.more_horiz_rounded,
             color: Theme.of(context).secondaryHeaderColor,
           ),
         ),

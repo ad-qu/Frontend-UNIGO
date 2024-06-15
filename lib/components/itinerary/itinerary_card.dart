@@ -104,14 +104,21 @@ class _ItineraryCardState extends State<ItineraryCard> {
                                       .cardColor, // Fondo rojo mientras se carga la imagen
                                   child: Center(
                                     child: CircularProgressIndicator(
-                                        backgroundColor:
-                                            Theme.of(context).hoverColor,
-                                        strokeCap: StrokeCap.round,
-                                        strokeWidth: 5,
-                                        valueColor: AlwaysStoppedAnimation<
-                                            Color>(Theme.of(
-                                                context)
-                                            .splashColor)), // Indicador de progreso mientras se carga
+                                      backgroundColor:
+                                          Theme.of(context).hoverColor,
+                                      strokeCap: StrokeCap.round,
+                                      strokeWidth: 5,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Theme.of(context).splashColor),
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ), // Indicador de progreso mientras se carga
                                   ),
                                 );
                               }
@@ -152,7 +159,10 @@ class _ItineraryCardState extends State<ItineraryCard> {
                   ),
                 ),
               ),
-              const ItineraryMoreButton(),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 4.5, 0),
+                child: ItineraryMoreButton(),
+              ),
             ],
           ),
         ),

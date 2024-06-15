@@ -8,6 +8,7 @@ class Challenge {
     this.question,
     required this.experience,
     required this.itinerary,
+    this.imageURL,
   });
 
   final String idChallenge;
@@ -18,6 +19,7 @@ class Challenge {
   final List<String>? question;
   final int experience;
   final String itinerary;
+  final String? imageURL;
 
   factory Challenge.fromJson(Map<String, dynamic> json) => Challenge(
         idChallenge: json["_id"],
@@ -32,6 +34,7 @@ class Challenge {
         ),
         experience: json["experience"],
         itinerary: json["itinerary"],
+        imageURL: json["imageURL"],
       );
 
   factory Challenge.fromJson2(Map<String, dynamic> json) => Challenge(
@@ -47,6 +50,7 @@ class Challenge {
         ),
         experience: json["experience"],
         itinerary: json["itinerary"],
+        imageURL: json["imageURL"],
       );
 
   get foto => null;
@@ -60,5 +64,6 @@ class Challenge {
         "question": question,
         "experience": experience,
         "itinerary": itinerary,
+        "imageURL": imageURL,
       };
 }
