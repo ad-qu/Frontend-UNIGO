@@ -23,7 +23,7 @@ class EntityCard extends StatefulWidget {
   final String attr3;
   final String? attr4;
   final bool isFollowed;
-  final String? attr5;
+  final String attr5;
 
   const EntityCard(
       {super.key,

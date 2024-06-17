@@ -22,7 +22,7 @@ class EntityProfileScreen extends StatefulWidget {
   final String attr2;
   final String attr3;
   final String? attr4;
-  final String? attr5;
+  final String attr5;
 
   const EntityProfileScreen({
     super.key,

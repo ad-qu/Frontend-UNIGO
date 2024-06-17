@@ -21,7 +21,7 @@ void main() async {
 
 class ItineraryHome extends StatefulWidget {
   final String idEntity;
-  final String? admin;
+  final String admin;
 
   const ItineraryHome({super.key, required this.idEntity, required this.admin});
 
@@ -70,7 +70,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
       );
 
       var list = response.data as List;
-
+      print(list);
       setState(() {
         itineraryList =
             list.map((itinerary) => Itinerary.fromJson2(itinerary)).toList();

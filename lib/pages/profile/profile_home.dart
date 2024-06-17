@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return child; // La imagen ha terminado de cargar
                         } else {
                           return Padding(
-                            padding: const EdgeInsets.all(2.75),
+                            padding: const EdgeInsets.all(2.5),
                             child: Container(
                               color: Theme.of(context)
                                   .scaffoldBackgroundColor, // Fondo mientras se carga la imagen

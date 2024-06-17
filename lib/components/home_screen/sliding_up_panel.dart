@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:unigo/components/home_screen/card_challenge_widget.dart';
 import 'package:unigo/components/itinerary/itinerary_card.dart';
+import 'package:unigo/components/itinerary/itinerary_card_home.dart';
 import 'package:unigo/models/challenge.dart';
 import 'package:unigo/models/itinerary.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -105,32 +106,10 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
               color: Theme.of(context).dividerColor,
               height: 0.05,
             ),
-            const SizedBox(height: 45),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Itinerarios ",
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.titleSmall?.color,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  "(${itineraryList.length})",
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).textTheme.titleSmall?.color,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 25),
             Expanded(
               child: PageView(
                 controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   buildItinerary(context, itineraryList, widget.controller,
                       _idUser, _pageController),
@@ -149,32 +128,63 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
 @override
 Widget buildItinerary(BuildContext context, List<Itinerary> itineraryList,
     ScrollController sc, idUser, PageController pageController) {
-  return CustomScrollView(
-    controller: sc,
-    slivers: [
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return GestureDetector(
-                  onTap: () {
-                    pageController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
+  return Column(
+    children: [
+      const SizedBox(height: 45),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Itinerarios ",
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.titleSmall?.color,
+              fontSize: 18,
+            ),
+          ),
+          Text(
+            "(${itineraryList.length})",
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).textTheme.titleSmall?.color,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 25),
+      Expanded(
+        child: CustomScrollView(
+          controller: sc,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: ItineraryCardHome(
+                        idUser: idUser,
+                        idItinerary: itineraryList[index].idItinerary,
+                        name: itineraryList[index].name,
+                        imageURL:
+                            itineraryList[index].imageURL?.toString() ?? '',
+                        entityAdmin: "",
+                        number: itineraryList[index].number,
+                      ),
                     );
                   },
-                  child: ItineraryCard(
-                    idUser: idUser,
-                    entityAdmin: "",
-                    idItinerary: itineraryList[index].idItinerary,
-                    name: itineraryList[index].name,
-                    imageURL: itineraryList[index].imageURL?.toString() ?? '',
-                    number: itineraryList[index].number,
-                  ));
-            },
-            childCount: itineraryList.length,
-          ),
+                  childCount: itineraryList.length,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     ],
@@ -184,30 +194,64 @@ Widget buildItinerary(BuildContext context, List<Itinerary> itineraryList,
 @override
 Widget buildChallenge(BuildContext context, List<Itinerary> itineraryList,
     ScrollController sc, idUser, PageController pageController) {
-  return CustomScrollView(
-    controller: sc,
-    slivers: [
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  pageController.nextPage(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                child: Container(
-                  width: 54,
-                  height: 59,
-                  color: Colors.amber,
-                ),
-              );
-            },
-            childCount: itineraryList.length,
+  return Column(
+    children: [
+      const SizedBox(height: 45),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Retos ",
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.titleSmall?.color,
+              fontSize: 18,
+            ),
           ),
+          Text(
+            "(${itineraryList.length})",
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).textTheme.titleSmall?.color,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 25),
+      Expanded(
+        child: CustomScrollView(
+          controller: sc,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Container(color: Colors.green, height: 50),
+                      // child: ItineraryCard(
+                      //   idUser: idUser,
+                      //   entityAdmin: "",
+                      //   idItinerary: itineraryList[index].idItinerary,
+                      //   name: itineraryList[index].name,
+                      //   imageURL:
+                      //       itineraryList[index].imageURL?.toString() ?? '',
+                      //   number: itineraryList[index].number,
+                      // ),
+                    );
+                  },
+                  childCount: itineraryList.length,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     ],
