@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:unigo/components/challenge/challenge_card.dart';
+import 'package:unigo/components/challenge/challenge_card_home.dart';
 import 'package:unigo/components/home_screen/card_challenge_widget.dart';
 import 'package:unigo/components/itinerary/itinerary_card.dart';
 import 'package:unigo/components/itinerary/itinerary_card_home.dart';
@@ -30,14 +32,16 @@ class SlidingUpPanelWidget extends StatefulWidget {
 class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
   String? _idUser;
   List<Itinerary> itineraryList = <Itinerary>[];
+  List<Challenge> challengeList = <Challenge>[];
+  List<Challenge> filteredChallengeList = <Challenge>[];
   final PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
-
     getUserInfo();
     getItineraries();
+    getChallenges();
   }
 
   Future<void> getUserInfo() async {
@@ -47,7 +51,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
     });
   }
 
-  Future getItineraries() async {
+  Future<void> getItineraries() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     String path =
@@ -68,9 +72,45 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
             list.map((itinerary) => Itinerary.fromJson2(itinerary)).toList();
       });
     } catch (e) {
-      // ignore: avoid_print
       print("Error $e");
     }
+  }
+
+  Future<void> getChallenges() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString('token') ?? "";
+    String path =
+        'http://${dotenv.env['API_URL']}/challenge/get/availableChallenges/$_idUser';
+    try {
+      var response = await Dio().get(
+        path,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+      var list = response.data as List;
+      setState(() {
+        challengeList =
+            list.map((challenge) => Challenge.fromJson2(challenge)).toList();
+      });
+    } catch (e) {
+      print("Error $e");
+    }
+  }
+
+  void filterChallengesByItinerary(String itineraryId) {
+    setState(() {
+      filteredChallengeList = challengeList
+          .where((challenge) => challenge.itinerary == itineraryId)
+          .toList();
+    });
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   Widget buildDragHandle(context) => GestureDetector(
@@ -113,8 +153,8 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
                 children: [
                   buildItinerary(context, itineraryList, widget.controller,
                       _idUser, _pageController),
-                  buildChallenge(context, itineraryList, widget.controller,
-                      _idUser, _pageController),
+                  buildChallenge(context, filteredChallengeList,
+                      widget.controller, _idUser, _pageController),
                 ],
               ),
             ),
@@ -123,150 +163,163 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
       ),
     );
   }
-}
 
-@override
-Widget buildItinerary(BuildContext context, List<Itinerary> itineraryList,
-    ScrollController sc, idUser, PageController pageController) {
-  return Column(
-    children: [
-      const SizedBox(height: 45),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Itinerarios ",
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).textTheme.titleSmall?.color,
-              fontSize: 18,
+  Widget buildItinerary(BuildContext context, List<Itinerary> itineraryList,
+      ScrollController sc, String? idUser, PageController pageController) {
+    return Column(
+      children: [
+        const SizedBox(height: 45),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Itinerarios ",
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.titleSmall?.color,
+                fontSize: 18,
+              ),
             ),
-          ),
-          Text(
-            "(${itineraryList.length})",
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).textTheme.titleSmall?.color,
-              fontSize: 18,
+            Text(
+              "(${itineraryList.length})",
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.normal,
+                color: Theme.of(context).textTheme.titleSmall?.color,
+                fontSize: 18,
+              ),
             ),
+          ],
+        ),
+        const SizedBox(height: 37.5),
+        Expanded(
+          child: CustomScrollView(
+            controller: sc,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          filterChallengesByItinerary(
+                              itineraryList[index].idItinerary);
+                        },
+                        child: ItineraryCardHome(
+                          idUser: idUser,
+                          idItinerary: itineraryList[index].idItinerary,
+                          name: itineraryList[index].name,
+                          imageURL:
+                              itineraryList[index].imageURL?.toString() ?? '',
+                          entityAdmin: "",
+                          number: itineraryList[index].number,
+                        ),
+                      );
+                    },
+                    childCount: itineraryList.length,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      const SizedBox(height: 25),
-      Expanded(
-        child: CustomScrollView(
-          controller: sc,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: ItineraryCardHome(
-                        idUser: idUser,
-                        idItinerary: itineraryList[index].idItinerary,
-                        name: itineraryList[index].name,
-                        imageURL:
-                            itineraryList[index].imageURL?.toString() ?? '',
-                        entityAdmin: "",
-                        number: itineraryList[index].number,
+        ),
+      ],
+    );
+  }
+
+  Widget buildChallenge(BuildContext context, List<Challenge> challengeList,
+      ScrollController sc, String? idUser, PageController pageController) {
+    return Column(
+      children: [
+        const SizedBox(height: 30),
+        Row(
+          children: [
+            const SizedBox(width: 15),
+            GestureDetector(
+              onTap: () {
+                pageController.previousPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 70, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Retos ",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleSmall?.color,
+                        fontSize: 18,
                       ),
-                    );
-                  },
-                  childCount: itineraryList.length,
+                    ),
+                    Text(
+                      "(${filteredChallengeList.length})",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).textTheme.titleSmall?.color,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ],
         ),
-      ),
-    ],
-  );
-}
-
-@override
-Widget buildChallenge(BuildContext context, List<Itinerary> itineraryList,
-    ScrollController sc, idUser, PageController pageController) {
-  return Column(
-    children: [
-      const SizedBox(height: 45),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Retos ",
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).textTheme.titleSmall?.color,
-              fontSize: 18,
-            ),
-          ),
-          Text(
-            "(${itineraryList.length})",
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.normal,
-              color: Theme.of(context).textTheme.titleSmall?.color,
-              fontSize: 18,
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 25),
-      Expanded(
-        child: CustomScrollView(
-          controller: sc,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: Container(color: Colors.green, height: 50),
-                      // child: ItineraryCard(
-                      //   idUser: idUser,
-                      //   entityAdmin: "",
-                      //   idItinerary: itineraryList[index].idItinerary,
-                      //   name: itineraryList[index].name,
-                      //   imageURL:
-                      //       itineraryList[index].imageURL?.toString() ?? '',
-                      //   number: itineraryList[index].number,
-                      // ),
-                    );
-                  },
-                  childCount: itineraryList.length,
+        const SizedBox(height: 25),
+        Expanded(
+          child: CustomScrollView(
+            controller: sc,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: ChallengeCardHome(
+                          idChallenge: challengeList[index].idChallenge,
+                          name: challengeList[index].name,
+                          description: challengeList[index].description,
+                          latitude: challengeList[index].latitude,
+                          longitude: challengeList[index].longitude,
+                          question: challengeList[index].question,
+                          experience: challengeList[index].experience,
+                          itinerary: challengeList[index].itinerary,
+                          imageURL: challengeList[index].imageURL,
+                        ),
+                      );
+                    },
+                    childCount: challengeList.length,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    ],
-  );
-}
-
-getChallengeInfo(String idChallenge) async {
-  final prefs = await SharedPreferences.getInstance();
-  final String token = prefs.getString('token') ?? "";
-
-  String path = 'http://${dotenv.env['API_URL']}/challenge/get/$idChallenge';
-  var response = await Dio().get(path,
-      options: Options(headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      }));
-  return response.data;
+      ],
+    );
+  }
 }

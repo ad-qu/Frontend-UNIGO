@@ -9,8 +9,8 @@ class MyChallengeCard extends StatelessWidget {
   final String attr1;
   final String attr2;
   final String attr3;
-  final String attr4;
-  final List<String> attr5;
+  final String? attr4;
+  final List<String>? attr5;
 
   const MyChallengeCard({
     super.key,
@@ -18,8 +18,8 @@ class MyChallengeCard extends StatelessWidget {
     required this.attr1, //name of the challenge
     required this.attr2, //description of the challenge
     required this.attr3, //exp
-    required this.attr4,
-    required this.attr5,
+    this.attr4,
+    this.attr5,
   });
 
   @override
@@ -41,7 +41,7 @@ class MyChallengeCard extends StatelessWidget {
               CircleAvatar(
                 radius: 17.5,
                 backgroundImage: attr4 != ""
-                    ? Image.network(attr4).image
+                    ? Image.network(attr4!).image
                     : const AssetImage('images/default.png'),
               ),
               Text(

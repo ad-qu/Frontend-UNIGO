@@ -14,14 +14,14 @@ class ChallengeCard extends StatefulWidget {
   final int experience;
 
   const ChallengeCard({
-    Key? key,
+    super.key,
     required this.idChallenge,
     required this.name,
     required this.description,
     required this.latitude,
     required this.longitude,
     required this.experience,
-  }) : super(key: key);
+  });
 
   @override
   State<ChallengeCard> createState() => _ChallengeCardState();
