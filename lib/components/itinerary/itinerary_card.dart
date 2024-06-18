@@ -160,7 +160,7 @@ class _ItineraryCardState extends State<ItineraryCard> {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 4.5, 0),
+                padding: EdgeInsets.fromLTRB(0, 0, 7.5, 0),
                 child: ItineraryMoreButton(),
               ),
             ],

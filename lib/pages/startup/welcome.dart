@@ -1,11 +1,9 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:unigo/pages/startup/login.dart';
 import 'package:unigo/pages/startup/signup.dart';
 import 'package:unigo/services/auth.dart';
 import 'package:unigo/components/credential_screen/animated_background.dart';
-import 'package:unigo/components/input_widgets/apple_button.dart';
 import 'package:unigo/components/input_widgets/google_button.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:unigo/components/language/language_button.dart';

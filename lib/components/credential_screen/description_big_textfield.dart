@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DescriptionBigTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -47,7 +48,7 @@ class _DescriptionBigTextFieldState extends State<DescriptionBigTextField> {
           borderRadius: const BorderRadius.all(Radius.circular(17.5)),
         ),
         labelText: widget.labelText,
-        labelStyle: const TextStyle(
+        labelStyle: GoogleFonts.inter(
           color: Color.fromARGB(255, 138, 138, 138),
           fontSize: 14,
         ),

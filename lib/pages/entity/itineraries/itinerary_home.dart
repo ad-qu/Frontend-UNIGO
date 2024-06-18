@@ -183,9 +183,31 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                               ),
                             ),
                           ),
-                          Text(
-                            "Itinerarios (${itineraryList.length})",
-                            style: Theme.of(context).textTheme.titleSmall,
+                          Row(
+                            children: [
+                              Text(
+                                "Itinerarios ",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.color,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              Text(
+                                "(${itineraryList.length})",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.normal,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.color,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
                           GestureDetector(
                             onTap: () {

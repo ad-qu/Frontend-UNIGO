@@ -30,7 +30,7 @@ class ItineraryMoreButton extends StatelessWidget {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(30)),
           child: Icon(
-            Icons.more_vert_rounded,
+            Icons.more_horiz_rounded,
             color: Theme.of(context).secondaryHeaderColor,
           ),
         ),

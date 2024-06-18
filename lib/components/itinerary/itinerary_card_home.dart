@@ -137,6 +137,7 @@ class _ItineraryCardHomeState extends State<ItineraryCardHome> {
                 ),
               ),
             ),
+         
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 18, 0),
               child: Icon(

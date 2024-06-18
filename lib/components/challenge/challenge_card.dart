@@ -38,7 +38,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
       child: Container(
-        height: 300.5,
+        height: 300,
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           color: Theme.of(context).cardColor,
@@ -49,11 +49,8 @@ class _ChallengeCardState extends State<ChallengeCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(50.5, 7.5, 5.5, 0),
-
-              //  padding: const EdgeInsets.fromLTRB(27.5, 25, 27.5, 17.5),
+              padding: const EdgeInsets.fromLTRB(30, 10, 10, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Text(
@@ -61,25 +58,25 @@ class _ChallengeCardState extends State<ChallengeCard> {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: Theme.of(context).textTheme.titleSmall,
-                      textAlign: TextAlign.center,
+                      textAlign: TextAlign.start,
                     ),
                   ),
-                  const ChallengeMoreButton(),
-                  // const ChallengeMoreButton(),
+                  ChallengeMoreButton(
+                    idChallenge: widget.idChallenge,
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(27.5, 2.5, 27.5, 17.5),
+                    padding: const EdgeInsets.fromLTRB(30, 8, 30, 20),
                     child: Text(
                       widget.description,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
+                      maxLines: 4,
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ),
@@ -173,7 +170,7 @@ class MiniMap extends StatelessWidget {
                     width: 35,
                     point: LatLng(latitude, longitude),
                     child: Icon(
-                      Icons.location_pin,
+                      Icons.location_on,
                       color: Theme.of(context).splashColor,
                       size: 35.0,
                     ),

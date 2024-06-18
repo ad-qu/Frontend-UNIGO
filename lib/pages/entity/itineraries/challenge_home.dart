@@ -177,9 +177,31 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                               ),
                             ),
                           ),
-                          Text(
-                            "Retos (${challengeList.length})",
-                            style: Theme.of(context).textTheme.titleSmall,
+                          Row(
+                            children: [
+                              Text(
+                                "Retos ",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.color,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              Text(
+                                "(${challengeList.length})",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.normal,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.color,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
                           GestureDetector(
                             onTap: () {

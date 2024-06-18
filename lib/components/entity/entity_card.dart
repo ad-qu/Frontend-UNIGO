@@ -11,10 +11,6 @@ import 'package:unigo/pages/entity/entity_profile.dart';
 import 'package:unigo/pages/entity/entity_viewer.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class EntityCard extends StatefulWidget {
   final String idUserSession;
   final String idEntity;

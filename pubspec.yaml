@@ -88,6 +88,7 @@ dependencies:
   google_fonts: ^6.2.0
   location_picker_flutter_map: ^3.0.1
   flutter_map_location_marker: ^8.0.5
+  qr_flutter: ^4.1.0
   # flutter_secure_storage: ^8.0.0
 
 flutter_launcher_icons:

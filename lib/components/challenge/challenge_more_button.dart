@@ -4,8 +4,22 @@ import 'package:unigo/components/challenge/challenge_menu.dart';
 import 'package:unigo/components/itinerary/itinerary_menu.dart';
 import 'package:unigo/components/language/language_menu.dart';
 
-class ChallengeMoreButton extends StatelessWidget {
-  const ChallengeMoreButton({super.key});
+class ChallengeMoreButton extends StatefulWidget {
+  final String idChallenge;
+  const ChallengeMoreButton({
+    super.key,
+    required this.idChallenge,
+  });
+
+  @override
+  State<ChallengeMoreButton> createState() => _ChallengeMoreButtonState();
+}
+
+class _ChallengeMoreButtonState extends State<ChallengeMoreButton> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +28,10 @@ class ChallengeMoreButton extends StatelessWidget {
         onTap: () {
           showPopover(
             context: context,
-            bodyBuilder: (context) => const ChallengeMenu(),
-            width: 125,
+            bodyBuilder: (context) => ChallengeMenu(
+              idChallenge: widget.idChallenge,
+            ),
+            width: 135,
             height: 122,
             direction: PopoverDirection.bottom,
             contentDyOffset: -7.5,

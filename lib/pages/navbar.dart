@@ -7,11 +7,13 @@ import 'package:unigo/pages/map/map.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 import 'package:unigo/pages/discover/discover_home.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/services.dart'; // Importa este paquete para SystemNavigator
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NavBarState createState() => _NavBarState();
 }
 
@@ -32,8 +34,14 @@ class _NavBarState extends State<NavBar> {
     const ProfileScreen(),
   ];
 
-  Future<bool> _onWillPop() async {
-    return !await _navigatorKeys[_currentIndex].currentState!.maybePop();
+  Future<bool> _onPopScope() async {
+    final currentNavigatorState = _navigatorKeys[_currentIndex].currentState!;
+    if (currentNavigatorState.canPop()) {
+      return !await currentNavigatorState.maybePop();
+    } else {
+      SystemNavigator.pop();
+      return false;
+    }
   }
 
   void _resetToRoot(int index) {
@@ -49,7 +57,7 @@ class _NavBarState extends State<NavBar> {
           return;
         }
         final navigator = Navigator.of(context);
-        bool value = await _onWillPop();
+        bool value = await _onPopScope();
         if (value) {
           navigator.pop();
         }

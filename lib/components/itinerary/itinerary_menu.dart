@@ -35,7 +35,7 @@ class ItineraryMenu extends StatelessWidget {
           },
           child: Container(
             height: 40,
-            color: Theme.of(context).dividerColor,
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Center(
               child: Text(
                 'Eliminar',
