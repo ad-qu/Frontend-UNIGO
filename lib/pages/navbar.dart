@@ -7,18 +7,17 @@ import 'package:unigo/pages/map/map.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 import 'package:unigo/pages/discover/discover_home.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter/services.dart'; // Importa este paquete para SystemNavigator
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _NavBarState createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
+  PageController _pageController = PageController();
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
@@ -34,18 +33,18 @@ class _NavBarState extends State<NavBar> {
     const ProfileScreen(),
   ];
 
-  Future<bool> _onPopScope() async {
-    final currentNavigatorState = _navigatorKeys[_currentIndex].currentState!;
-    if (currentNavigatorState.canPop()) {
-      return !await currentNavigatorState.maybePop();
-    } else {
-      SystemNavigator.pop();
-      return false;
-    }
+  Future<bool> _onWillPop() async {
+    return !await _navigatorKeys[_currentIndex].currentState!.maybePop();
   }
 
   void _resetToRoot(int index) {
     _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
@@ -57,14 +56,16 @@ class _NavBarState extends State<NavBar> {
           return;
         }
         final navigator = Navigator.of(context);
-        bool value = await _onPopScope();
+        bool value = await _onWillPop();
         if (value) {
           navigator.pop();
         }
       },
       child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
+        body: PageView(
+          physics: const NeverScrollableScrollPhysics(),
+          controller: _pageController,
+          onPageChanged: _onPageChanged,
           children: screens.asMap().entries.map((entry) {
             int index = entry.key;
             Widget screen = entry.value;
@@ -96,7 +97,7 @@ class _NavBarState extends State<NavBar> {
               if (index != _currentIndex) {
                 _resetToRoot(_currentIndex);
               }
-              setState(() => _currentIndex = index);
+              _pageController.jumpToPage(index);
             },
             padding: const EdgeInsets.fromLTRB(12, 8.5, 10, 8.5),
             tabs: [

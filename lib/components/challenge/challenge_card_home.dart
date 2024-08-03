@@ -1,10 +1,15 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:unigo/components/challenge/challenge_menu.dart';
 import 'package:unigo/components/challenge/challenge_more_button.dart';
 import 'package:unigo/components/itinerary/itinerary_menu.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:unigo/pages/map/challenge_screen.dart';
+import 'package:unigo/pages/map/qr_screen.dart';
 
 class ChallengeCardHome extends StatefulWidget {
   final String idChallenge;
@@ -58,7 +63,28 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
               motion: const ScrollMotion(),
               children: [
                 SlidableAction(
-                  onPressed: (context) {},
+                  onPressed: (context) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                            child: MyChallengePage(
+                              selectedChallengeId: widget.idChallenge,
+                              nameChallenge: widget.name,
+                              descrChallenge: widget.description,
+                              expChallenge: widget.experience.toString(),
+                              questions: widget.question,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                   backgroundColor: Theme.of(context).dividerColor,
                   foregroundColor: Colors.white,
                   icon: Icons.info,
@@ -71,7 +97,19 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
               motion: const ScrollMotion(),
               children: [
                 SlidableAction(
-                  onPressed: (context) {},
+                  onPressed: (context) {
+                    Navigator.pop(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.leftToRight,
+                        child: MyQR(
+                          idChallenge: widget.idChallenge,
+                          questions: widget.question ?? [],
+                          expChallenge: widget.experience.toString(),
+                        ),
+                      ),
+                    );
+                  },
                   backgroundColor: Theme.of(context).dividerColor,
                   foregroundColor: Colors.white,
                   icon: Icons.camera_alt,

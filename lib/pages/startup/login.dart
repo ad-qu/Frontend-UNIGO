@@ -281,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                    padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -290,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               AppLocalizations.of(context)!.login_button,
                           onTap: logIn,
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 15),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           child: RichText(

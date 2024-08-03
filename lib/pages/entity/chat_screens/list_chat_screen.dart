@@ -6,8 +6,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:page_transition/page_transition.dart';
+import 'package:unigo/models/challenge.dart';
 
-import '../../../models/challenge (deprecated).dart';
 import '../../../components/chat_screen/chat_card_widget.dart';
 import 'chat_screen.dart';
 
@@ -24,8 +24,8 @@ class MyChatList extends StatefulWidget {
 }
 
 class _MyChatListState extends State<MyChatList> {
-  ChallengeD? challenge;
-  List<ChallengeD> challengeList = <ChallengeD>[];
+  Challenge? challenge;
+  List<Challenge> challengeList = <Challenge>[];
   TextEditingController roomNameController = TextEditingController();
   Map<String, String> roomNames = {};
   IO.Socket? socket;
@@ -70,7 +70,7 @@ class _MyChatListState extends State<MyChatList> {
         }));
     var registros = response.data as List;
     for (var sub in registros) {
-      challengeList.add(ChallengeD.fromJson(sub));
+      challengeList.add(Challenge.fromJson(sub));
     }
     if (mounted) {
       setState(() {
@@ -109,7 +109,7 @@ class _MyChatListState extends State<MyChatList> {
     );
   }
 
-  Widget buildChats(BuildContext context, List<ChallengeD> challengeList) {
+  Widget buildChats(BuildContext context, List<Challenge> challengeList) {
     return CustomScrollView(
       slivers: [
         SliverPadding(

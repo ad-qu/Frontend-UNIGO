@@ -7,7 +7,7 @@ import 'package:unigo/pages/entity/entity_search.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../components/profile_screen/card_user_widget.dart';
+import '../../components/profile_screen/user_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -51,8 +51,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
   Future getNotFriends() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path =
-        'http://${dotenv.env['API_URL']}/user/friends/unfollowing/$_idUser';
+    String path = 'http://${dotenv.env['API_URL']}/user/unfollowing/$_idUser';
     try {
       var response = await Dio().get(
         path,

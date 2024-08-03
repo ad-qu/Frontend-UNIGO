@@ -47,6 +47,13 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _bothPasswordMatch = false;
 
+  String? selectedDropdownValue; // Valor seleccionado inicialmente
+  List<String> dropdownItems = [
+    'Option 1',
+    'Option 2',
+    'Option 3'
+  ]; // Opciones del dropdown
+
   @override
   void initState() {
     super.initState();
@@ -139,7 +146,7 @@ class _SignupScreenState extends State<SignupScreen> {
           );
         } else {
           var response = await Dio().post(
-            "http://${dotenv.env['API_URL']}/auth/register",
+            "http://${dotenv.env['API_URL']}/auth/signup",
             data: {
               "name": nameController.text,
               "surname": surnameController.text,
@@ -276,7 +283,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      //resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -322,7 +329,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -366,6 +373,33 @@ class _SignupScreenState extends State<SignupScreen> {
                             obscureText: false),
 
                         const SizedBox(height: 15),
+
+                        //Dropdown menu button
+                        // DropdownButtonFormField<String>(
+                        //   decoration: InputDecoration(
+                        //     labelText: AppLocalizations.of(context)!.email,
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(17.5),
+                        //     ),
+                        //     contentPadding: const EdgeInsets.all(17),
+                        //     fillColor: Theme.of(context).cardColor,
+                        //     filled: true,
+                        //   ),
+                        //   value: selectedDropdownValue,
+                        //   items: dropdownItems.map((String value) {
+                        //     return DropdownMenuItem<String>(
+                        //       value: value,
+                        //       child: Text(value),
+                        //     );
+                        //   }).toList(),
+                        //   onChanged: (String? newValue) {
+                        //     setState(() {
+                        //       selectedDropdownValue = newValue!;
+                        //     });
+                        //   },
+                        // ),
+
+                        // const SizedBox(height: 15),
 
                         //Password textfield
                         TextField(
@@ -652,7 +686,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -661,7 +695,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         buttonText: AppLocalizations.of(context)!.signup_button,
                         onTap: signUp,
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 15),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                         child: RichText(

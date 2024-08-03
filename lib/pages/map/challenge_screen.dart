@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../models/challenge (deprecated).dart';
+import 'package:unigo/models/challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +26,7 @@ class MyChallengePage extends StatefulWidget {
 }
 
 class _MyChallengePageState extends State<MyChallengePage> {
-  ChallengeD? challenge;
+  Challenge? challenge;
   String? _token = "";
   String? _idChallenge = "";
   List<String>? _questions = [];
@@ -82,7 +82,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
       ),
     );
     var challengeData = response.data;
-    var challenge = ChallengeD.fromJson(challengeData);
+    var challenge = Challenge.fromJson(challengeData);
     setState(() {
       this.challenge = challenge;
     });
@@ -95,7 +95,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
       return Container(
         height: 485,
         decoration: BoxDecoration(
-          color: Theme.of(context).textTheme.headlineMedium?.color,
+          color: Theme.of(context).scaffoldBackgroundColor,
           shape: BoxShape.rectangle,
           borderRadius: const BorderRadius.all(Radius.circular(20)),
         ),
@@ -117,7 +117,7 @@ class _MyChallengePageState extends State<MyChallengePage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 30, bottom: 30),
                     child: Image.asset(
-                      'images/marker_advanced.png',
+                      'images/marker.png',
                       height: 100,
                       width: 100,
                     ),

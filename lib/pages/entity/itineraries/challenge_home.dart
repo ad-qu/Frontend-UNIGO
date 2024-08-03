@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/components/challenge/challenge_card.dart';
 import 'package:unigo/components/itinerary/itinerary_card.dart';
-import 'package:unigo/models/challenge%20(deprecated).dart';
 import 'package:unigo/models/challenge.dart';
 import 'package:unigo/models/entity.dart';
 import 'package:unigo/models/itinerary.dart';
@@ -19,14 +18,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unigo/pages/entity/itineraries/challenge_add.dart';
 import 'package:unigo/pages/entity/itineraries/itinerary_add.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class ChallengeHome extends StatefulWidget {
   final String idItinerary;
+  final String admin;
 
-  const ChallengeHome({super.key, required this.idItinerary});
+  const ChallengeHome({
+    super.key,
+    required this.idItinerary,
+    required this.admin,
+  });
 
   @override
   State<ChallengeHome> createState() => _ChallengeHomeState();
@@ -35,6 +35,7 @@ class ChallengeHome extends StatefulWidget {
 class _ChallengeHomeState extends State<ChallengeHome> {
   late bool _isLoading;
   List<Challenge> challengeList = [];
+  String? _idUser = "";
 
   @override
   void initState() {
@@ -46,6 +47,14 @@ class _ChallengeHomeState extends State<ChallengeHome> {
     });
     super.initState();
     getChallenges();
+    getUserInfo();
+  }
+
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _idUser = prefs.getString('idUser');
+    });
   }
 
   Future getChallenges() async {
@@ -75,7 +84,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
     }
   }
 
-  Future<void> _refreshEntities() async {
+  Future<void> _refreshChallenges() async {
     await getChallenges();
   }
 
@@ -160,10 +169,6 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                             onTap: () {
                               Navigator.pop(
                                 context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const EntityScreen(),
-                                ),
                               );
                             },
                             child: Container(
@@ -203,30 +208,45 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                               ),
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child: ChallengeAdd(
-                                      idItinerary: widget.idItinerary),
+                          if (widget.admin == _idUser)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child: ChallengeAdd(
+                                        idItinerary: widget.idItinerary),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                              );
-                            },
-                            child: Container(
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  size: 27.5,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
                               padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.add,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                                 size: 27.5,
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -235,7 +255,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                         displacement: 0,
                         backgroundColor: Theme.of(context).cardColor,
                         color: Theme.of(context).secondaryHeaderColor,
-                        onRefresh: _refreshEntities,
+                        onRefresh: _refreshChallenges,
                         child: CustomScrollView(
                           slivers: [
                             if (challengeList.isNotEmpty)
@@ -259,6 +279,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                                               challengeList[index].longitude,
                                           experience:
                                               challengeList[index].experience,
+                                          onChange: _refreshChallenges,
                                         ),
                                       );
                                     } catch (e) {

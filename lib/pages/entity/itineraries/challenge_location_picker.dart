@@ -138,7 +138,7 @@ class ChallengeLocationPicker extends StatelessWidget {
                 ),
 
                 //Marker
-                markerIconOffset: -25,
+                markerIconOffset: 40,
                 markerIcon: Icon(
                   Icons.location_on,
                   color: Theme.of(context).splashColor,

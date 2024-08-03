@@ -117,7 +117,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
         onTap: togglePanel,
         child: Center(
           child: Container(
-            width: 150,
+            width: 75,
             height: 3.75,
             decoration: BoxDecoration(
               color: Theme.of(context).secondaryHeaderColor,

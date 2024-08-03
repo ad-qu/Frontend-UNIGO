@@ -12,6 +12,7 @@ class ChallengeCard extends StatefulWidget {
   final String latitude;
   final String longitude;
   final int experience;
+  final VoidCallback onChange;
 
   const ChallengeCard({
     super.key,
@@ -21,6 +22,7 @@ class ChallengeCard extends StatefulWidget {
     required this.latitude,
     required this.longitude,
     required this.experience,
+    required this.onChange,
   });
 
   @override
@@ -63,6 +65,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
                   ),
                   ChallengeMoreButton(
                     idChallenge: widget.idChallenge,
+                    onChange: widget.onChange,
                   ),
                 ],
               ),

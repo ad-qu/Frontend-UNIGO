@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <!-- Google Sign-in Section -->
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+          <string>com.googleusercontent.apps.557103334938-uu7ke7tesl1g3e00fujietnhbl5fo2rl</string>
+        </array>
+      </dict>
+    </array>
+    <!-- End of the Google Sign-in Section -->
+    <key>GIDClientID</key>
+    <string>557103334938-uu7ke7tesl1g3e00fujietnhbl5fo2rl.apps.googleusercontent.com</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app needs access to location when open.</string>
     <key>NSLocationAlwaysUsageDescription</key>

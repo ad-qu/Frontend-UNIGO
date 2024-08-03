@@ -488,25 +488,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            widget.idEntity,
-                            style: GoogleFonts.inter(
-                              color: Theme.of(context).dividerColor,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                        ],
-                      ),
+                      const SizedBox(height: 15),
                     ],
                   )
                 : Column(
@@ -923,25 +905,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            widget.idEntity,
-                            style: GoogleFonts.inter(
-                              color: Theme.of(context).dividerColor,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                        ],
-                      ),
+                      const SizedBox(height: 15),
                     ],
                   ),
           ),

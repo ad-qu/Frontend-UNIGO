@@ -1,21 +1,19 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:unigo/models/challenge.dart';
+import 'package:unigo/pages/map/challenge_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-
-void main() async {
-  await dotenv.load();
-}
 
 class MapGPS extends StatefulWidget {
   const MapGPS({super.key});
@@ -62,7 +60,7 @@ class _MapGPSState extends State<MapGPS> {
           });
           mapController.move(
             LatLng(userLocation!.latitude, userLocation!.longitude),
-            16,
+            18,
           );
         }
       },
@@ -114,33 +112,26 @@ class _MapGPSState extends State<MapGPS> {
           rotate: true,
           child: GestureDetector(
             onTap: () {
-              // setState(() {
-              //   questions = challenge.question;
-              //   selectedChallengeId = challenge.idChallenge;
-              //   nameChallenge = challenge.name;
-              //   descrChallenge = challenge.description;
-              //   expChallenge = challenge.experience;
-              // });
-              // showDialog(
-              //   context: context,
-              //   builder: (BuildContext context) {
-              //     return GestureDetector(
-              //       onTap: () {
-              //         Navigator.pop(context);
-              //       },
-              //       child: BackdropFilter(
-              //         filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-              //         child: MyChallengePage(
-              //           selectedChallengeId: selectedChallengeId,
-              //           nameChallenge: nameChallenge,
-              //           descrChallenge: descrChallenge,
-              //           expChallenge: expChallenge.toString(),
-              //           questions: questions,
-              //         ),
-              //       ),
-              //     );
-              //   },
-              // );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                      child: MyChallengePage(
+                        selectedChallengeId: challenge.idChallenge,
+                        nameChallenge: challenge.name,
+                        descrChallenge: challenge.description,
+                        expChallenge: challenge.experience.toString(),
+                        questions: challenge.question,
+                      ),
+                    ),
+                  );
+                },
+              );
             },
             child: ClipOval(
               child: (challenge.imageURL == null || challenge.imageURL!.isEmpty)
@@ -295,7 +286,7 @@ class _MapGPSState extends State<MapGPS> {
 
   void centerUniversityLocation() {
     const center = LatLng(41.27561, 1.98722);
-    mapController.move(center, 16);
+    mapController.move(center, 18);
   }
 
   @override
@@ -306,10 +297,10 @@ class _MapGPSState extends State<MapGPS> {
         FlutterMap(
           mapController: mapController,
           options: MapOptions(
-            initialCenter:
-                LatLng(userLocation!.latitude, userLocation!.longitude),
-            initialZoom: 16,
-            maxZoom: 18.25,
+            initialCenter: const LatLng(41.27561, 1.98722),
+            // initialCenter: LatLng(userLocation!.latitude, userLocation!.longitude),
+            initialZoom: 18,
+            maxZoom: 20,
             cameraConstraint: CameraConstraint.contain(
               bounds: LatLngBounds(
                 const LatLng(41, 1.65),

@@ -7,7 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import '../../../models/challenge (deprecated).dart';
+import 'package:unigo/models/challenge.dart';
+import 'package:unigo/pages/entity/itineraries/challenge_add.dart';
 import '../../../models/message.dart';
 import '../../../components/chat_title_widget.dart';
 import 'chat_service.dart';
@@ -40,7 +41,7 @@ Future<String> getUsername() async {
 
 class _ChatWidgetState extends State<ChatWidget> {
   ChatService appState = ChatService();
-  List<ChallengeD> challengeList = <ChallengeD>[];
+  List<Challenge> challengeList = <Challenge>[];
   TextEditingController roomNameController = TextEditingController();
   Map<String, String> roomNames = {};
   IO.Socket? socket;

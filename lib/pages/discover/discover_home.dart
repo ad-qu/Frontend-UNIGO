@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/pages/discover/discover_search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../components/profile_screen/card_user_widget.dart';
+import '../../components/profile_screen/user_card.dart';
 
 void main() async {
   await dotenv.load();

@@ -3,7 +3,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/pages/profile/profile_viewer.dart';
 
 void main() async {
   await dotenv.load();
@@ -139,7 +141,13 @@ class _MyUserCardState extends State<MyUserCard> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              print("sdfasdfasd");
+              Navigator.push(
+                context,
+                PageTransition(
+                  type: PageTransitionType.rightToLeft,
+                  child: ProfiletViewer(idCardUser: widget.idCardUser),
+                ),
+              );
             },
             child: Container(
               height: 65,

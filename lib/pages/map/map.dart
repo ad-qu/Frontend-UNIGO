@@ -7,10 +7,6 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../components/map/map_gps.dart';
 import '../../components/home_screen/sliding_up_panel.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class Map extends StatefulWidget {
   //const LoginScreen({super.key, required String title});
   const Map({super.key});

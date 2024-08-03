@@ -78,43 +78,132 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
     super.dispose();
   }
 
+  Future createEntity() async {
+    if (_tempImageFile != null) {
+      await uploadImageToFirebase();
+    }
+    final prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString('token') ?? "";
+    try {
+      Navigator.pop(
+        // ignore: use_build_context_synchronously
+        context,
+        PageTransition(
+          type: PageTransitionType.topToBottom,
+          child: const EntityScreen(),
+        ),
+      );
+      await Dio().post(
+        'http://${dotenv.env['API_URL']}/entity/update/${widget.idEntity}',
+        data: {
+          "name": nameController.text,
+          "description": descriptionController.text,
+          "imageURL": imageURL,
+        },
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print(e);
+    }
+  }
+
+  Future deleteEntity() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString('token') ?? "";
+    try {
+      String path =
+          'http://${dotenv.env['API_URL']}/entity/delete/${widget.idEntity}';
+      var response = await Dio().delete(
+        path,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: const Color.fromARGB(255, 56, 142, 60),
+            showCloseIcon: false,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.5)),
+            margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: Text(
+                "Challenge successfully deleted",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme.of(context).splashColor,
+            showCloseIcon: false,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.5)),
+            margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: Text(
+                AppLocalizations.of(context)!.unable_to_proceed,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Theme.of(context).splashColor,
+          showCloseIcon: false,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
+          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+          content: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            child: Text(
+              AppLocalizations.of(context)!.unable_to_proceed,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future createEntity() async {
-      if (_tempImageFile != null) {
-        await uploadImageToFirebase();
-      }
-      final prefs = await SharedPreferences.getInstance();
-      final String token = prefs.getString('token') ?? "";
-      try {
-        Navigator.pop(
-          // ignore: use_build_context_synchronously
-          context,
-          PageTransition(
-            type: PageTransitionType.topToBottom,
-            child: const EntityScreen(),
-          ),
-        );
-        await Dio().post(
-          'http://${dotenv.env['API_URL']}/entity/update/${widget.idEntity}',
-          data: {
-            "name": nameController.text,
-            "description": descriptionController.text,
-            "imageURL": imageURL,
-          },
-          options: Options(
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer $token",
-            },
-          ),
-        );
-      } catch (e) {
-        // ignore: avoid_print
-        print(e);
-      }
-    }
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -191,6 +280,20 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    //Sign up button
+                    RedButton(
+                      buttonText: "ELIMINAR",
+                      onTap: deleteEntity,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
                 child: Column(

@@ -68,20 +68,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 25),
+                        padding: const EdgeInsets.fromLTRB(35, 0, 35, 25),
                         child: Text(
                             '${AppLocalizations.of(context)!.slogan}  🧭',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleLarge),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                        padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
                         child: Text(AppLocalizations.of(context)!.description,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 2.5, 30, 0),
+                        padding: const EdgeInsets.fromLTRB(35, 5, 35, 0),
                         child: Text(AppLocalizations.of(context)!.hype,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium),
@@ -98,7 +98,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       buttonText: AppLocalizations.of(context)!.get_stated,
                       onTap: signUp,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 15),
                     GestureDetector(
                       child: GoogleButton(
                         buttonText: AppLocalizations.of(context)!.google_login,

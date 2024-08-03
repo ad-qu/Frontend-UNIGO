@@ -24,13 +24,14 @@ import 'package:unigo/components/input_widgets/log_out_button.dart';
 import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/theme/theme_provider.dart';
 import '../../models/user.dart' as user_ea;
-import '../../components/profile_screen/card_user_widget.dart';
+import '../../components/profile_screen/user_card.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/pages/profile/edit_account.dart';
 import 'package:unigo/pages/profile/edit_password.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'dart:ui';
+import 'package:restart_app/restart_app.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -350,13 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     auth.signOut();
     GoogleSignIn().signOut();
     clearInfo();
-    Navigator.pushReplacement(
-      context,
-      PageTransition(
-        type: PageTransitionType.leftToRight,
-        child: const WelcomeScreen(),
-      ),
-    );
+    Restart.restartApp();
   }
 
   Future getInsignias() async {
@@ -485,46 +480,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Container(),
           ),
           AlertDialog(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
+              borderRadius: BorderRadius.circular(35.0),
             ),
-            title: const Text('Eliminar cuenta'),
+            title: Text('Eliminar cuenta',
+                style: Theme.of(context).textTheme.titleSmall),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                    '¿Estás seguro de que quieres eliminar tu cuenta? \n\nAl eliminar tu cuenta, esta quedará inaccesible y no podrás utilizarla. \n\nPara reactivarla, será necesario contactar con nuestro equipo de soporte. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación. \n\n\nEscribe tu nombre de usuario para confirmar:',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyMedium?.color)),
-                const SizedBox(height: 45),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: TextField(
-                    onChanged: (value) {
-                      if (mounted) {
-                        setState(() {
-                          _deleteUsername = value;
-                        });
-                      }
-                    },
-                    cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 25, 25, 25),
+                  '¿Estás seguro de que quieres eliminar tu cuenta? \n\nAl eliminar tu cuenta, esta quedará inaccesible y no podrás utilizarla. \n\nPara reactivarla, será necesario contactar con nuestro equipo de soporte. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación. \n\n\nEscribe tu nombre de usuario para confirmar:',
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+                const SizedBox(height: 25),
+                TextField(
+                  onChanged: (value) {
+                    if (mounted) {
+                      setState(() {
+                        _deleteUsername = value;
+                      });
+                    }
+                  },
+                  cursorColor: const Color.fromARGB(255, 222, 66, 66),
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 25, 25, 25),
+                  ),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Theme.of(context).textTheme.bodyMedium?.color,
+                    hintText: _username,
+                    hintStyle: const TextStyle(
+                      color: Color.fromARGB(255, 146, 146, 146),
                     ),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Theme.of(context).textTheme.bodyMedium?.color,
-                      hintText: _username,
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 146, 146, 146),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(17.5),
+                      borderSide: BorderSide.none,
                     ),
+                    contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
                   ),
                 ),
               ],
@@ -535,7 +529,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.of(context).pop();
                 },
                 style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all<Color>(
+                  foregroundColor: WidgetStateProperty.all<Color>(
                     const Color.fromARGB(255, 222, 66, 66),
                   ),
                 ),
@@ -578,7 +572,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   }
                 },
                 style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.all<Color>(
+                  foregroundColor: WidgetStateProperty.all<Color>(
                     const Color.fromARGB(255, 222, 66, 66),
                   ),
                 ),

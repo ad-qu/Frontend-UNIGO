@@ -10,7 +10,7 @@ import 'package:unigo/pages/entity/entity_search.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../components/profile_screen/card_user_widget.dart';
+import '../../components/profile_screen/user_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

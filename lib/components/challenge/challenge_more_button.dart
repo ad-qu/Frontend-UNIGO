@@ -6,9 +6,11 @@ import 'package:unigo/components/language/language_menu.dart';
 
 class ChallengeMoreButton extends StatefulWidget {
   final String idChallenge;
+  final VoidCallback onChange;
   const ChallengeMoreButton({
     super.key,
     required this.idChallenge,
+    required this.onChange,
   });
 
   @override
@@ -30,6 +32,10 @@ class _ChallengeMoreButtonState extends State<ChallengeMoreButton> {
             context: context,
             bodyBuilder: (context) => ChallengeMenu(
               idChallenge: widget.idChallenge,
+              onChange: () {
+                widget.onChange();
+                Navigator.of(context).pop();
+              },
             ),
             width: 135,
             height: 122,

@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:unigo/components/credential_screen/description_short_textfield.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 import 'package:unigo/components/credential_screen/question_textfield.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
@@ -80,14 +81,9 @@ class _ChallengeAddState extends State<ChallengeAdd> {
       final String token = prefs.getString('token') ?? "";
       updateQuestionArray();
       try {
-        // Navigator.pop(
-        //   // ignore: use_build_context_synchronously
-        //   context,
-        //   PageTransition(
-        //     type: PageTransitionType.topToBottom,
-        //     child: const EntityScreen(),
-        //   ),
-        // );
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+
         print(nameController.text);
         print(descriptionController.text);
         print(latitude);
@@ -177,7 +173,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                     child: Column(
                       children: [
                         //Nombre del reto
-                        InputShortTextField(
+                        InputBigTextField(
                           controller: nameController,
                           labelText: "Nombre",
                           obscureText: false,
@@ -185,7 +181,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         const SizedBox(height: 15),
 
                         //Descripción del reto
-                        DescriptionShortTextField(
+                        DescriptionBigTextField(
                           controller: descriptionController,
                           labelText: "Descripción",
                           obscureText: false,
@@ -231,7 +227,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: InputShortTextField(
+                                    child: InputBigTextField(
                                       controller: answerControllers[index],
                                       labelText: "Respuesta ${index + 1}",
                                       obscureText: false,

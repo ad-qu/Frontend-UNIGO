@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/user.dart';
 import '../../models/entity.dart';
-import '../../components/profile_screen/card_user_widget.dart';
+import '../../components/profile_screen/user_card.dart';
 import '../../components/entity/entity_card.dart';
 import 'entity_home.dart';
 

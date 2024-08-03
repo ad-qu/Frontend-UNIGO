@@ -44,6 +44,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
     });
     super.initState();
     getItineraries();
+    getUserInfo();
   }
 
   Future<void> getUserInfo() async {
@@ -81,7 +82,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
     }
   }
 
-  Future<void> _refreshEntities() async {
+  Future<void> _refreshItineraries() async {
     await getItineraries();
   }
 
@@ -209,30 +210,45 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                               ),
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child:
-                                      ItineraryAdd(idEntity: widget.idEntity),
+                          if (widget.admin == _idUser)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.bottomToTop,
+                                    child:
+                                        ItineraryAdd(idEntity: widget.idEntity),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                              );
-                            },
-                            child: Container(
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  size: 27.5,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
                               padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.add,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                                 size: 27.5,
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -241,7 +257,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                         displacement: 0,
                         backgroundColor: Theme.of(context).cardColor,
                         color: Theme.of(context).secondaryHeaderColor,
-                        onRefresh: _refreshEntities,
+                        onRefresh: _refreshItineraries,
                         child: CustomScrollView(
                           slivers: [
                             if (itineraryList.isNotEmpty)
@@ -264,6 +280,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                                   ?.toString() ??
                                               '',
                                           number: itineraryList[index].number,
+                                          onChange: _refreshItineraries,
                                         ),
                                       );
                                     } catch (e) {

@@ -24,6 +24,7 @@ class ItineraryCard extends StatefulWidget {
   final String name;
   final String imageURL;
   final int number;
+  final VoidCallback onChange;
 
   const ItineraryCard({
     super.key,
@@ -33,6 +34,7 @@ class ItineraryCard extends StatefulWidget {
     required this.name,
     required this.imageURL,
     required this.number,
+    required this.onChange,
   });
 
   @override
@@ -56,7 +58,9 @@ class _ItineraryCardState extends State<ItineraryCard> {
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: ChallengeHome(idItinerary: widget.idItinerary),
+                child: ChallengeHome(
+                    idItinerary: widget.idItinerary,
+                    admin: widget.entityAdmin ?? ''),
               ),
             );
           } else {
@@ -64,7 +68,9 @@ class _ItineraryCardState extends State<ItineraryCard> {
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: ChallengeHome(idItinerary: widget.idItinerary),
+                child: ChallengeHome(
+                    idItinerary: widget.idItinerary,
+                    admin: widget.entityAdmin ?? ''),
               ),
             );
           }
@@ -159,9 +165,12 @@ class _ItineraryCardState extends State<ItineraryCard> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 7.5, 0),
-                child: ItineraryMoreButton(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 7.5, 0),
+                child: ItineraryMoreButton(
+                  idItinerary: widget.idItinerary,
+                  onChange: widget.onChange,
+                ),
               ),
             ],
           ),

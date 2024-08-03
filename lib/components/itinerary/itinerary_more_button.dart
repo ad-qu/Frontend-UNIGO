@@ -2,8 +2,24 @@ import 'package:popover/popover.dart';
 import 'package:flutter/material.dart';
 import 'package:unigo/components/itinerary/itinerary_menu.dart';
 
-class ItineraryMoreButton extends StatelessWidget {
-  const ItineraryMoreButton({super.key});
+class ItineraryMoreButton extends StatefulWidget {
+  final String idItinerary;
+  final VoidCallback onChange;
+
+  const ItineraryMoreButton({
+    super.key,
+    required this.idItinerary,
+    required this.onChange,
+  });
+  @override
+  State<ItineraryMoreButton> createState() => ItineraryMoreButtonState();
+}
+
+class ItineraryMoreButtonState extends State<ItineraryMoreButton> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +28,13 @@ class ItineraryMoreButton extends StatelessWidget {
         onTap: () {
           showPopover(
             context: context,
-            bodyBuilder: (context) => const ItineraryMenu(),
+            bodyBuilder: (context) => ItineraryMenu(
+              idItinerary: widget.idItinerary,
+              onChange: () {
+                widget.onChange();
+                Navigator.of(context).pop();
+              },
+            ),
             width: 100,
             height: 81,
             direction: PopoverDirection.bottom,
