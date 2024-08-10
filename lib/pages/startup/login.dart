@@ -18,10 +18,6 @@ import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/password_textfield.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -39,13 +35,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if ((emailController.text != '') && (passwordController.text != '')) {
         try {
           var response = await Dio().post(
-            'http://${dotenv.env['API_URL']}/auth/login',
+            'http://${dotenv.env['API_URL']}/auth/logIn',
             data: {
               "email": emailController.text,
               "password": passwordController.text
             },
           );
-          if (response.statusCode == 200) {
+          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+          print(response.statusCode);
+          if (response.statusCode == 222) {
             Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
             User u = User.fromJson(payload);
             var data = json.decode(response.toString());
@@ -59,36 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
             prefs.setString('email', emailController.text);
             prefs.setString('password', passwordController.text);
             prefs.setString('imageURL', u.imageURL ?? '');
-            try {
-              // prefs.setInt('exp', u.exp!);
-              prefs.setInt('level', u.level!);
-              prefs.setInt('experience', u.experience!);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                  showCloseIcon: true,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                  content: Text(
-                    'Error $e',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  duration: const Duration(seconds: 3),
-                ),
-              );
-            }
+            prefs.setInt('level', u.level!);
+            prefs.setInt('experience', u.experience!);
             Navigator.push(
                 context,
                 PageTransition(
                     type: PageTransitionType.rightToLeft,
                     child: const NavBar()));
-          } else if (response.statusCode == 220) {
+          } else if (response.statusCode == 423) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: const Color.fromARGB(255, 222, 66, 66),
@@ -107,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 duration: const Duration(seconds: 3),
               ),
             );
-          } else if (response.statusCode == 221) {
+          } else if (response.statusCode == 404) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: const Color.fromARGB(255, 222, 66, 66),
@@ -126,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 duration: const Duration(seconds: 3),
               ),
             );
-          } else if (response.statusCode == 222) {
+          } else if (response.statusCode == 401) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: const Color.fromARGB(255, 222, 66, 66),
@@ -154,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(10)),
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
                 content: const Text(
-                  'Wrong credentials. Try again with other values',
+                  'Something went wrong. Try again later',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -174,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(10)),
               margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
               content: const Text(
-                'Wrong credentials. Try again with other values',
+                'Something went wrong. Try again later',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
@@ -189,10 +165,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Theme.of(context).splashColor,
-            showCloseIcon: false,
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).secondaryHeaderColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(30, 0, 30, 12),
+            margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
             content: Padding(
               padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
               child: Text(

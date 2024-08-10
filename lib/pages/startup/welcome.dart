@@ -14,11 +14,10 @@ class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _WelcomeScreenState createState() => _WelcomeScreenState();
+  WelcomeScreenState createState() => WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
