@@ -49,6 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _deleteUsername = "";
   // ignore: unused_field
   String? _token = "";
+  String? _campus = "";
   String? _followers = "";
   String? _following = "";
   int _level = 0;
@@ -313,8 +314,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         try {
           _level = prefs.getInt('level')!;
           _exp = prefs.getInt('experience')!;
-          print("assadfdsdf");
-          print(_exp);
+          _campus = prefs.getString('campus')!;
+          print("342342342342346237853gbedfgjhsdfjhksdfjhsdj");
+          print(_campus);
         } catch (e) {
           print(e);
           _level = 0;

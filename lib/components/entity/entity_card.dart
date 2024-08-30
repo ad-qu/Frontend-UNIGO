@@ -20,17 +20,20 @@ class EntityCard extends StatefulWidget {
   final String? attr4;
   final bool isFollowed;
   final String attr5;
+  final VoidCallback? onRefresh; // Callback to notify when refresh is needed
 
-  const EntityCard(
-      {super.key,
-      required this.idUserSession, //the id in shared preferences
-      required this.idEntity, //the id of the user that appears in the card
-      required this.attr1, //photo url
-      required this.attr2, //username
-      required this.attr3, //desc
-      required this.attr4, //verified
-      required this.isFollowed, //if true it means that the user is following
-      required this.attr5}); //admin
+  const EntityCard({
+    super.key,
+    required this.idUserSession, //the id in shared preferences
+    required this.idEntity, //the id of the user that appears in the card
+    required this.attr1, //photo url
+    required this.attr2, //username
+    required this.attr3, //desc
+    required this.attr4, //verified
+    required this.isFollowed, //if true it means that the user is following
+    required this.attr5,
+    this.onRefresh,
+  }); //admin
 
   @override
   State<EntityCard> createState() => _EntityCardState();
@@ -83,7 +86,11 @@ class _EntityCardState extends State<EntityCard> {
                   isFollowed: widget.isFollowed,
                 ),
               ),
-            );
+            ).then((result) {
+              if (result == true) {
+                widget.onRefresh?.call(); // Call the callback if defined
+              }
+            });
           }
         },
         child: Container(

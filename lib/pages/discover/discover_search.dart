@@ -11,10 +11,6 @@ import '../../components/profile_screen/user_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class DiscoverSearchScreen extends StatefulWidget {
   const DiscoverSearchScreen({super.key});
 
@@ -27,6 +23,8 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
   List<User> notFriendsList = [];
   List<User> filteredUsers = [];
   String? _idUser = "";
+  String? _campus = "";
+  bool _isCampusFilterEnabled = true;
 
   @override
   void initState() {
@@ -45,6 +43,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _idUser = prefs.getString('idUser');
+      _campus = prefs.getString('campus');
     });
   }
 
@@ -70,18 +69,11 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
         notFriendsList =
             notFriendsList.where((user) => user.active == true).toList();
         filteredUsers = notFriendsList;
+        print("Entities fetched: ${filteredUsers.length}"); // Debugging line
+        _runFilter(""); // Initial filter call to populate filteredEntities
       });
     } catch (e) {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
+      print("Failed to fetch entities: $e");
     }
   }
 
@@ -89,8 +81,14 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
     setState(() {
       filteredUsers = notFriendsList.where((user) {
         final lowerCaseKeyword = enteredKeyword.toLowerCase();
-        return user.username.toLowerCase().startsWith(lowerCaseKeyword) &&
-            user.active == true;
+        final matchesKeyword =
+            user.username.toLowerCase().startsWith(lowerCaseKeyword) &&
+                user.active == true;
+        final matchesCampus =
+            _isCampusFilterEnabled ? (user.campus == _campus) : true;
+        print(
+            "User: ${user.name}, Matches Keyword: $matchesKeyword, Matches Campus: $matchesCampus"); // Debugging line
+        return matchesKeyword && matchesCampus;
       }).toList();
     });
   }
@@ -98,6 +96,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: _isLoading
             ? Container(
@@ -207,7 +206,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -288,6 +287,23 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 25),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isCampusFilterEnabled =
+                                    !_isCampusFilterEnabled;
+                                _runFilter(""); // Apply filter when toggle
+                              });
+                            },
+                            child: Icon(
+                              _isCampusFilterEnabled
+                                  ? Icons.filter_alt_rounded
+                                  : Icons.filter_alt_off_rounded,
+                              color: Theme.of(context).secondaryHeaderColor,
+                              size: 25,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -306,7 +322,7 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                       child: MyUserCard(
                                         idUserSession: _idUser!,
                                         idCardUser: filteredUsers[index].idUser,
-                                        attr1: notFriendsList[index]
+                                        attr1: filteredUsers[index]
                                                 .imageURL
                                                 ?.toString() ??
                                             '',

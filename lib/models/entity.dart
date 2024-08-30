@@ -3,6 +3,7 @@ class Entity {
     required this.idEntity,
     required this.name,
     required this.description,
+    required this.campus,
     this.imageURL,
     this.verified,
     required this.admin,
@@ -11,6 +12,7 @@ class Entity {
   final String idEntity;
   final String name;
   final String description;
+  final String? campus;
   final String? imageURL;
   final String? verified;
   final String admin;
@@ -19,6 +21,7 @@ class Entity {
         idEntity: json["_id"],
         name: json["name"],
         description: json["description"],
+        campus: json["campus"],
         imageURL: json["imageURL"],
         verified: json["verified"],
         admin: json["admin"],
@@ -28,6 +31,7 @@ class Entity {
         idEntity: json["_id"],
         name: json["name"],
         description: json["description"],
+        campus: json["campus"],
         imageURL: json["imageURL"],
         verified: json["verified"],
         admin: json["admin"],
@@ -39,6 +43,7 @@ class Entity {
         "_id": idEntity,
         "name": name,
         "description": description,
+        "campus": campus,
         "imageURL": imageURL,
         "verified": verified,
         "admin": admin,

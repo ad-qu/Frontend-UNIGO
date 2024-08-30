@@ -184,22 +184,6 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
     return Column(
       children: [
         GestureDetector(
-          child: Container(
-            height: 39,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: Center(
-              child: Text(
-                'Editar',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Divider(color: Theme.of(context).dividerColor, height: 1),
-        GestureDetector(
           onTap: () async {
             Navigator.push(
               context,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:unigo/components/credential_screen/input_big_textfield.dart';
+import 'package:unigo/models/campus.dart';
 import 'package:unigo/pages/startup/login.dart';
 import '../../components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
@@ -34,6 +35,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final passwordController = TextEditingController();
   final passControllerVerify = TextEditingController();
 
+  List<Campus> campusList = [];
+  Campus? selectedCampus;
+
   double strength = 0;
   RegExp numReg = RegExp(r".*[0-9].*");
   RegExp letterReg = RegExp(r".*[A-Aa-z].*");
@@ -47,16 +51,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _bothPasswordMatch = false;
 
-  String? selectedDropdownValue; // Valor seleccionado inicialmente
-  List<String> dropdownItems = [
-    'Option 1',
-    'Option 2',
-    'Option 3'
-  ]; // Opciones del dropdown
-
   @override
   void initState() {
     super.initState();
+    getCampus();
     passwordVisible1 = true;
     passwordVisible2 = true;
   }
@@ -65,6 +63,19 @@ class _SignupScreenState extends State<SignupScreen> {
   void dispose() {
     super.dispose();
     passwordController.dispose();
+  }
+
+  Future getCampus() async {
+    String path = 'http://${dotenv.env['API_URL']}/campus/get/all';
+    try {
+      var response = await Dio().get(path);
+      var campus = response.data as List;
+      setState(() {
+        campusList = campus.map((campus) => Campus.fromJson2(campus)).toList();
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
@@ -76,7 +87,8 @@ class _SignupScreenState extends State<SignupScreen> {
             (usernameController.text == '') ||
             (emailController.text == '') ||
             (passwordController.text == '') ||
-            (passControllerVerify.text == '')) {
+            (passControllerVerify.text == '') ||
+            (selectedCampus!.name == '')) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Theme.of(context).splashColor,
@@ -152,6 +164,7 @@ class _SignupScreenState extends State<SignupScreen> {
               "surname": surnameController.text,
               "username": usernameController.text,
               "email": emailController.text,
+              "campus": selectedCampus,
               "password": passwordController.text,
             },
           );
@@ -283,7 +296,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     return Scaffold(
-      //resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -374,32 +387,89 @@ class _SignupScreenState extends State<SignupScreen> {
 
                         const SizedBox(height: 15),
 
-                        //Dropdown menu button
-                        // DropdownButtonFormField<String>(
-                        //   decoration: InputDecoration(
-                        //     labelText: AppLocalizations.of(context)!.email,
-                        //     border: OutlineInputBorder(
-                        //       borderRadius: BorderRadius.circular(17.5),
-                        //     ),
-                        //     contentPadding: const EdgeInsets.all(17),
-                        //     fillColor: Theme.of(context).cardColor,
-                        //     filled: true,
-                        //   ),
-                        //   value: selectedDropdownValue,
-                        //   items: dropdownItems.map((String value) {
-                        //     return DropdownMenuItem<String>(
-                        //       value: value,
-                        //       child: Text(value),
-                        //     );
-                        //   }).toList(),
-                        //   onChanged: (String? newValue) {
-                        //     setState(() {
-                        //       selectedDropdownValue = newValue!;
-                        //     });
-                        //   },
-                        // ),
+                        DropdownButtonFormField<Campus>(
+                          value: selectedCampus,
+                          enableFeedback: false,
+                          iconEnabledColor:
+                              Theme.of(context).secondaryHeaderColor,
+                          isExpanded: true,
+                          hint: Text(
+                          AppLocalizations.of(context)!.campus,
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 138, 138, 138),
+                              fontSize: 14,
+                            ),
+                          ),
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(17.5)),
+                            ),
+                            contentPadding: const EdgeInsets.all(17),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(17.5)),
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            fillColor: Theme.of(context).cardColor,
+                            filled: true,
+                          ),
+                          dropdownColor: Theme.of(context).cardColor,
+                          items: campusList.map((Campus campus) {
+                            return DropdownMenuItem<Campus>(
+                              value: campus,
+                              child: Text(
+                                campus.name,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium!
+                                      .color,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (Campus? newValue) {
+                            setState(() {
+                              selectedCampus = newValue;
+                            });
+                          },
+                          selectedItemBuilder: (BuildContext context) {
+                            return campusList
+                                .map<DropdownMenuItem<Campus>>((Campus campus) {
+                                  return DropdownMenuItem<Campus>(
+                                    value: campus,
+                                    child: Text(
+                                      campus.name,
+                                    ),
+                                  );
+                                })
+                                .toList()
+                                .map<Widget>((DropdownMenuItem<Campus> item) {
+                                  return item.value == selectedCampus
+                                      ? Text(
+                                          (item.value?.name ?? "").length > 32
+                                              ? ('${item.value!.name.substring(0, 32)}...') // Trunca el texto a 32 caracteres
+                                              : item.value!.name,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelMedium,
+                                        )
+                                      : item.child;
+                                })
+                                .toList();
+                          },
+                        ),
 
-                        // const SizedBox(height: 15),
+                        const SizedBox(height: 15),
 
                         //Password textfield
                         TextField(

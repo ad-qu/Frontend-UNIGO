@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:unigo/models/campus.dart';
 import '../../components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -33,6 +34,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
   String? _idUser = "";
   String imageURL = "";
   File? _tempImageFile;
+  String? _campus;
 
   @override
   void initState() {
@@ -44,6 +46,10 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _idUser = prefs.getString('idUser');
+      _campus = prefs.getString('campus');
+      print("sdfjhaskjdfhaskjdfhasjkdfhak");
+
+      print(_campus);
     });
   }
 
@@ -92,6 +98,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
             "name": nameController.text,
             "description": descriptionController.text,
             "imageURL": imageURL,
+            "campus": _campus,
             "admin": _idUser,
           },
           options: Options(
@@ -108,6 +115,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -196,9 +204,9 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
+                padding: const EdgeInsets.fromLTRB(40, 0, 40, 15),
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(

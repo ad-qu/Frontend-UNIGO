@@ -15,7 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:unigo/components/language/language_button.dart';
-import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/password_textfield.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -41,125 +40,113 @@ class _LoginScreenState extends State<LoginScreen> {
               "password": passwordController.text
             },
           );
-          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-          print(response.statusCode);
+
+          print(response.data);
+
           if (response.statusCode == 222) {
-            Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
-            User u = User.fromJson(payload);
-            var data = json.decode(response.toString());
+            Map<String, dynamic> data = response.data;
+            final token = data['token'];
+            final idUser = data['_id'];
+            final name = data['name'];
+            final surname = data['surname'];
+            final username = data['username'];
+            final imageURL = data['imageURL'];
+            final campus = data['campus'];
+            final level = data['level'];
+            final experience = data['experience'];
+
             final SharedPreferences prefs =
                 await SharedPreferences.getInstance();
-            prefs.setString('token', data['token']);
-            prefs.setString('idUser', u.idUser);
-            prefs.setString('name', u.name);
-            prefs.setString('surname', u.surname);
-            prefs.setString('username', u.username);
+            prefs.setString('token', token);
+            prefs.setString('idUser', idUser);
+            prefs.setString('name', name);
+            prefs.setString('surname', surname);
+            prefs.setString('username', username);
             prefs.setString('email', emailController.text);
             prefs.setString('password', passwordController.text);
-            prefs.setString('imageURL', u.imageURL ?? '');
-            prefs.setInt('level', u.level!);
-            prefs.setInt('experience', u.experience!);
+            prefs.setString('campus', campus ?? '');
+            prefs.setString('imageURL', imageURL ?? '');
+            prefs.setInt('level', level ?? 0);
+            prefs.setInt('experience', experience ?? 0);
+
             Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.rightToLeft,
-                    child: const NavBar()));
-          } else if (response.statusCode == 423) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                showCloseIcon: true,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Text(
-                  'Disabled account',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          } else if (response.statusCode == 404) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                showCloseIcon: true,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Text(
-                  'Account not found',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          } else if (response.statusCode == 401) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                showCloseIcon: true,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Text(
-                  'Wrong credentials. Try again with other values',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
+              context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: const NavBar(),
               ),
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+                backgroundColor: Theme.of(context).splashColor,
                 showCloseIcon: true,
+                closeIconColor: Theme.of(context).secondaryHeaderColor,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                content: const Text(
-                  'Something went wrong. Try again later',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(17.5)),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
+                content: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                  child: Text(
+                    "Parece que ocurrió un error",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
                   ),
                 ),
                 behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 3),
+                duration: const Duration(seconds: 2),
               ),
             );
           }
+        } on DioException catch (e) {
+          if (e.response != null) {
+            switch (e.response!.statusCode) {
+              case 401:
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Theme.of(context).splashColor,
+                    showCloseIcon: true,
+                    closeIconColor: Theme.of(context).secondaryHeaderColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(17.5)),
+                    margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
+                    content: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                      child: Text(
+                        "Verifica tus credenciales",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
+                      ),
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+                break;
+              case 404:
+                print('Error 404: Recurso no encontrado.');
+                break;
+              case 423:
+                print('Usuario inabilidado.');
+                break;
+              case 500:
+                print('Error 500: Error en el servidor.');
+                break;
+              default:
+                print('Error inesperado: ${e.response!.statusCode}');
+                break;
+            }
+          } else {
+            // Error sin respuesta del servidor
+            print('Error sin respuesta del servidor: ${e.message}');
+          }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-              showCloseIcon: true,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: const Text(
-                'Something went wrong. Try again later',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
-            ),
-          );
+          // Otros errores que no son de Dio
+          print('Ocurrió un error inesperado: $e');
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -188,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(

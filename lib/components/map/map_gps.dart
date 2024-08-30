@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings
 import 'dart:async';
+import 'dart:async' as async;
+
 import 'dart:convert';
 import 'dart:ui';
 import 'package:dio/dio.dart';
@@ -33,6 +35,7 @@ class _MapGPSState extends State<MapGPS> {
   bool serviceEnabled = false;
   bool showUserLocation = false;
   Position? userLocation;
+  async.Timer? _gpsCheckTimer;
 
   late MapController mapController;
   StreamSubscription<Position>? _positionStreamSubscription;
@@ -66,12 +69,29 @@ class _MapGPSState extends State<MapGPS> {
       },
     );
     centerAndGetLocationPermission();
+    _startGPSTimer();
   }
 
   @override
   void dispose() {
     _positionStreamSubscription?.cancel();
+    _gpsCheckTimer?.cancel(); // Cancelar el temporizador
     super.dispose();
+  }
+
+  void _startGPSTimer() {
+    _gpsCheckTimer =
+        async.Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (serviceEnabled = await Geolocator.isLocationServiceEnabled()) {
+        setState(() {
+          showUserLocation = true;
+        });
+      } else {
+        setState(() {
+          showUserLocation = false;
+        });
+      }
+    });
   }
 
   Future getChallenges() async {
@@ -185,8 +205,6 @@ class _MapGPSState extends State<MapGPS> {
   }
 
   Future centerAndGetLocationPermission() async {
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
     if (serviceEnabled) {
       _positionStreamSubscription = Geolocator.getPositionStream().listen(
         (Position position) {
@@ -199,11 +217,8 @@ class _MapGPSState extends State<MapGPS> {
           );
         },
       );
-      showUserLocation = true;
       final center = LatLng(userLocation!.latitude, userLocation!.longitude);
       mapController.move(center, 17);
-    } else {
-      showUserLocation = false;
     }
     LocationPermission checkPermissions;
     checkPermissions = await Geolocator.checkPermission();

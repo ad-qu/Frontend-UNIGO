@@ -169,6 +169,8 @@ class _ItineraryCardState extends State<ItineraryCard> {
                 padding: const EdgeInsets.fromLTRB(0, 0, 7.5, 0),
                 child: ItineraryMoreButton(
                   idItinerary: widget.idItinerary,
+                  imageURL: widget.imageURL,
+                  name: widget.name,
                   onChange: widget.onChange,
                 ),
               ),

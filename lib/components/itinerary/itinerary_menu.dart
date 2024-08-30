@@ -11,11 +11,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ItineraryMenu extends StatefulWidget {
   final String idItinerary;
+  final String name;
+  final String imageURL;
   final VoidCallback onChange;
 
   const ItineraryMenu({
     super.key,
     required this.idItinerary,
+    required this.name,
+    required this.imageURL,
     required this.onChange,
   });
   @override
@@ -179,25 +183,6 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () async {
-            Navigator.pop(context);
-          },
-          child: Container(
-            height: 39,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: Center(
-              child: Text(
-                'Editar',
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Divider(color: Theme.of(context).dividerColor, height: 1),
         GestureDetector(
           onTap: () async {
             showDeleteConfirmation();

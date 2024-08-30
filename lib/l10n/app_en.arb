@@ -25,6 +25,7 @@
   "faster2": "remember you",
   "faster3": " for faster logins.",
   "empty_fields": "Check that the fields are not empty",
+  "not_found": "User does not exist",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -32,6 +33,7 @@
   "name": "Name",
   "surname": "Surname",
   "username": "Username",
+  "campus": "Select your universitary campus",
   "repeat_password": "Repeat your password",
   "characters": "Contains at least 8 characters",
   "number": "Contains at least 1 number",
@@ -92,7 +94,7 @@
 
   "@---------------- DISCOVER ------------------": {
   },
-  "filter_box": "Search for a user...",
+  "filter_box": "Search...",
 
   "@---------------- CHAT ------------------": {
   },

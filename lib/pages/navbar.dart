@@ -62,6 +62,7 @@ class _NavBarState extends State<NavBar> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
@@ -89,7 +90,7 @@ class _NavBarState extends State<NavBar> {
             gap: 10,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             color: Theme.of(context).secondaryHeaderColor,
-            activeColor: Theme.of(context).secondaryHeaderColor,
+            activeColor: Theme.of(context).canvasColor,
             tabBackgroundColor: Theme.of(context).splashColor,
             duration: const Duration(milliseconds: 250),
             selectedIndex: _currentIndex,

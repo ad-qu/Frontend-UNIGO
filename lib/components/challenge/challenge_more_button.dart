@@ -38,7 +38,7 @@ class _ChallengeMoreButtonState extends State<ChallengeMoreButton> {
               },
             ),
             width: 135,
-            height: 122,
+            height: 81,
             direction: PopoverDirection.bottom,
             contentDyOffset: -7.5,
             arrowHeight: 10,

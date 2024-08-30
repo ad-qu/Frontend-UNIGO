@@ -14,10 +14,6 @@ import '../../components/profile_screen/user_card.dart';
 import '../../components/entity/entity_card.dart';
 import 'entity_home.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class EntitySearchScreen extends StatefulWidget {
   const EntitySearchScreen({super.key});
 
@@ -30,16 +26,18 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
   List<Entity> unFollowingList = [];
   List<Entity> filteredEntities = [];
   String? _idUser;
+  bool _isCampusFilterEnabled = true;
+  String? _campus;
 
   @override
-  void didChangeDependencies() {
+  void initState() {
     _isLoading = true;
     Future.delayed(const Duration(milliseconds: 750), () {
       setState(() {
         _isLoading = false;
       });
     });
-    super.didChangeDependencies();
+    super.initState();
     getUserInfo();
     fetchEntities();
   }
@@ -48,6 +46,8 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _idUser = prefs.getString('idUser');
+      _campus = prefs.getString('campus');
+      print("User Campus: $_campus");
     });
   }
 
@@ -75,18 +75,25 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
         unFollowingList =
             unfollowing.map((entity) => Entity.fromJson2(entity)).toList();
         filteredEntities = unFollowingList;
-        print("bbbbbbbbbbbbbbbbbbbbbbbbb");
+        print("Entities fetched: ${unFollowingList.length}"); // Debugging line
+        _runFilter(""); // Initial filter call to populate filteredEntities
       });
     } catch (e) {
-      print("ccccc");
+      print("Failed to fetch entities: $e");
     }
   }
 
   void _runFilter(String enteredKeyword) {
     setState(() {
-      filteredEntities = (unFollowingList).where((entity) {
+      filteredEntities = unFollowingList.where((entity) {
         final lowerCaseKeyword = enteredKeyword.toLowerCase();
-        return entity.name.toLowerCase().startsWith(lowerCaseKeyword);
+        final matchesKeyword =
+            entity.name.toLowerCase().startsWith(lowerCaseKeyword);
+        final matchesCampus =
+            _isCampusFilterEnabled ? (entity.campus == _campus) : true;
+        print(
+            "Entity: ${entity.name}, Matches Keyword: $matchesKeyword, Matches Campus: $matchesCampus"); // Debugging line
+        return matchesKeyword && matchesCampus;
       }).toList();
     });
   }
@@ -94,6 +101,7 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: _isLoading
             ? Container(
@@ -101,7 +109,7 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -171,6 +179,23 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 25),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isCampusFilterEnabled =
+                                    !_isCampusFilterEnabled;
+                                _runFilter(""); // Apply filter when toggle
+                              });
+                            },
+                            child: Icon(
+                              _isCampusFilterEnabled
+                                  ? Icons.filter_alt_rounded
+                                  : Icons.filter_alt_off_rounded,
+                              color: Theme.of(context).secondaryHeaderColor,
+                              size: 25,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -203,19 +228,13 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 20, 15, 47.5),
+                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const EntityScreen(),
-                                ),
-                              );
+                              Navigator.pop(context, true);
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -284,6 +303,23 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(width: 25),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isCampusFilterEnabled =
+                                    !_isCampusFilterEnabled;
+                                _runFilter(""); // Apply filter when toggle
+                              });
+                            },
+                            child: Icon(
+                              _isCampusFilterEnabled
+                                  ? Icons.filter_alt_rounded
+                                  : Icons.filter_alt_off_rounded,
+                              color: Theme.of(context).secondaryHeaderColor,
+                              size: 25,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -313,6 +349,9 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                         attr4: filteredEntities[index].verified,
                                         attr5: filteredEntities[index].admin,
                                         isFollowed: false,
+                                        onRefresh: () {
+                                          fetchEntities(); // Call refresh on fetchEntities
+                                        },
                                       ),
                                     );
                                   } catch (e) {

@@ -4,11 +4,15 @@ import 'package:unigo/components/itinerary/itinerary_menu.dart';
 
 class ItineraryMoreButton extends StatefulWidget {
   final String idItinerary;
+  final String imageURL;
+  final String name;
   final VoidCallback onChange;
 
   const ItineraryMoreButton({
     super.key,
     required this.idItinerary,
+    required this.imageURL,
+    required this.name,
     required this.onChange,
   });
   @override
@@ -30,13 +34,15 @@ class ItineraryMoreButtonState extends State<ItineraryMoreButton> {
             context: context,
             bodyBuilder: (context) => ItineraryMenu(
               idItinerary: widget.idItinerary,
+              name: widget.name,
+              imageURL: widget.imageURL,
               onChange: () {
                 widget.onChange();
                 Navigator.of(context).pop();
               },
             ),
             width: 100,
-            height: 81,
+            height: 40,
             direction: PopoverDirection.bottom,
             contentDyOffset: -7.5,
             arrowHeight: 10,

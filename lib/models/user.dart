@@ -7,6 +7,7 @@ class User {
       this.imageURL,
       this.email,
       this.password,
+      this.campus,
       this.experience,
       this.level,
       this.active});
@@ -18,6 +19,7 @@ class User {
   final String? imageURL;
   final String? email;
   final String? password;
+  final String? campus;
   final int? experience;
   final int? level;
   final bool? active;
@@ -27,6 +29,7 @@ class User {
         surname: json["surname"],
         username: json["username"],
         imageURL: json["imageURL"],
+        campus: json["campus"],
         level: json["level"],
         experience: json["experience"],
         active: json["active"],
@@ -40,6 +43,7 @@ class User {
         surname: json["surname"],
         username: json["username"],
         imageURL: json["imageURL"],
+        campus: json["campus"],
         level: json["level"],
         experience: json["experience"],
         active: json["active"],
@@ -54,6 +58,7 @@ class User {
         "_id": idUser,
         "name": name,
         "surname": surname,
+        "campus": campus,
         "experience": experience,
         // "username": username,
         // "email": email,

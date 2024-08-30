@@ -184,14 +184,17 @@ class _EntityScreenState extends State<EntityScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.rightToLeft,
                                   child: const EntitySearchScreen(),
                                 ),
                               );
+                              if (result == true) {
+                                _refreshEntities(); // Refresh entities when coming back
+                              }
                             },
                             child: Container(
                               padding: const EdgeInsets.all(15),
@@ -238,6 +241,9 @@ class _EntityScreenState extends State<EntityScreen> {
                                           attr4: entityList[index].verified,
                                           attr5: entityList[index].admin,
                                           isFollowed: true,
+                                          onRefresh: () {
+                                            getEntities(); // Call refresh on fetchEntities
+                                          },
                                         ),
                                       );
                                     } catch (e) {

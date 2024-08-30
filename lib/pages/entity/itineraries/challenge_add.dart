@@ -18,10 +18,6 @@ import 'package:unigo/pages/entity/itineraries/challenge_location_picker.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class ChallengeAdd extends StatefulWidget {
   final String idItinerary;
   const ChallengeAdd({
@@ -44,6 +40,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
   );
   String selectedAnswer = '';
   int selectedAnswerIndex = -1;
+  bool showQuestionSection = false;
 
   String longitude = "";
   String latitude = "";
@@ -168,7 +165,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
@@ -188,68 +185,95 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         ),
                         const SizedBox(height: 35),
 
-                        // Instrucciones sobre las respuestas
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  "Recuerda que habrán 3 posibles respuestas.\nSolo una será la correcta.",
-                                  style: GoogleFonts.inter(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.color,
-                                    fontSize: 12,
-                                  ),
-                                ),
+                        // Interruptor para mostrar la sección de preguntas
+                        Row(
+                          children: [
+                            Text(
+                              "Agregar pregunta y respuestas",
+                              style: GoogleFonts.inter(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.color,
+                                fontSize: 14,
                               ),
-                            ],
-                          ),
+                            ),
+                            Switch(
+                              value: showQuestionSection,
+                              onChanged: (value) {
+                                setState(() {
+                                  showQuestionSection = value;
+                                });
+                              },
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 15),
 
-                        // Pregunta del reto
-                        QuestionTextField(
-                          controller: questionController,
-                          labelText: "Pregunta",
-                          obscureText: false,
-                        ),
-                        const SizedBox(height: 7),
-
-                        // Respuestas del reto
-                        Column(
-                          children: List.generate(3, (index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: InputBigTextField(
-                                      controller: answerControllers[index],
-                                      labelText: "Respuesta ${index + 1}",
-                                      obscureText: false,
+                        // Mostrar la sección de preguntas y respuestas si el interruptor está activado
+                        if (showQuestionSection) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    "Recuerda que habrán 3 posibles respuestas.\nSolo una será la correcta.",
+                                    style: GoogleFonts.inter(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color,
+                                      fontSize: 12,
                                     ),
                                   ),
-                                  Radio<int>(
-                                    activeColor:
-                                        Theme.of(context).secondaryHeaderColor,
-                                    value: index,
-                                    groupValue: selectedAnswerIndex,
-                                    onChanged: (int? value) {
-                                      setState(() {
-                                        selectedAnswerIndex = value!;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                        ),
-                        const SizedBox(height: 25),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+
+                          // Pregunta del reto
+                          QuestionTextField(
+                            controller: questionController,
+                            labelText: "Pregunta",
+                            obscureText: false,
+                          ),
+                          const SizedBox(height: 7),
+
+                          // Respuestas del reto
+                          Column(
+                            children: List.generate(3, (index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: InputBigTextField(
+                                        controller: answerControllers[index],
+                                        labelText: "Respuesta ${index + 1}",
+                                        obscureText: false,
+                                      ),
+                                    ),
+                                    Radio<int>(
+                                      activeColor: Theme.of(context)
+                                          .secondaryHeaderColor,
+                                      value: index,
+                                      groupValue: selectedAnswerIndex,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          selectedAnswerIndex = value!;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ),
+                          const SizedBox(height: 25),
+                        ],
 
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
@@ -416,7 +440,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -428,43 +452,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                      fontSize: 12,
-                    ),
-                    children: [
-                      TextSpan(
-                        text:
-                            "Recuerda que el reto que crees deberá cumplir los ",
-                      ),
-                      TextSpan(
-                        text: AppLocalizations.of(context)!.explanation2,
-                        style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
-                      ),
-                      TextSpan(
-                        text: AppLocalizations.of(context)!.explanation3,
-                      ),
-                      TextSpan(
-                        text: AppLocalizations.of(context)!.explanation4,
-                        style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
-                      ),
-                      TextSpan(
-                        text: " de UNIGO!",
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              const SizedBox(height: 15),
             ],
           ),
         ),

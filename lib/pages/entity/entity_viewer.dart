@@ -113,13 +113,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.pop(
-                                  context,
-                                  PageTransition(
-                                    type: PageTransitionType.topToBottom,
-                                    child: const EntityScreen(),
-                                  ),
-                                );
+                                Navigator.pop(context, true);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(15),
@@ -500,13 +494,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.pop(
-                                  context,
-                                  PageTransition(
-                                    type: PageTransitionType.topToBottom,
-                                    child: const EntityScreen(),
-                                  ),
-                                );
+                                Navigator.pop(context, true);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(15),

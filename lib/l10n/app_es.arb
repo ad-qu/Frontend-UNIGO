@@ -24,6 +24,7 @@
   "faster2": "te recordará",
   "faster3": " para iniciar sesión.",
   "empty_fields": "Verifique que no haya campos vacíos",
+  "not_found": "El usuario no existe",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -31,6 +32,7 @@
   "name": "Nombre",
   "surname": "Apellido",
   "username": "Nombre de usuario",
+  "campus": "Selecciona tu campus universitario",
   "repeat_password": "Repita la contraseña",
   "characters": "Contiene al menos 8 carácteres",
   "number": "Contiene al menos 1 número",
@@ -97,7 +99,7 @@
 
   "@---------------- DISCOVER ------------------": {
   },
-  "filter_box": "Busca un usuario...",
+  "filter_box": "Busca...",
 
   "@---------------- CHAT ------------------": {
   },

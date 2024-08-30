@@ -24,6 +24,7 @@
   "faster2": "et recordarà",
   "faster3": " per a iniciar sessió.",
   "empty_fields": "Comproveu que no hi hagi camps buits",
+  "not_found": "L'usuari no existeix",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -31,6 +32,7 @@
   "name": "Nom",
   "surname": "Cognom",
   "username": "Nom d'usuari",
+  "campus": "Selecciona el teu campus universitari",
   "repeat_password": "Repeteix la contrasenya",
   "characters": "Conté almenys 8 caràcters",
   "number": "Conté almenys 1 número",
@@ -91,7 +93,7 @@
   
   "@---------------- DISCOVER ------------------": {
   },
-  "filter_box": "Cerca un usuari...",
+  "filter_box": "Cerca...",
 
   "@---------------- CHAT ------------------": {
   },

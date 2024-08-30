@@ -28,7 +28,7 @@ class DeleteAccountButton extends StatelessWidget {
                   Icon(
                     Icons.delete_forever_rounded,
                     size: 20,
-                    color: Theme.of(context).secondaryHeaderColor,
+                    color: Theme.of(context).canvasColor,
                   ),
                   SizedBox(
                     width: 17,
