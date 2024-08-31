@@ -1,26 +1,31 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+class Messages {
+  Messages({
+    required this.idUser,
+    required this.senderName,
+    required this.message,
+  });
 
-class ChatMessage {
-  ChatMessage(
-    {required this.senderName,
-    required this.messageContent,
-    required this.timeSent,
-    required this.roomId,
-    required this.photoURL});
-
-  final String messageContent;
+  final String idUser;
   final String senderName;
-  final Timestamp timeSent;
-  final String roomId;
-  final String photoURL;
+  final String message;
 
-  Map<String, dynamic> toMap() {
-    return {
-      'senderName': senderName,
-      'messageContent': messageContent,
-      'timeSent': timeSent,
-      'roomId': roomId,
-      'photoURL': photoURL,
-    };
-  }
+  factory Messages.fromJson(Map<String, dynamic> json) => Messages(
+        idUser: json["idUser"],
+        senderName: json["senderName"],
+        message: json["message"],
+      );
+
+  factory Messages.fromJson2(Map<String, dynamic> json) => Messages(
+        idUser: json["idUser"],
+        senderName: json["senderName"],
+        message: json["message"],
+      );
+
+  get foto => null;
+
+  Map<String, dynamic> toJson() => {
+        "_id": idUser,
+        "senderName": senderName,
+        "message": message,
+      };
 }

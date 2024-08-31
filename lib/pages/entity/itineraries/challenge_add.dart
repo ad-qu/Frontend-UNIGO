@@ -183,28 +183,38 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                           labelText: "Descripción",
                           obscureText: false,
                         ),
-                        const SizedBox(height: 35),
+                        const SizedBox(height: 20),
 
                         // Interruptor para mostrar la sección de preguntas
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              "Agregar pregunta y respuestas",
-                              style: GoogleFonts.inter(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.color,
-                                fontSize: 14,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "¿Desea agregar una pregunta?",
+                                style: GoogleFonts.inter(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
-                            Switch(
-                              value: showQuestionSection,
-                              onChanged: (value) {
-                                setState(() {
-                                  showQuestionSection = value;
-                                });
-                              },
+                            Transform.scale(
+                              scale: 0.75, // Redimensionar el Switch
+                              child: Switch(
+                                value: showQuestionSection,
+                                onChanged: (value) {
+                                  setState(() {
+                                    showQuestionSection = value;
+                                  });
+                                },
+                                activeColor: Theme.of(context)
+                                    .splashColor, // Color cuando está activado
+                                inactiveTrackColor: Colors
+                                    .grey, // Color de la pista cuando está desactivado
+                                inactiveThumbColor: Theme.of(context)
+                                    .splashColor, // Color del control deslizante cuando está desactivado
+                              ),
                             ),
                           ],
                         ),
@@ -440,7 +450,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

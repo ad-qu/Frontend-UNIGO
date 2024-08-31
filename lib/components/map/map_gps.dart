@@ -9,8 +9,11 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:unigo/models/campus.dart';
 import 'package:unigo/models/challenge.dart';
 import 'package:unigo/pages/map/challenge_screen.dart';
+import 'package:unigo/pages/profile/profile_home.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +29,7 @@ class MapGPS extends StatefulWidget {
 
 class _MapGPSState extends State<MapGPS> {
   String? _idUser;
+
   Challenge? challenge;
   List<Challenge> challengeList = <Challenge>[];
 
@@ -36,11 +40,14 @@ class _MapGPSState extends State<MapGPS> {
   bool showUserLocation = false;
   Position? userLocation;
   async.Timer? _gpsCheckTimer;
-
+  String? latitude;
+  String? longitude;
   late MapController mapController;
   StreamSubscription<Position>? _positionStreamSubscription;
-  SharedPreferences? _prefs;
-  static const String _lastKnownLocationKey = 'last_known_location';
+  bool gpsActivated = false;
+
+  List<Campus> campusList = [];
+  Campus? selectedCampus;
 
   @override
   void initState() {
@@ -48,50 +55,47 @@ class _MapGPSState extends State<MapGPS> {
 
     mapController = MapController();
 
-    getChallenges();
+    getLocationPermission();
+    startGPS();
 
-    SharedPreferences.getInstance().then(
-      (prefs) {
-        _prefs = prefs;
-        final lastLocationString = prefs.getString(_lastKnownLocationKey);
-        if (lastLocationString != null) {
-          final lastLocation = Position.fromMap(
-            Map<String, dynamic>.from(json.decode(lastLocationString)),
-          );
-          setState(() {
-            userLocation = lastLocation;
-          });
-          mapController.move(
-            LatLng(userLocation!.latitude, userLocation!.longitude),
-            18,
-          );
-        }
-      },
-    );
-    centerAndGetLocationPermission();
-    _startGPSTimer();
+    getCampusLocation();
+    getChallenges();
+    getCampus();
   }
 
   @override
   void dispose() {
     _positionStreamSubscription?.cancel();
-    _gpsCheckTimer?.cancel(); // Cancelar el temporizador
+    _gpsCheckTimer?.cancel();
     super.dispose();
   }
 
-  void _startGPSTimer() {
-    _gpsCheckTimer =
-        async.Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (serviceEnabled = await Geolocator.isLocationServiceEnabled()) {
-        setState(() {
-          showUserLocation = true;
-        });
-      } else {
-        setState(() {
-          showUserLocation = false;
-        });
-      }
-    });
+  Future<void> getCampusLocation() async {
+    final prefs = await SharedPreferences.getInstance();
+    latitude = prefs.getString('latitude');
+    longitude = prefs.getString('longitude');
+
+    if (latitude == null ||
+        longitude == null ||
+        latitude == '' ||
+        longitude == '') {
+      latitude = "41.38365114691718";
+      longitude = "2.115667142329124";
+      _showCampusSelectionDialog();
+    }
+  }
+
+  Future getCampus() async {
+    String path = 'http://${dotenv.env['API_URL']}/campus/get/all';
+    try {
+      var response = await Dio().get(path);
+      var campus = response.data as List;
+      setState(() {
+        campusList = campus.map((campus) => Campus.fromJson2(campus)).toList();
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future getChallenges() async {
@@ -204,22 +208,7 @@ class _MapGPSState extends State<MapGPS> {
     allmarkers.addAll(newMarkers);
   }
 
-  Future centerAndGetLocationPermission() async {
-    if (serviceEnabled) {
-      _positionStreamSubscription = Geolocator.getPositionStream().listen(
-        (Position position) {
-          setState(
-            () {
-              userLocation = position;
-              _prefs?.setString(
-                  _lastKnownLocationKey, json.encode(position.toJson()));
-            },
-          );
-        },
-      );
-      final center = LatLng(userLocation!.latitude, userLocation!.longitude);
-      mapController.move(center, 17);
-    }
+  Future<void> getLocationPermission() async {
     LocationPermission checkPermissions;
     checkPermissions = await Geolocator.checkPermission();
 
@@ -299,108 +288,338 @@ class _MapGPSState extends State<MapGPS> {
     }
   }
 
+  Future<void> getPositionSubscription() async {
+    _positionStreamSubscription = Geolocator.getPositionStream().listen(
+      (Position position) {
+        setState(() {
+          userLocation = position;
+        });
+      },
+    );
+  }
+
+  Future<void> startGPS() async {
+    _gpsCheckTimer =
+        async.Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (gpsActivated) {
+        if (await Geolocator.isLocationServiceEnabled() == false) {
+          setState(() {
+            gpsActivated = false;
+          });
+        }
+      } else {
+        if (await Geolocator.isLocationServiceEnabled() == true) {
+          getPositionSubscription();
+          setState(() {
+            gpsActivated = true;
+          });
+        }
+      }
+    });
+  }
+
+  openSettings() {
+    Geolocator.openLocationSettings();
+  }
+
+  Future<void> _showCampusSelectionDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text(
+              'Selecciona un campus universitario',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            content: FutureBuilder(
+              future: getCampus(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    width: double.maxFinite,
+                    height: 155,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Color.fromARGB(25, 217, 59, 60),
+                        strokeCap: StrokeCap.round,
+                        strokeWidth: 5,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            Color.fromARGB(255, 204, 49, 49)),
+                      ),
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text('Error al cargar los campus'),
+                  );
+                } else {
+                  return Container(
+                    width: double.maxFinite,
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height *
+                          0.5, // 60% de la altura de la pantalla
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'No ha sido posible seleccionar un campus universitario al iniciar sesión con Google. Selecciona uno para continuar.',
+                            style: TextStyle(
+                                fontSize: 13.5), // Mismo tamaño de texto
+                            textAlign: TextAlign.left,
+                          ),
+                          const SizedBox(height: 20),
+                          DropdownButtonFormField<Campus>(
+                            value: selectedCampus,
+                            enableFeedback: false,
+                            iconEnabledColor:
+                                Theme.of(context).secondaryHeaderColor,
+                            isExpanded: true,
+                            hint: const Text(
+                              'Seleccionar campus',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 138, 138, 138),
+                                fontSize: 14,
+                              ),
+                            ),
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).dividerColor,
+                                    width: 1),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              contentPadding: const EdgeInsets.all(17),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).dividerColor,
+                                    width: 1),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              fillColor: Theme.of(context).cardColor,
+                              filled: true,
+                            ),
+                            dropdownColor: Theme.of(context).cardColor,
+                            items: campusList.map((Campus campus) {
+                              return DropdownMenuItem<Campus>(
+                                value: campus,
+                                child: Text(
+                                  campus.name,
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.color,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (Campus? newValue) {
+                              setState(() {
+                                selectedCampus = newValue;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  if (selectedCampus != null) {
+                    final prefs = await SharedPreferences.getInstance();
+                    final String token = prefs.getString('token') ?? "";
+                    String path =
+                        'http://${dotenv.env['API_URL']}/user/update/$_idUser';
+
+                    try {
+                      var response = await Dio().post(
+                        path,
+                        data: {
+                          "campus": selectedCampus?.idCampus,
+                        },
+                        options: Options(
+                          headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer $token",
+                          },
+                        ),
+                      );
+
+                      prefs.setString('campus', selectedCampus?.idCampus ?? '');
+                      prefs.setString(
+                          'latitude', selectedCampus?.latitude ?? '');
+                      prefs.setString(
+                          'longitude', selectedCampus?.longitude ?? '');
+
+                      Navigator.of(context)
+                          .pop(); // Cerrar el diálogo si la solicitud es exitosa
+                    } catch (e) {
+                      // Manejar errores de solicitud
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error al realizar la solicitud: $e'),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Por favor, selecciona un campus.'),
+                      ),
+                    );
+                  }
+                },
+                style: ButtonStyle(
+                  overlayColor: WidgetStateColor.resolveWith(
+                    (states) => const Color.fromARGB(255, 204, 49, 49)
+                        .withOpacity(0.2), // Color del overlay al presionar
+                  ),
+                ),
+                child: const Text(
+                  'Guardar',
+                  style: TextStyle(
+                    color: Color.fromARGB(
+                        255, 204, 49, 49), // Cambia el color del texto a rojo
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void centerUniversityLocation() {
-    const center = LatLng(41.27561, 1.98722);
-    mapController.move(center, 18);
+    print("sdfsdfasfsdf");
+    print(latitude);
+    if (latitude != null ||
+        longitude != null ||
+        latitude != '' ||
+        latitude != '') {
+      LatLng center = LatLng(double.parse(latitude!), double.parse(longitude!));
+      mapController.move(center, 17);
+    } else {
+      LatLng defaultCenter = const LatLng(41.38365114691718, 2.115667142329124);
+      mapController.move(defaultCenter, 17);
+    }
+  }
+
+  void centerUserLocation() {
+    LatLng center = LatLng(userLocation!.latitude, userLocation!.longitude);
+    mapController.move(center, 17);
   }
 
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    return Stack(
-      children: [
-        FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-            initialCenter: const LatLng(41.27561, 1.98722),
-            // initialCenter: LatLng(userLocation!.latitude, userLocation!.longitude),
-            initialZoom: 18,
-            maxZoom: 20,
-            cameraConstraint: CameraConstraint.contain(
-              bounds: LatLngBounds(
-                const LatLng(41, 1.65),
-                const LatLng(41.6, 2.35),
-              ),
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              initialCenter:
+                  LatLng(double.parse(latitude!), double.parse(longitude!)),
+              initialZoom: 16.5,
+              maxZoom: 20,
             ),
-          ),
-          children: [
-            RichAttributionWidget(
-              attributions: [
-                TextSourceAttribution(
-                  'OpenStreetMap contributors',
-                  onTap: () => launchUrl(
-                    Uri.parse('https://openstreetmap.org/copyright'),
+            children: [
+              RichAttributionWidget(
+                attributions: [
+                  TextSourceAttribution(
+                    'OpenStreetMap contributors',
+                    onTap: () => launchUrl(
+                      Uri.parse('https://openstreetmap.org/copyright'),
+                    ),
+                  ),
+                ],
+              ),
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                tileBuilder: isDarkMode ? _darkModeTileBuilder : null,
+              ),
+              MarkerLayer(
+                markers: allmarkers,
+              ),
+              CurrentLocationLayer(
+                style: LocationMarkerStyle(
+                  headingSectorColor: Colors.blue.shade700,
+                  marker: DefaultLocationMarker(
+                    color: Colors.blue.shade700,
                   ),
                 ),
-              ],
-            ),
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-              tileBuilder: isDarkMode ? _darkModeTileBuilder : null,
-            ),
-            MarkerLayer(
-              markers: allmarkers,
-            ),
-            CurrentLocationLayer(
-              style: LocationMarkerStyle(
-                headingSectorColor: Colors.blue.shade700,
-                marker: DefaultLocationMarker(
-                  color: Colors.blue.shade700,
+              ),
+            ],
+          ),
+          Positioned(
+            bottom: 250,
+            right: 32,
+            child: GestureDetector(
+              onTap: centerUniversityLocation,
+              child: Container(
+                width: 62.5,
+                height: 62.5,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).splashColor,
                 ),
-              ),
-            ),
-          ],
-        ),
-        Positioned(
-          bottom: 250,
-          right: 32,
-          child: GestureDetector(
-            onTap: () {
-              centerUniversityLocation();
-            },
-            child: Container(
-              width: 62.5,
-              height: 62.5,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).splashColor,
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.school_rounded,
-                  color: Color.fromARGB(255, 238, 238, 238),
-                  size: 30,
+                child: const Center(
+                  child: Icon(
+                    Icons.school_rounded,
+                    color: Color.fromARGB(255, 238, 238, 238),
+                    size: 30,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 157.5,
-          right: 32,
-          child: GestureDetector(
-            onTap: centerAndGetLocationPermission,
-            child: Container(
-              width: 62.5,
-              height: 62.5,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).splashColor,
-              ),
-              child: Center(
-                child: Icon(
-                  showUserLocation
-                      ? Icons.gps_fixed_rounded
-                      : Icons.gps_off_rounded,
-                  color: const Color.fromARGB(255, 238, 238, 238),
-                  size: 30,
+          Positioned(
+            bottom: 157.5,
+            right: 32,
+            child: GestureDetector(
+              onTap: gpsActivated == true ? centerUserLocation : openSettings,
+              child: Container(
+                width: 62.5,
+                height: 62.5,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).splashColor,
+                ),
+                child: Center(
+                  child: Icon(
+                    gpsActivated
+                        ? Icons.gps_fixed_rounded
+                        : Icons.gps_off_rounded,
+                    color: const Color.fromARGB(255, 238, 238, 238),
+                    size: 30,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

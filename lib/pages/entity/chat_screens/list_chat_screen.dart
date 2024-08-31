@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/models/challenge.dart';
+import 'package:unigo/pages/entity/chat_screens/chat_screen2.dart';
 
 import '../../../components/chat_screen/chat_card_widget.dart';
 import 'chat_screen.dart';
@@ -125,7 +126,7 @@ class _MyChatListState extends State<MyChatList> {
                       PageTransition(
                         type: PageTransitionType
                             .rightToLeft, // Tipo de transición deseada
-                        child: ChatWidget(
+                        child: Chat2Widget(
                           roomNameWidget: challengeList[index].name,
                           socketWidget: socket,
                           roomNamesWidget: roomNames,

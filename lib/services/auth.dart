@@ -72,7 +72,7 @@ class AuthService {
         data: {
           "name": name,
           "surname": surname,
-          "username": Random().nextInt(99999 - 10000 + 1) + 10000,
+          "username": (Random().nextInt(99999 - 10000 + 1) + 10000).toString(),
           "email": user.email,
           "password": user.uid
         },
@@ -80,47 +80,35 @@ class AuthService {
 
       print(response);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print('User registration successful');
-        Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
-        unigo.User u = unigo.User.fromJson(payload);
-
-        print('Token: $payload');
-
-        var data = json.decode(response.toString());
-
-        print(data['token']);
+        Map<String, dynamic> data = response.data;
+        final token = data['token'];
+        final idUser = data['_id'];
+        final name = data['name'];
+        final surname = data['surname'];
+        final username = data['username'];
+        final imageURL = data['imageURL'];
+        final campus = data['campus'];
+        final latitude = data['latitude'];
+        final longitude = data['longitude'];
+        final level = data['level'];
+        final experience = data['experience'];
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', data['token']);
-        prefs.setString('idUser', u.idUser);
-        prefs.setString('name', u.name);
-        prefs.setString('surname', u.surname);
-        prefs.setString('username', u.username);
-        try {
-          // prefs.setInt('exp', u.exp!);
-          prefs.setInt('level', u.level!);
-          prefs.setInt('experience', u.experience!);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-              showCloseIcon: true,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: Text(
-                'Error $e',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
+        prefs.setString('token', token);
+        prefs.setString('idUser', idUser);
+        prefs.setString('name', name);
+        prefs.setString('surname', surname);
+        prefs.setString('username', username);
+        prefs.setString('email', user.email!);
+        prefs.setString('password', user.uid);
+        prefs.setString('campus', campus ?? '');
+        prefs.setString('latitude', latitude ?? '');
+        prefs.setString('longitude', longitude ?? '');
+        prefs.setString('imageURL', imageURL ?? '');
+        prefs.setInt('level', level);
+        prefs.setInt('experience', experience);
       } else {
         print(
             'User registration failed with status code: ${response.statusCode}');
@@ -140,44 +128,54 @@ class AuthService {
           "password": user.uid,
         },
       );
-      if (response.statusCode == 200) {
-        Map<String, dynamic> payload = Jwt.parseJwt(response.toString());
-        unigo.User u = unigo.User.fromJson(payload);
-        var data = json.decode(response.toString());
+      if (response.statusCode == 222) {
+        Map<String, dynamic> data = response.data;
+        final token = data['token'];
+        final idUser = data['_id'];
+        final name = data['name'];
+        final surname = data['surname'];
+        final username = data['username'];
+        final imageURL = data['imageURL'];
+        final campus = data['campus'];
+        final latitude = data['latitude'];
+        final longitude = data['longitude'];
+        final level = data['level'];
+        final experience = data['experience'];
+
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', data['token']);
-        prefs.setString('idUser', u.idUser);
-        prefs.setString('name', u.name);
-        prefs.setString('surname', u.surname);
-        prefs.setString('username', u.username);
+        prefs.setString('token', token);
+        prefs.setString('idUser', idUser);
+        prefs.setString('name', name);
+        prefs.setString('surname', surname);
+        prefs.setString('username', username);
         prefs.setString('email', user.email!);
         prefs.setString('password', user.uid);
-        prefs.setString('imageURL', u.imageURL ?? '');
-        try {
-          // prefs.setInt('exp', u.exp!);
-          prefs.setInt('level', u.level!);
-          prefs.setInt('experience', u.experience!);
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-              showCloseIcon: true,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-              content: Text(
-                'Error $e',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
+        prefs.setString('campus', campus ?? '');
+        prefs.setString('latitude', latitude ?? '');
+        prefs.setString('longitude', longitude ?? '');
+        prefs.setString('imageURL', imageURL ?? '');
+        prefs.setInt('level', level);
+        prefs.setInt('experience', experience);
       }
-    } catch (e) {}
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color.fromARGB(255, 222, 66, 66),
+          showCloseIcon: true,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+          content: Text(
+            'Error $e',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 }

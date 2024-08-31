@@ -3,12 +3,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../components/map/map_gps.dart';
 import '../../components/home_screen/sliding_up_panel.dart';
 
 class Map extends StatefulWidget {
-  //const LoginScreen({super.key, required String title});
   const Map({super.key});
 
   @override

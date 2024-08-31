@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:unigo/pages/entity/chat_screens/chat_screen.dart';
 import 'package:unigo/pages/entity/entity_edit.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/entity_people.dart';
@@ -274,47 +275,59 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: const Color.fromARGB(
-                                            55, 204, 49, 49),
-                                        width: 1),
-                                    color: Theme.of(context).cardColor,
-                                    borderRadius: BorderRadius.circular(17.5)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(1),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.chat,
-                                            size: 20,
-                                            color: Theme.of(context)
-                                                .secondaryHeaderColor,
-                                          ),
-                                          const SizedBox(
-                                            width: 17,
-                                          ),
-                                          Text(
-                                            "Chat",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium,
-                                          ),
-                                        ],
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios_rounded,
-                                        size: 18,
-                                        color: Theme.of(context)
-                                            .secondaryHeaderColor,
-                                      ),
-                                    ],
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      type: PageTransitionType.rightToLeft,
+                                      child: ChatScreen(idEntity: widget.idEntity),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: const Color.fromARGB(
+                                              55, 204, 49, 49),
+                                          width: 1),
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius:
+                                          BorderRadius.circular(17.5)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(1),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.chat,
+                                              size: 20,
+                                              color: Theme.of(context)
+                                                  .secondaryHeaderColor,
+                                            ),
+                                            const SizedBox(
+                                              width: 17,
+                                            ),
+                                            Text(
+                                              "Chat",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelMedium,
+                                            ),
+                                          ],
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          size: 18,
+                                          color: Theme.of(context)
+                                              .secondaryHeaderColor,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

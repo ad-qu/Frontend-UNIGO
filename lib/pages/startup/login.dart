@@ -52,6 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
             final username = data['username'];
             final imageURL = data['imageURL'];
             final campus = data['campus'];
+            final latitude = data['latitude'];
+            final longitude = data['longitude'];
             final level = data['level'];
             final experience = data['experience'];
 
@@ -65,9 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
             prefs.setString('email', emailController.text);
             prefs.setString('password', passwordController.text);
             prefs.setString('campus', campus ?? '');
+            prefs.setString('latitude', latitude ?? '');
+            prefs.setString('longitude', longitude ?? '');
             prefs.setString('imageURL', imageURL ?? '');
-            prefs.setInt('level', level ?? 0);
-            prefs.setInt('experience', experience ?? 0);
+            prefs.setInt('level', level);
+            prefs.setInt('experience', experience);
 
             Navigator.push(
               context,

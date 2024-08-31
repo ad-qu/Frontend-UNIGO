@@ -27,13 +27,17 @@ class SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 1500));
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? username = prefs.getString("idUser");
+    String? idUser = prefs.getString("idUser");
     String? email = prefs.getString("email");
     String? password = prefs.getString("password");
+    print(idUser);
+    print(email);
+    print(password);
 
-    if (username == null) {
+    if (idUser == null) {
       _goToWelcomeScreen();
     } else {
+      print("23123123123131");
       try {
         var response = await Dio().post(
           'http://${dotenv.env['API_URL']}/auth/logIn',
@@ -42,14 +46,36 @@ class SplashScreenState extends State<SplashScreen> {
 
         // If the response code is 222, authentication is successful, otherwise navigate to Welcome Screen
         if (response.statusCode == 222) {
-          Map<String, dynamic> payload = Jwt.parseJwt(response.data['token']);
-          User u = User.fromJson(payload);
-          prefs.setString('token', response.data['token']);
-          prefs.setString('idUser', u.idUser);
-          prefs.setString('name', u.name);
-          prefs.setString('surname', u.surname);
-          prefs.setString('username', u.username);
+          Map<String, dynamic> data = response.data;
+          final token = data['token'];
+          final idUser = data['_id'];
+          final name = data['name'];
+          final surname = data['surname'];
+          final username = data['username'];
+          final imageURL = data['imageURL'];
+          final campus = data['campus'];
+          final latitude = data['latitude'];
+          final longitude = data['longitude'];
+          final level = data['level'];
+          final experience = data['experience'];
 
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('token', token);
+          prefs.setString('idUser', idUser);
+          prefs.setString('name', name);
+          prefs.setString('surname', surname);
+          prefs.setString('username', username);
+          prefs.setString('email', email!);
+          prefs.setString('password', password!);
+          prefs.setString('campus', campus ?? '');
+          prefs.setString('latitude', latitude ?? '');
+          prefs.setString('longitude', longitude ?? '');
+          prefs.setString('imageURL', imageURL ?? '');
+          prefs.setInt('level', level);
+          prefs.setInt('experience', experience);
+          print(latitude);
+          print(longitude);
+          print("233123123123123");
           _goToHomeScreen();
         } else {
           _goToWelcomeScreen();

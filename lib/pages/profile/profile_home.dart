@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -352,6 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future logOut() async {
     auth.signOut();
     GoogleSignIn().signOut();
+    FirebaseFirestore.instance.clearPersistence;
     clearInfo();
     Restart.restartApp();
   }

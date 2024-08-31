@@ -1,301 +1,278 @@
-import 'package:chat_bubbles/bubbles/bubble_special_one.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:unigo/components/loading_circle.dart';
+// ignore_for_file: use_build_context_synchronously
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/components/chat_screen/own_message_card.dart';
+import 'package:unigo/components/chat_screen/reply_card.dart';
+import 'package:unigo/components/itinerary/itinerary_card.dart';
+import 'package:unigo/models/message.dart';
+
+import 'package:unigo/pages/entity/entity_home.dart';
+
+import 'package:flutter/material.dart';
+
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:unigo/models/challenge.dart';
-import 'package:unigo/pages/entity/itineraries/challenge_add.dart';
-import '../../../models/message.dart';
-import '../../../components/chat_title_widget.dart';
-import 'chat_service.dart';
 
-void main() async {
-  await dotenv.load();
-}
+class ChatScreen extends StatefulWidget {
+  final String idEntity;
 
-class ChatWidget extends StatefulWidget {
-  final String? roomNameWidget;
-  final IO.Socket? socketWidget;
-  final Map<String, String>? roomNamesWidget;
-
-  const ChatWidget({
+  const ChatScreen({
     super.key,
-    this.roomNameWidget,
-    this.socketWidget,
-    this.roomNamesWidget,
+    required this.idEntity,
   });
 
   @override
-  State<ChatWidget> createState() => _ChatWidgetState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-Future<String> getUsername() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  var userName = prefs.getString('username');
-  return userName ?? '';
-}
+class _ChatScreenState extends State<ChatScreen> {
+  late bool _isLoading;
+  ScrollController _scrollController = ScrollController();
 
-class _ChatWidgetState extends State<ChatWidget> {
-  ChatService appState = ChatService();
-  List<Challenge> challengeList = <Challenge>[];
-  TextEditingController roomNameController = TextEditingController();
-  Map<String, String> roomNames = {};
-  IO.Socket? socket;
-  String _currentRoom = '';
-  String profilePic = " ";
-  List<ChatMessage> _messages = [];
-  final TextEditingController _textController = TextEditingController();
-  bool _isLoading = true;
+  late IO.Socket socket;
+
+  String? _idChat = "";
+  List<Messages> listMessage = [];
+  final TextEditingController _msgController = TextEditingController();
+
+  String? _idUser = "";
+  String? _senderName = "";
 
   @override
   void initState() {
+    _isLoading = true;
+    Future.delayed(const Duration(milliseconds: 750), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+
+    getUserInfo();
+    getChat(widget.idEntity);
+
     super.initState();
-    socket = widget.socketWidget;
-    roomNames = widget.roomNamesWidget!;
-    createRoom(widget.roomNameWidget!);
-    loadMessages().then((_) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+
+    socket = IO.io('http://${dotenv.env['API_URL_SOCKET']}', <String, dynamic>{
+      'transports': ['websocket'],
+    });
+    socket.onConnect((_) {
+      print('Conectado al servidor SocketIO');
+
+      //Enviar evento 'join-room' al servidor
+      socket.emit('join-room', widget.idEntity);
+    });
+    socket.on('connected-users', (data) {
+      print('Número de usuarios conectados: $data');
+    });
+    socket.on('message', (data) {
+      print('Mensaje recibido: $data');
+      if (data['idUser'] != _idUser) {
+        if (mounted) {
+          setState(() {
+            Messages msg = Messages(
+                idUser: data['idUser'] ?? '',
+                senderName: data['senderName'] ?? '',
+                message: data['message'] ?? '');
+            listMessage.add(msg);
+
+            // Scroll hasta el final de la lista
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollController
+                  .jumpTo(_scrollController.position.maxScrollExtent);
+            });
+          });
+        }
       }
     });
   }
 
-  Future<void> loadMessages() async {
-    List<ChatMessage> messages = await appState.getMessages(_currentRoom);
-    if (mounted) {
-      setState(() {
-        _messages = messages;
-      });
-    }
+  Future<void> getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _idUser = prefs.getString('idUser');
+      _senderName = prefs.getString('username');
+    });
+  }
+
+  Future<void> getChat(String idEntity) async {
     final prefs = await SharedPreferences.getInstance();
-    profilePic = prefs.getString('imageURL') ?? '';
-  }
+    final String token = prefs.getString('token') ?? "";
+    String path = 'http://${dotenv.env['API_URL']}/chat/get/${widget.idEntity}';
+    try {
+      var response = await Dio().get(
+        path,
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
 
-  void createRoom(String roomName) {
-    if (mounted) {
+      final data = response.data;
+      String chatId = data['_id'];
+      List<dynamic> conversationData = data['conversation'];
+      List<Messages> chatMessages = conversationData.map((messageJson) {
+        return Messages.fromJson2(messageJson);
+      }).toList();
+
+      print('Chat ID: $chatId');
+      print('Chat Messages: $chatMessages');
+
       setState(() {
-        roomNameController.clear(); // clear the input field
-        _currentRoom = roomName;
-        socket!.emit("JOIN_ROOM", getKeyFromValue(roomNames, _currentRoom));
+        listMessage = chatMessages;
+        _idChat = chatId;
       });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
+    } catch (e) {
+      print(e);
     }
   }
 
-  String? getKeyFromValue(Map<String, String> map, String targetValue) {
-    for (var entry in map.entries) {
-      if (entry.value == targetValue) {
-        return entry.key;
-      }
+  Future<void> sendMessageToDB() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String token = prefs.getString('token') ?? "";
+    await Dio().put(
+      'http://${dotenv.env['API_URL']}/chat/update/$_idChat',
+      data: {
+        "idUser": _idUser,
+        "senderName": _senderName,
+        "message": _msgController.text,
+      },
+      options: Options(
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      ),
+    );
+  }
+
+  void sendMessageToRoom(String message) {
+    Messages myMessage =
+        Messages(idUser: _idUser!, senderName: _senderName!, message: message);
+    if (socket.connected && mounted) {
+      setState(() {
+        listMessage.add(myMessage);
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
+      final data = {
+        'room': widget.idEntity,
+        'idUser': _idUser,
+        'senderName': _senderName,
+        'message': message,
+      };
+      socket.emit('message', data);
+    } else {
+      // logica de reconexión
+      print('socket not connected');
+      socket.connect();
+      socket.onConnect((_) =>
+          // ignore: avoid_print
+          {
+            print('Reconectado al servidor SocketIO'),
+            sendMessageToRoom(message)
+          });
     }
-    return null;
   }
 
-  void _handleSubmitted(ChatMessage chatMessage) {
-    if (_currentRoom.isNotEmpty) {
-      appState.sendMessage(chatMessage);
-      if (mounted) {
-        setState(() {
-          loadMessages();
-          _textController.clear();
-        });
-      }
-    }
-  }
-
-  String changeDateTimeFormat(DateTime date) {
-    final DateFormat formatter = DateFormat('hh:mm | dd - MM - yyyy');
-
-    //final DateFormat formatter = DateFormat('yyyy-MM-dd | hh:mm');
-    final String formatted = formatter.format(date);
-    return formatted;
-  }
-
-  Widget doMessageBubble(ChatMessage message, String username) {
-    final isSender = message.senderName == username;
-    final visibility = !isSender;
-    final alignment =
-        isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start;
-    final alignment2 =
-        isSender ? MainAxisAlignment.end : MainAxisAlignment.start;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 11),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: alignment,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(79.5, 4, 4, 0),
-            child: Visibility(
-              visible: visibility,
-              child: Text(
-                message.senderName,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Theme.of(context).textTheme.headlineMedium?.color,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: alignment2,
-            //crossAxisAlignment: CrossAxisAlignment.end,
-            crossAxisAlignment: alignment,
-            children: [
-              Visibility(
-                visible: visibility,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(17.5, 6, 5, 17.5),
-                  child: CircleAvatar(
-                    radius: 17.5,
-                    backgroundImage: message.photoURL != ""
-                        ? Image.network(message.photoURL).image
-                        : const AssetImage('images/default.png'),
-                  ),
-                ),
-              ),
-              Column(
-                mainAxisAlignment: alignment2,
-                crossAxisAlignment: alignment,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromRGBO(0, 125, 204, 1.0),
+        title: Text("Chat"),
+      ),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: [
+            SizedBox(
+                height: MediaQuery.of(context).size.height - 140,
+                child: ListView.builder(
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemCount: listMessage.length,
+                    itemBuilder: (context, index) {
+                      if (listMessage[index].idUser == _idUser) {
+                        return OwnMessageCard(msg: listMessage[index].message);
+                      } else {
+                        return ReplyCard(
+                            msg: listMessage[index].message,
+                            sender: listMessage[index].senderName);
+                      }
+                    })),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 4),
-                    child: BubbleSpecialOne(
-                      text: message.messageContent,
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      tail: true,
-                      isSender: isSender,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 60,
+                    child: Card(
+                      margin:
+                          const EdgeInsets.only(left: 2, right: 2, bottom: 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                      child: TextFormField(
+                        controller: _msgController,
+                        textAlignVertical: TextAlignVertical.center,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 5,
+                        minLines: 1,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Escriu un missatge...",
+                          contentPadding: EdgeInsets.all(20),
+                        ),
+                      ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(19.5, 2, 18, 4),
-                    child: Text(
-                      changeDateTimeFormat(message.timeSent.toDate()),
-                      style: const TextStyle(
-                        fontSize: 13.0,
-                        color: Colors.grey,
+                    padding: const EdgeInsets.only(
+                      bottom: 8,
+                      right: 5,
+                      left: 2,
+                    ),
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: const Color.fromRGBO(0, 125, 204, 1.0),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                        ),
+                        onPressed: () async {
+                          if (_msgController.text.isNotEmpty) {
+                            try {
+                              await sendMessageToDB();
+                              sendMessageToRoom(_msgController.text);
+                              _msgController.clear();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text('Error al enviar el missatge'),
+                                ),
+                              );
+                            }
+                          }
+                        },
                       ),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const LoadingCircle();
-    } else {
-      return Scaffold(
-        body: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: SafeArea(
-            child: Column(
-              children: [
-                MyChatTitleCard(attr1: _currentRoom),
-                Expanded(
-                  child: ListView.builder(
-                    reverse: true,
-                    itemCount: _messages.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      ChatMessage message = _messages[index];
-                      return FutureBuilder<String>(
-                        future: getUsername(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<String> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-                          String username = snapshot.data ?? '';
-                          return doMessageBubble(message, username);
-                        },
-                      );
-                    },
-                  ),
-                ),
-                const Divider(
-                  color: Color.fromARGB(255, 52, 52, 52),
-                  height: 0.05,
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(19, 18, 14, 18),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 49.5,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(100.0),
-                          ),
-                          child: TextFormField(
-                            controller: _textController,
-                            cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 25, 25, 25)),
-                            decoration: InputDecoration(
-                              hintText: AppLocalizations.of(context)!.send_msg,
-                              hintStyle: const TextStyle(
-                                  color: Color.fromARGB(255, 146, 146, 146)),
-                              border: InputBorder.none,
-                              contentPadding:
-                                  const EdgeInsets.fromLTRB(20, 1, 20, 0),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 15.0),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (_textController.text.isNotEmpty) {
-                            _handleSubmitted(ChatMessage(
-                              senderName: await getUsername(),
-                              messageContent: _textController.text,
-                              timeSent: Timestamp.now(),
-                              roomId: _currentRoom,
-                              photoURL: profilePic,
-                            ));
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          backgroundColor:
-                              const Color.fromARGB(255, 222, 66, 66),
-                          padding: const EdgeInsets.all(12),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 2.0),
-                          child: Icon(
-                            Icons.send_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
   }
 }
