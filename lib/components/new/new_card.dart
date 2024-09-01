@@ -47,13 +47,16 @@ class _NewCardState extends State<NewCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
+      padding:
+          const EdgeInsets.fromLTRB(0, 2, 0, 10), // Ajusta el padding inferior
       child: Container(
-        height: 390,
+        // Reducir la altura del contenedor principal
+        height: widget.imageURL == null || widget.imageURL!.isEmpty ? 200 : 350,
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(37.5),
+          borderRadius: BorderRadius.circular(
+              30), // Reduce el radio de borde si es necesario
         ),
         width: MediaQuery.of(context).size.width,
         child: Column(
@@ -64,7 +67,8 @@ class _NewCardState extends State<NewCard> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(27.5, 25, 27.5, 20),
+                    padding: const EdgeInsets.fromLTRB(
+                        20, 20, 20, 15), // Ajusta el padding del título
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -74,11 +78,9 @@ class _NewCardState extends State<NewCard> {
                             maxLines: 2,
                             widget.title,
                             style: Theme.of(context).textTheme.titleSmall,
-                            textAlign: TextAlign.center,
+                            textAlign: TextAlign.start,
                           ),
                         ),
-                        const SizedBox(
-                            width: 8), // Espacio entre el texto y el icono
                       ],
                     ),
                   ),
@@ -87,89 +89,79 @@ class _NewCardState extends State<NewCard> {
             ),
             Expanded(
               child: SizedBox(
-                height: 110,
+                height: 90, // Reduce la altura del contenedor de la descripción
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(35, 0, 35, 17.5),
-                  child: Center(
-                    child: RichText(
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 5,
-                      text: TextSpan(
-                        style: Theme.of(context).textTheme.labelMedium,
-                        children: [
-                          TextSpan(
-                            text: widget.description,
-                          ),
-                        ],
-                      ),
+                  padding: const EdgeInsets.fromLTRB(
+                      20, 7, 30, 20), // Ajusta el padding de la descripción
+                  child: RichText(
+                    overflow: TextOverflow.ellipsis,
+                    maxLines:
+                        4, // Reduce el número máximo de líneas si es necesario
+                    text: TextSpan(
+                      style: Theme.of(context).textTheme.labelMedium,
+                      children: [
+                        TextSpan(
+                          text: widget.description,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(17.5, 12.5, 17.5, 17.5),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width - 34,
-                height: 150,
-                child: (widget.imageURL == null || widget.imageURL!.isEmpty)
-                    ? Container(
-                        decoration: BoxDecoration(
-                          image: const DecorationImage(
-                            image: AssetImage('images/new.png'),
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.circular(
-                              17.5), // Radio de los bordes
-                        ),
-                      )
-                    : ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(17.5), // Radio de los bordes
-                        child: Image.network(
-                          widget.imageURL ?? '',
-                          fit: BoxFit.cover,
-                          loadingBuilder: (BuildContext context, Widget child,
-                              ImageChunkEvent? loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child; // La imagen ha terminado de cargar
-                            } else {
-                              return Container(
-                                color: Theme.of(context)
-                                    .cardColor, // Fondo mientras se carga la imagen
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    backgroundColor:
-                                        Theme.of(context).hoverColor,
-                                    strokeCap: StrokeCap.round,
-                                    strokeWidth: 5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Theme.of(context).splashColor,
-                                    ), // Indicador de progreso mientras se carga
-                                  ),
+            if (widget.imageURL != null && widget.imageURL!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    15, 10, 15, 15), // Ajusta el padding de la imagen
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width - 30,
+                  height: 130, // Reduce la altura del contenedor de la imagen
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        15), // Reduce el radio del borde si es necesario
+                    child: Image.network(
+                      widget.imageURL!,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Container(
+                            color: Theme.of(context).cardColor,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                backgroundColor: Theme.of(context).hoverColor,
+                                strokeCap: StrokeCap.round,
+                                strokeWidth:
+                                    4, // Reduce el ancho de la barra de progreso
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).splashColor,
                                 ),
-                              );
-                            }
-                          },
-                          errorBuilder: (BuildContext context, Object error,
-                              StackTrace? stackTrace) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 150,
-                              decoration: BoxDecoration(
-                                image: const DecorationImage(
-                                  image: AssetImage('images/new.png'),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.circular(
-                                    17.5), // Radio de los bordes
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        return Container(
+                          width: MediaQuery.of(context).size.width,
+                          height:
+                              130, // Asegúrate de que el tamaño coincida con el tamaño del contenedor de la imagen
+                          decoration: BoxDecoration(
+                            image: const DecorationImage(
+                              image: AssetImage('images/new.png'),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
-            ),
           ],
         ),
       ),

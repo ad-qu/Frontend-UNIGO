@@ -14,9 +14,9 @@ class OwnMessageCard extends StatelessWidget {
           ),
           child: Card(
             elevation: 1,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            color: const Color.fromRGBO(99, 195, 255, 1),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.5)),
+            color: Theme.of(context).splashColor,
             margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             child: Stack(
               children: [

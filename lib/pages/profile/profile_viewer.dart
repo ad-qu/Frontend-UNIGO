@@ -14,10 +14,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/components/input_widgets/delete_account_button.dart';
 import 'package:unigo/components/input_widgets/edit_account_button.dart';
 import 'package:unigo/components/input_widgets/edit_password_button.dart';
+import 'package:unigo/components/input_widgets/history_button.dart';
 import 'package:unigo/components/input_widgets/log_out_button.dart';
 import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/theme/theme_provider.dart';
 import 'package:unigo/pages/discover/discover_home.dart';
+import 'package:unigo/pages/profile/history_home.dart';
 import '../../models/user.dart' as user_ea;
 import '../../components/profile_screen/user_card.dart';
 import 'package:page_transition/page_transition.dart';
@@ -28,9 +30,11 @@ import '../../models/user.dart';
 
 class ProfiletViewer extends StatefulWidget {
   final String idCardUser;
+  final bool isFollowed;
   const ProfiletViewer({
     super.key,
     required this.idCardUser,
+    required this.isFollowed,
   });
 
   @override
@@ -40,30 +44,18 @@ class ProfiletViewer extends StatefulWidget {
 class _ProfiletViewerState extends State<ProfiletViewer> {
   late bool _isLoading;
   String? _username = "";
+  String? _idUser = "";
+  String? _name = "";
+
   // ignore: unused_field
   String? _token = "";
   String? _followers = "";
   String? _following = "";
   int _level = 0;
   int _experience = 0;
-  bool _seeFollowing = false;
-  bool _seeFollowers = false;
-  bool _seeOptions = true;
-  List<user_ea.User> followingList = [];
-  List<user_ea.User> followersList = [];
-  List<dynamic> insigniasList = [];
   FirebaseAuth auth = FirebaseAuth.instance;
   String imageURL = "";
-  bool _isFollowingHighlighted = false;
-  bool _isFollowersHighlighted = false;
-
-  final TextStyle _highlightedText = const TextStyle(
-      color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 18);
-
-  // ignore: prefer_const_constructors
-  late TextStyle _normalText;
-  late TextStyle _textStyleFollowers;
-  late TextStyle _textStyleFollowing;
+  bool? followParameter;
 
   @override
   void initState() {
@@ -76,9 +68,8 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
     super.initState();
     getUserInfo();
     getFriendsInfo();
-    getFollowing();
-    getFollowers();
-    getInsignias();
+
+    followParameter = widget.isFollowed;
   }
 
   Widget imageProfile() {
@@ -149,6 +140,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
     print(widget.idCardUser);
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
+    _idUser = prefs.getString('idUser');
 
     String path =
         'http://${dotenv.env['API_URL']}/user/profile/${widget.idCardUser}';
@@ -172,6 +164,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
       imageURL = u['imageURL'];
       _level = u['level'];
       _experience = u['experience'];
+      _name = u['name'];
     } catch (e) {
       print("ERROR");
       print(e);
@@ -200,159 +193,55 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
     }
   }
 
-  Future getInsignias() async {
+  Future followOrUnfollow() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path =
-        'http://${dotenv.env['API_URL']}/user/get/insignia/${widget.idCardUser}';
     try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-      var insignias = response.data as List;
-      setState(() {
-        insigniasList = insignias;
-      });
-    } catch (e) {
-      print('Error in insignias: $e');
-    }
-    print("He fet les insignies");
-  }
-
-  Future getFollowing() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    String path =
-        'http://${dotenv.env['API_URL']}/user/following/${widget.idCardUser}';
-    try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-      var users = response.data as List;
-      if (mounted) {
+      if (followParameter == true) {
+        await Dio().post(
+          'http://${dotenv.env['API_URL']}/user/follow/delete/$_idUser/${widget.idCardUser}',
+          options: Options(
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token",
+            },
+          ),
+        );
         setState(() {
-          followingList =
-              users.map((user) => user_ea.User.fromJson2(user)).toList();
+          followParameter = false;
+        });
+      } else {
+        await Dio().post(
+          'http://${dotenv.env['API_URL']}/user/follow/add/$_idUser/${widget.idCardUser}',
+          options: Options(
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token",
+            },
+          ),
+        );
+        setState(() {
+          followParameter = true;
         });
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
+      // ignore: avoid_print
+      print(e);
     }
   }
 
-  Future getFollowers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    String path =
-        'http://${dotenv.env['API_URL']}/user/followers/${widget.idCardUser}';
-    try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-      var users = response.data as List;
-      if (mounted) {
-        setState(() {
-          followersList =
-              users.map((user) => user_ea.User.fromJson2(user)).toList();
-        });
-      }
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
-    }
-  }
-
-  void nothingDo() {}
-
-  Widget showBadges() {
-    print("Estic al podium");
-
-    if (insigniasList.isEmpty) {
-      return SizedBox(
-        height: 10,
-      );
-    } else {
-      return SizedBox(
-        height: 37.5,
-        width: insigniasList.length * 45.0,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          shrinkWrap: false,
-          itemCount: insigniasList.length,
-          itemBuilder: (BuildContext context, int index) {
-            try {
-              return Row(
-                children: [
-                  CircleAvatar(
-                    radius: 17.5,
-                    backgroundImage:
-                        AssetImage('images/' + insigniasList[index] + '.png'),
-                  ),
-                  SizedBox(width: 5),
-                ],
-              );
-            } catch (e) {
-              return SizedBox();
-            }
-          },
-        ),
-      );
-    }
+  seeHistory() async {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.rightToLeft,
+        child: HistoryHome(idUser: widget.idCardUser),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    _normalText = TextStyle(
-      color: MediaQuery.of(context).platformBrightness == Brightness.light
-          ? Colors.black
-          : Colors.white,
-      fontWeight: FontWeight.normal,
-      fontSize: 18,
-    );
-
-    _textStyleFollowers = _normalText;
-    _textStyleFollowing =
-        _isFollowingHighlighted ? _highlightedText : _normalText;
-    _textStyleFollowers =
-        _isFollowersHighlighted ? _highlightedText : _normalText;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -501,7 +390,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                                   .textTheme
                                                   .titleSmall),
                                           const SizedBox(height: 10),
-                                          Text('Creada el 19/06/2024',
+                                          Text(_name ?? '',
                                               textAlign: TextAlign.left,
                                               style: Theme.of(context)
                                                   .textTheme
@@ -513,7 +402,6 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                 ),
                               ],
                             ),
-
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -535,14 +423,6 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                                     .labelMedium),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 2.0),
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: showBadges(),
                                       ),
                                     ),
                                   ],
@@ -570,167 +450,138 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _seeFollowing = !_seeFollowing;
-                                        if (_seeFollowing) {
-                                          _seeOptions = false;
-                                          _isFollowingHighlighted = true;
-                                          _isFollowersHighlighted = false;
-                                          _seeFollowers = false;
-                                        } else {
-                                          _seeOptions = true;
-                                          _isFollowingHighlighted = false;
-                                        }
-                                      });
-                                    }
-                                  },
-                                  child: Text(
-                                    "$_following\n${AppLocalizations.of(context)!.following}",
-                                    // "$_following\nFollowing",
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                  ),
+                                Text(
+                                  "$_following\n${AppLocalizations.of(context)!.following}",
+                                  // "$_following\nFollowing",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                                 const SizedBox(width: 100),
-                                GestureDetector(
-                                  onTap: () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _seeFollowers = !_seeFollowers;
-                                        if (_seeFollowers) {
-                                          _seeOptions = false;
-                                          _isFollowersHighlighted = true;
-                                          _isFollowingHighlighted = false;
-                                          _seeFollowing = false;
-                                        } else {
-                                          _seeOptions = true;
-                                          _isFollowersHighlighted = false;
-                                        }
-                                      });
-                                    }
-                                  },
-                                  child: Text(
-                                    "$_followers\n${AppLocalizations.of(context)!.followers}",
-                                    // "$_followers\nFollowers",
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                  ),
+                                Text(
+                                  "$_followers\n${AppLocalizations.of(context)!.followers}",
+                                  // "$_followers\nFollowers",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 20),
-                            // Following scroll page
-                            Visibility(
-                              visible:
-                                  _seeFollowing, // not visible if set false
-                              child: SizedBox(
-                                height: 325,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: followingList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    try {
-                                      return MyUserCard(
-                                        idUserSession: "",
-                                        idCardUser: followingList[index].idUser,
-                                        attr1: followingList[index]
-                                                .imageURL
-                                                ?.toString() ??
-                                            '',
-                                        attr2: followingList[index].username,
-                                        attr3: followingList[index]
-                                            .level
-                                            .toString(),
-                                        following: true,
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox();
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                            // Followers scroll view
-                            Visibility(
-                              visible:
-                                  _seeFollowers, // not visible if set false
-                              child: SizedBox(
-                                height: 325,
-                                child: ListView.builder(
-                                  itemCount: followersList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    try {
-                                      return MyUserCard(
-                                        idUserSession: "",
-                                        idCardUser: followersList[index].idUser,
-                                        attr1: followingList[index]
-                                                .imageURL
-                                                ?.toString() ??
-                                            '',
-                                        attr2: followersList[index].username,
-                                        attr3: followersList[index]
-                                            .level
-                                            .toString(),
-                                        following: true,
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox(); // Return an empty SizedBox if the index is out of range
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-
-                            Visibility(
-                              visible: _seeOptions,
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 17.5),
-
-                                  //const SizedBox(height: 17.5),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: EditAccountButton(
-                                        buttonText: "See history",
-                                        onTap: nothingDo),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: EditPasswordButton(
-                                        buttonText: "See badges",
-                                        onTap: nothingDo),
-                                  ),
-                                  const SizedBox(height: 38),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: DeleteAccountButton(
-                                        buttonText: "//", onTap: nothingDo),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: LogOutButton(
-                                        buttonText: "Follow", onTap: nothingDo),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 17.5),
+
+                      //const SizedBox(height: 17.5),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                        child: HistoryButton(
+                            buttonText: "See history", onTap: seeHistory),
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(25, 0, 25, 10),
+                        child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                followOrUnfollow();
+                              });
+                            },
+                            child: followParameter ?? false
+                                ? Container(
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            width: 0),
+                                        color: const Color.fromARGB(
+                                            255, 19, 89, 168),
+                                        borderRadius:
+                                            BorderRadius.circular(17.5)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(1),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 30, 0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.check,
+                                                  size: 20,
+                                                  color: Theme.of(context)
+                                                      .secondaryHeaderColor,
+                                                ),
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Text(
+                                                  "Siguiendo",
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: const Color.fromARGB(
+                                                        255, 227, 227, 227),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            width: 0),
+                                        color: Colors.blue.shade700,
+                                        borderRadius:
+                                            BorderRadius.circular(17.5)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(1),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 30, 0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.add,
+                                                  size: 20,
+                                                  color: Theme.of(context)
+                                                      .secondaryHeaderColor,
+                                                ),
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Text(
+                                                  "Seguir",
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: const Color.fromARGB(
+                                                        255, 227, 227, 227),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )),
+                      ),
+                      const SizedBox(height: 15),
                     ],
                   ),
                 ),

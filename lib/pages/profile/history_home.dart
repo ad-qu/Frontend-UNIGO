@@ -2,29 +2,36 @@
 import 'package:dio/dio.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:unigo/components/challenge/challenge_card.dart';
 import 'package:unigo/components/itinerary/itinerary_card.dart';
+import 'package:unigo/models/challenge.dart';
 import 'package:unigo/models/entity.dart';
+import 'package:unigo/models/itinerary.dart';
 import 'package:unigo/pages/entity/entity_add.dart';
+import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/pages/entity/entity_profile.dart';
 import 'package:unigo/pages/entity/entity_search.dart';
 import 'package:unigo/components/entity/entity_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/pages/entity/itineraries/challenge_add.dart';
+import 'package:unigo/pages/entity/itineraries/itinerary_add.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
-class EntityScreen extends StatefulWidget {
-  const EntityScreen({super.key});
+class HistoryHome extends StatefulWidget {
+  final String idUser;
+  const HistoryHome({
+    super.key,
+    required this.idUser,
+  });
 
   @override
-  State<EntityScreen> createState() => _EntityScreenState();
+  State<HistoryHome> createState() => _ChallengeHomeState();
 }
 
-class _EntityScreenState extends State<EntityScreen> {
+class _ChallengeHomeState extends State<HistoryHome> {
   late bool _isLoading;
-  List<Entity> entityList = [];
+  List<Challenge> challengeList = [];
   String? _idUser = "";
 
   @override
@@ -37,7 +44,7 @@ class _EntityScreenState extends State<EntityScreen> {
     });
     super.initState();
     getUserInfo();
-    getEntities();
+    getChallenges();
   }
 
   Future<void> getUserInfo() async {
@@ -47,10 +54,11 @@ class _EntityScreenState extends State<EntityScreen> {
     });
   }
 
-  Future getEntities() async {
+  Future getChallenges() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/entity/following/$_idUser';
+    String path =
+        'http://${dotenv.env['API_URL']}/challenge/get/history/$_idUser';
     try {
       var response = await Dio().get(
         path,
@@ -61,22 +69,20 @@ class _EntityScreenState extends State<EntityScreen> {
           },
         ),
       );
-      print(response);
+      var list = response.data as List;
 
-      var following = response.data as List;
-      print(following);
       setState(() {
-        entityList =
-            following.map((entities) => Entity.fromJson2(entities)).toList();
-        print(entityList);
+        challengeList =
+            list.map((challenge) => Challenge.fromJson2(challenge)).toList();
       });
     } catch (e) {
-      print(e);
+      // ignore: avoid_print
+      print("Error $e");
     }
   }
 
-  Future<void> _refreshEntities() async {
-    await getEntities();
+  Future<void> _refreshChallenges() async {
+    await getChallenges();
   }
 
   @override
@@ -89,21 +95,23 @@ class _EntityScreenState extends State<EntityScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                      padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30)),
                             child: Icon(
-                              Icons.add,
-                              size: 30,
+                              Icons.arrow_back_ios_new_rounded,
                               color: Theme.of(context).secondaryHeaderColor,
                             ),
+                          ),
+                          Text(
+                            "Historial (${challengeList.length})",
+                            style: Theme.of(context).textTheme.titleSmall,
                           ),
                           Container(
                             padding: const EdgeInsets.all(15),
@@ -111,10 +119,10 @@ class _EntityScreenState extends State<EntityScreen> {
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            child: Icon(
-                              Icons.search,
-                              size: 27,
-                              color: Theme.of(context).secondaryHeaderColor,
+                            child: const Icon(
+                              Icons.add,
+                              color: Color.fromARGB(255, 227, 227, 227),
+                              size: 27.5,
                             ),
                           ),
                         ],
@@ -124,7 +132,7 @@ class _EntityScreenState extends State<EntityScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 175,
+                        height: 277.5,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),
@@ -135,7 +143,7 @@ class _EntityScreenState extends State<EntityScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                       child: Container(
                         width: MediaQuery.of(context).size.width,
-                        height: 175,
+                        height: 277.5,
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(37.5),
@@ -143,63 +151,70 @@ class _EntityScreenState extends State<EntityScreen> {
                       ),
                     ),
                   ],
-                ))
+                ),
+              )
             : Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                      padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
+                              Navigator.pop(
                                 context,
-                                PageTransition(
-                                  type: PageTransitionType.bottomToTop,
-                                  child: const EntityAddScreen(),
-                                ),
                               );
                             },
                             child: Container(
                               padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(30)),
                               child: Icon(
-                                Icons.add,
-                                size: 30,
+                                Icons.arrow_back_ios_new_rounded,
                                 color: Theme.of(context).secondaryHeaderColor,
                               ),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              final result = await Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const EntitySearchScreen(),
+                          Row(
+                            children: [
+                              Text(
+                                "Historial ",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.color,
+                                  fontSize: 18,
                                 ),
-                              );
-                              if (result == true) {
-                                _refreshEntities(); // Refresh entities when coming back
-                              }
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(30),
                               ),
-                              child: Icon(
-                                Icons.search,
-                                size: 27,
-                                color: Theme.of(context).secondaryHeaderColor,
+                              Text(
+                                "(${challengeList.length})",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.normal,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.color,
+                                  fontSize: 18,
+                                ),
                               ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              size: 27.5,
                             ),
                           ),
                         ],
@@ -210,10 +225,10 @@ class _EntityScreenState extends State<EntityScreen> {
                         displacement: 0,
                         backgroundColor: Theme.of(context).cardColor,
                         color: Theme.of(context).secondaryHeaderColor,
-                        onRefresh: _refreshEntities,
+                        onRefresh: _refreshChallenges,
                         child: CustomScrollView(
                           slivers: [
-                            if (entityList.isNotEmpty)
+                            if (challengeList.isNotEmpty)
                               SliverList(
                                 delegate: SliverChildBuilderDelegate(
                                   (BuildContext context, int index) {
@@ -222,28 +237,26 @@ class _EntityScreenState extends State<EntityScreen> {
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 16.0,
                                         ),
-                                        child: EntityCard(
-                                          idUserSession: _idUser!,
-                                          idEntity: entityList[index].idEntity,
-                                          attr1: entityList[index]
-                                                  .imageURL
-                                                  ?.toString() ??
-                                              '',
-                                          attr2: entityList[index].name,
-                                          attr3: entityList[index].description,
-                                          attr4: entityList[index].verified,
-                                          attr5: entityList[index].admin,
-                                          isFollowed: true,
-                                          onRefresh: () {
-                                            getEntities(); // Call refresh on fetchEntities
-                                          },
+                                        child: ChallengeCard(
+                                          idChallenge:
+                                              challengeList[index].idChallenge,
+                                          name: challengeList[index].name,
+                                          description:
+                                              challengeList[index].description,
+                                          latitude:
+                                              challengeList[index].latitude,
+                                          longitude:
+                                              challengeList[index].longitude,
+                                          experience:
+                                              challengeList[index].experience,
+                                          onChange: _refreshChallenges,
                                         ),
                                       );
                                     } catch (e) {
                                       return const SizedBox();
                                     }
                                   },
-                                  childCount: entityList.length,
+                                  childCount: challengeList.length,
                                 ),
                               )
                             else
@@ -268,23 +281,7 @@ class _EntityScreenState extends State<EntityScreen> {
                                             children: [
                                               TextSpan(
                                                 text:
-                                                    'No entities you follow were found\nPress ',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                              WidgetSpan(
-                                                child: Icon(
-                                                  Icons.search,
-                                                  size:
-                                                      16, // Ajusta el tamaño del ícono según sea necesario
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor,
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text:
-                                                    ' to find entities to follow',
+                                                    'No challenges were found',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .titleMedium,

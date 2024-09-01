@@ -4,7 +4,6 @@ class Entity {
     required this.name,
     required this.description,
     required this.campus,
-    required this.chat,
     this.imageURL,
     this.verified,
     required this.admin,
@@ -13,8 +12,7 @@ class Entity {
   final String idEntity;
   final String name;
   final String description;
-  final String campus;
-  final String chat;
+  final String? campus;
   final String? imageURL;
   final String? verified;
   final String admin;
@@ -24,7 +22,6 @@ class Entity {
         name: json["name"],
         description: json["description"],
         campus: json["campus"],
-        chat: json["chat"],
         imageURL: json["imageURL"],
         verified: json["verified"],
         admin: json["admin"],
@@ -35,7 +32,6 @@ class Entity {
         name: json["name"],
         description: json["description"],
         campus: json["campus"],
-        chat: json["chat"],
         imageURL: json["imageURL"],
         verified: json["verified"],
         admin: json["admin"],
@@ -48,7 +44,6 @@ class Entity {
         "name": name,
         "description": description,
         "campus": campus,
-        "chat": chat,
         "imageURL": imageURL,
         "verified": verified,
         "admin": admin,

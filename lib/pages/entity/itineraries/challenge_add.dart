@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,6 +33,8 @@ class ChallengeAdd extends StatefulWidget {
 class _ChallengeAddState extends State<ChallengeAdd> {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+  TextEditingController xpController = TextEditingController();
+
   List<String> questionArray = List.filled(4, '');
   final questionController = TextEditingController();
   final List<TextEditingController> answerControllers = List.generate(
@@ -41,7 +44,8 @@ class _ChallengeAddState extends State<ChallengeAdd> {
   String selectedAnswer = '';
   int selectedAnswerIndex = -1;
   bool showQuestionSection = false;
-
+  bool showXPSection = false;
+  int xpValue = 0;
   String longitude = "";
   String latitude = "";
 
@@ -55,6 +59,8 @@ class _ChallengeAddState extends State<ChallengeAdd> {
     nameController.dispose();
     descriptionController.dispose();
     questionController.dispose();
+    xpController.dispose();
+
     super.dispose();
   }
 
@@ -169,7 +175,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        //Nombre del reto
+                        // Nombre del reto
                         InputBigTextField(
                           controller: nameController,
                           labelText: "Nombre",
@@ -177,13 +183,136 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         ),
                         const SizedBox(height: 15),
 
-                        //Descripción del reto
+                        // Descripción del reto
                         DescriptionBigTextField(
                           controller: descriptionController,
                           labelText: "Descripción",
                           obscureText: false,
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 35),
+
+                        // Interruptor para otorgar XP
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "¿Desea que este reto dé XP?",
+                                style: GoogleFonts.inter(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Transform.scale(
+                              scale: 0.75, // Redimensionar el Switch
+                              child: Switch(
+                                value: showXPSection,
+                                onChanged: (value) {
+                                  setState(() {
+                                    showXPSection = value;
+                                  });
+                                },
+                                activeColor: Theme.of(context)
+                                    .splashColor, // Color cuando está activado
+                                inactiveTrackColor:
+                                    Colors.grey, // Pista inactiva
+                                inactiveThumbColor: Theme.of(context)
+                                    .splashColor, // Control deslizante inactivo
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Mostrar el TextField de XP si el interruptor está activado
+                        if (showXPSection) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    "Ingrese la cantidad de experiencia (0-100):",
+                                    style: GoogleFonts.inter(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.color,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+
+                          // TextField para ingresar el XP con el nuevo diseño
+                          TextField(
+                            controller: xpController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(
+                                  3), // Limitar a 3 caracteres
+                            ],
+                            cursorWidth: 1,
+                            style: Theme.of(context).textTheme.labelMedium,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              contentPadding: const EdgeInsets.all(17),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              labelText: "XP",
+                              labelStyle: const TextStyle(
+                                color: Color.fromARGB(255, 138, 138, 138),
+                                fontSize: 14,
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              fillColor: Theme.of(context).cardColor,
+                              filled: true,
+                              counterText: '',
+                              hintText: "0-100",
+                            ),
+                            onChanged: (value) {
+                              final newValue = int.tryParse(value) ?? 0;
+
+                              if (newValue > 100) {
+                                xpController.text = '100';
+                                xpController.selection =
+                                    TextSelection.fromPosition(
+                                  TextPosition(
+                                      offset: xpController.text.length),
+                                );
+                              } else if (newValue < 0) {
+                                xpController.text = '0';
+                                xpController.selection =
+                                    TextSelection.fromPosition(
+                                  TextPosition(
+                                      offset: xpController.text.length),
+                                );
+                              }
+                            },
+                          ),
+
+                          const SizedBox(height: 20),
+                        ],
 
                         // Interruptor para mostrar la sección de preguntas
                         Row(
@@ -210,10 +339,10 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                                 },
                                 activeColor: Theme.of(context)
                                     .splashColor, // Color cuando está activado
-                                inactiveTrackColor: Colors
-                                    .grey, // Color de la pista cuando está desactivado
+                                inactiveTrackColor:
+                                    Colors.grey, // Pista inactiva
                                 inactiveThumbColor: Theme.of(context)
-                                    .splashColor, // Color del control deslizante cuando está desactivado
+                                    .splashColor, // Control deslizante inactivo
                               ),
                             ),
                           ],
@@ -282,9 +411,11 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                               );
                             }),
                           ),
-                          const SizedBox(height: 25),
+                          const SizedBox(height: 20),
                         ],
+                        const SizedBox(height: 15),
 
+                        // Selección de ubicación del reto
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Row(
@@ -304,7 +435,6 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 15),
 
                         // Mostrar el MiniMap solo si las coordenadas son válidas
@@ -462,11 +592,34 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                   ],
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 30),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _XPInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Limitar la entrada a valores entre 0 y 100
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+    int value = int.parse(newValue.text);
+    if (value < 0) {
+      value = 0;
+    } else if (value > 100) {
+      value = 100;
+    }
+    return TextEditingValue(
+      text: value.toString(),
+      selection: newValue.selection,
     );
   }
 }

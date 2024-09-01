@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:unigo/pages/profile/history_home.dart';
 import 'package:unigo/pages/startup/login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -452,6 +453,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //   ),
       // ));
     }
+  }
+
+  seeHistory() async {
+    Navigator.push(
+      context,
+      PageTransition(
+        type: PageTransitionType.rightToLeft,
+        child: HistoryHome(idUser: _idUser!),
+      ),
+    );
   }
 
   editAccount() async {
@@ -1080,7 +1091,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Column(
                                 children: [
                                   const SizedBox(height: 17.5),
-
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                    child: HistoryButton(
+                                        buttonText: "History",
+                                        onTap: seeHistory),
+                                  ),
+                                  const SizedBox(height: 38),
                                   //const SizedBox(height: 17.5),
                                   Padding(
                                     padding:

@@ -317,12 +317,11 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                     const SizedBox(height: 12),
                                     GestureDetector(
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          PageTransition(
-                                            type:
-                                                PageTransitionType.rightToLeft,
-                                            child: ChatScreen(
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .push(
+                                          MaterialPageRoute(
+                                            builder: (context) => ChatScreen(
                                                 idEntity: widget.idEntity),
                                           ),
                                         );
@@ -890,7 +889,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                           width: 12,
                                         ),
                                         Text(
-                                          "Seguir entidad",
+                                          "Seguir",
                                           style: GoogleFonts.inter(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
   String? _idUser = "";
   String imageURL = "";
   File? _tempImageFile;
+  String? _deleteConfirmationText = "";
 
   @override
   void initState() {
@@ -202,6 +204,119 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
     }
   }
 
+  void showDeleteConfirmationDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: Container(),
+            ),
+            AlertDialog(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(35.0),
+              ),
+              title: Text(
+                'Eliminar entidad',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '¿Estás seguro de que quieres eliminar esta entidad? \n\nAl eliminar la entidad, esta quedará inaccesible y no podrás utilizarla. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación.',
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const SizedBox(height: 25),
+                  TextField(
+                    onChanged: (value) {
+                      if (mounted) {
+                        setState(() {
+                          // Guardar el valor ingresado para la confirmación
+                          _deleteConfirmationText = value;
+                        });
+                      }
+                    },
+                    cursorColor: const Color.fromARGB(255, 222, 66, 66),
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 25, 25, 25),
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Theme.of(context).textTheme.bodyMedium?.color,
+                      hintText: 'Escribe "ELIMINAR" para confirmar',
+                      hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 146, 146, 146),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(17.5),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(
+                      const Color.fromARGB(255, 222, 66, 66),
+                    ),
+                  ),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_deleteConfirmationText == 'ELIMINAR') {
+                      deleteEntity(); // Llamar al método de eliminación
+                      Navigator.of(context).pop(); // Cerrar el diálogo
+                    } else {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.amber,
+                          showCloseIcon: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
+                          content: const Text(
+                            'Texto de confirmación incorrecto',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          closeIconColor: Colors.black,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  },
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStateProperty.all<Color>(
+                      const Color.fromARGB(255, 222, 66, 66),
+                    ),
+                  ),
+                  child: const Text('Confirmar'),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -210,20 +325,34 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
         child: SizedBox(
           width: 1080,
           child: Column(
-            children: <Widget>[
+            children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
-                        child: Center(
-                          child: Text(
-                            "Editar entidad",
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
+                    GestureDetector(
+                      onTap: () {
+                        showDeleteConfirmationDialog(); // Mostrar el diálogo de confirmación
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(30),
                         ),
+                        child: Icon(
+                          Icons.delete_rounded,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Editar entidad",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleSmall?.color,
+                        fontSize: 18,
                       ),
                     ),
                     GestureDetector(
@@ -287,29 +416,15 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   children: [
                     //Sign up button
                     RedButton(
-                      buttonText: "ELIMINAR",
-                      onTap: deleteEntity,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    //Sign up button
-                    RedButton(
-                      buttonText: "MODIFICAR",
+                      buttonText: "EDITAR",
                       onTap: createEntity,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
+                padding: const EdgeInsets.fromLTRB(40, 0, 40, 15),
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(

@@ -15,7 +15,11 @@ class ReplyCard extends StatelessWidget {
         ),
         child: Card(
           elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color:
+              Theme.of(context).dividerColor, // Cambia el color de fondo aquí
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.5),
+          ),
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           child: Stack(
             children: [
@@ -26,7 +30,8 @@ class ReplyCard extends StatelessWidget {
                     padding: const EdgeInsets.only(
                       left: 10,
                       right: 30,
-                      top: 5,),
+                      top: 5,
+                    ),
                     child: Text(
                       sender,
                       style: const TextStyle(

@@ -277,11 +277,11 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                               const SizedBox(height: 12),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.rightToLeft,
-                                      child: ChatScreen(idEntity: widget.idEntity),
+                                  Navigator.of(context, rootNavigator: true)
+                                      .push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChatScreen(idEntity: widget.idEntity),
                                     ),
                                   );
                                 },

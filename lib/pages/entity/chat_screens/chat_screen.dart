@@ -185,20 +185,53 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(0, 125, 204, 1.0),
-        title: Text("Chat"),
-      ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            SizedBox(
-                height: MediaQuery.of(context).size.height - 140,
+      body: SafeArea(
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Chat",
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.transparent,
+                        size: 27.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
                 child: ListView.builder(
                     controller: _scrollController,
-                    shrinkWrap: true,
                     itemCount: listMessage.length,
                     itemBuilder: (context, index) {
                       if (listMessage[index].idUser == _idUser) {
@@ -208,69 +241,88 @@ class _ChatScreenState extends State<ChatScreen> {
                             msg: listMessage[index].message,
                             sender: listMessage[index].senderName);
                       }
-                    })),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 60,
-                    child: Card(
-                      margin:
-                          const EdgeInsets.only(left: 2, right: 2, bottom: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
-                      child: TextFormField(
-                        controller: _msgController,
-                        textAlignVertical: TextAlignVertical.center,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 5,
-                        minLines: 1,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Escriu un missatge...",
-                          contentPadding: EdgeInsets.all(20),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 8,
-                      right: 5,
-                      left: 2,
-                    ),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: const Color.fromRGBO(0, 125, 204, 1.0),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.send,
-                          color: Colors.white,
-                        ),
-                        onPressed: () async {
-                          if (_msgController.text.isNotEmpty) {
-                            try {
-                              await sendMessageToDB();
-                              sendMessageToRoom(_msgController.text);
-                              _msgController.clear();
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text('Error al enviar el missatge'),
-                                ),
-                              );
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+                    }),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _msgController,
+                        cursorWidth: 1,
+                        maxLength: 12,
+                        style: Theme.of(context).textTheme.labelMedium,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(25)),
+                          ),
+                          contentPadding: const EdgeInsets.all(17),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 1),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(25)),
+                          ),
+                          labelText: "Escribe un mensaje...",
+                          labelStyle: const TextStyle(
+                            color: Color.fromARGB(255, 138, 138, 138),
+                            fontSize: 14,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          fillColor: Theme.of(context).cardColor,
+                          filled: true,
+                          counterText: '',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    GestureDetector(
+                      onTap: () async {
+                        if (_msgController.text.isNotEmpty) {
+                          try {
+                            await sendMessageToDB();
+                            sendMessageToRoom(_msgController.text);
+                            _msgController.clear();
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text('Error al enviar el mensaje'),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: Container(
+                        width: 52.5,
+                        height: 52.5,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).splashColor,
+                        ),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 3.5),
+                            child: Icon(
+                              Icons.send_rounded,
+                              color: Theme.of(context).secondaryHeaderColor,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

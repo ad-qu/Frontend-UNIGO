@@ -145,7 +145,9 @@ class _MyUserCardState extends State<MyUserCard> {
                 context,
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
-                  child: ProfiletViewer(idCardUser: widget.idCardUser),
+                  child: ProfiletViewer(
+                      idCardUser: widget.idCardUser,
+                      isFollowed: widget.following),
                 ),
               );
             },
