@@ -47,7 +47,6 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     setState(() {
       _idUser = prefs.getString('idUser');
       _campus = prefs.getString('campus');
-      print("sdfjhaskjdfhaskjdfhasjkdfhak");
 
       print(_campus);
     });
@@ -75,45 +74,47 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Future createEntity() async {
+  Future createEntity() async {
+    try {
       if (_tempImageFile != null) {
         await uploadImageToFirebase();
       }
       final prefs = await SharedPreferences.getInstance();
       final String token = prefs.getString('token') ?? "";
-      try {
-        Navigator.pop(
-          // ignore: use_build_context_synchronously
-          context,
-          PageTransition(
-            type: PageTransitionType.topToBottom,
-            child: const EntityScreen(),
-          ),
-        );
-        await Dio().post(
-          'http://${dotenv.env['API_URL']}/entity/add',
-          data: {
-            "name": nameController.text,
-            "description": descriptionController.text,
-            "imageURL": imageURL,
-            "campus": _campus,
-            "admin": _idUser,
-          },
-          options: Options(
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer $token",
-            },
-          ),
-        );
-      } catch (e) {
-        // ignore: avoid_print
-        print(e);
-      }
-    }
 
+      var response = await Dio().post(
+        'http://${dotenv.env['API_URL']}/entity/add',
+        data: {
+          "name": nameController.text,
+          "description": descriptionController.text,
+          "imageURL": imageURL,
+          "campus": _campus,
+          "admin": _idUser,
+        },
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      print("Response status: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context, true);
+        print("Response status:423423423424");
+      } else {
+        print("Failed to create entity: ${response.data}");
+      }
+    } catch (e) {
+      print("Error during entity creation: $e");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -139,13 +140,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pop(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.topToBottom,
-                            child: const EntityScreen(),
-                          ),
-                        );
+                        Navigator.pop(context);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(15),

@@ -23,7 +23,6 @@ class ItineraryCardHome extends StatefulWidget {
   final String idItinerary;
   final String name;
   final String imageURL;
-  final int number;
 
   const ItineraryCardHome({
     super.key,
@@ -32,7 +31,6 @@ class ItineraryCardHome extends StatefulWidget {
     required this.idItinerary,
     required this.name,
     required this.imageURL,
-    required this.number,
   });
 
   @override
@@ -115,29 +113,14 @@ class _ItineraryCardHomeState extends State<ItineraryCardHome> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 24, 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          widget.name.length > 12
-                              ? '${widget.name.substring(0, 12)}...'
-                              : widget.name,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '(${widget.number})',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ],
-                    ),
-                  ],
+                child: Text(
+                  widget.name.length > 12
+                      ? '${widget.name.substring(0, 12)}...'
+                      : widget.name,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
             ),
-         
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 18, 0),
               child: Icon(

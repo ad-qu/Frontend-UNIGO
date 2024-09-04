@@ -18,10 +18,6 @@ import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class NewsAddScreen extends StatefulWidget {
   final String idEntity;
 
@@ -36,10 +32,13 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
   final descriptionController = TextEditingController();
   String imageURL = "";
   File? _tempImageFile;
+  bool _isUploading = false;
 
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
   Future<void> pickAnImage(ImageSource source) async {
@@ -52,7 +51,6 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
         });
       }
     } catch (e) {
-      // ignore: avoid_print
       print('Failed to pick the image: $e');
     }
   }
@@ -62,16 +60,35 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
     return formatter.format(date);
   }
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    descriptionController.dispose();
-    super.dispose();
-  }
+  Future<void> createNew() async {
+    if (nameController.text == "" || descriptionController.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Theme.of(context).splashColor,
+          showCloseIcon: true,
+          closeIconColor: Theme.of(context).secondaryHeaderColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
+          margin: const EdgeInsets.fromLTRB(30, 0, 30, 60.75),
+          content: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            child: Text(
+              AppLocalizations.of(context)!.empty_fields,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      setState(() {
+        _isUploading = true;
+      });
 
-  @override
-  Widget build(BuildContext context) {
-    Future createNew() async {
       if (_tempImageFile != null) {
         await uploadImageToFirebase();
       }
@@ -82,14 +99,6 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
       final prefs = await SharedPreferences.getInstance();
       final String token = prefs.getString('token') ?? "";
       try {
-        Navigator.pop(
-          // ignore: use_build_context_synchronously
-          context,
-          PageTransition(
-            type: PageTransitionType.topToBottom,
-            child: const EntityScreen(),
-          ),
-        );
         await Dio().post(
           'http://${dotenv.env['API_URL']}/new/add/${widget.idEntity}',
           data: {
@@ -105,13 +114,157 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
             },
           ),
         );
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context, true);
       } catch (e) {
-        // ignore: avoid_print
         print(e);
+      } finally {
+        setState(() {
+          _isUploading = false;
+        });
       }
     }
+  }
 
+  Widget imageNew() {
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (builder) => bottomSheet(),
+            );
+          },
+          child: _tempImageFile != null
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: FileImage(_tempImageFile!),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(17.5),
+                  ),
+                )
+              : Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    image: const DecorationImage(
+                      image: AssetImage('images/new.png'),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(17.5),
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget bottomSheet() {
+    return Container(
+      height: 215,
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25.0),
+          topRight: Radius.circular(25.0),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "Choose a photo",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(
+            height: 45,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).splashColor,
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () {
+                    pickAnImage(ImageSource.camera);
+                    Navigator.pop(context);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 40,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).splashColor,
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () {
+                    pickAnImage(ImageSource.gallery);
+                    Navigator.pop(context);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.white,
+                      semanticLabel: "Gallery",
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Future<void> uploadImageToFirebase() async {
+    try {
+      final storage = FirebaseStorage.instance;
+
+      var snapshot = await storage
+          .ref()
+          .child('news/${nameController.text}/picture')
+          .putFile(_tempImageFile!);
+      var downloadURL = await snapshot.ref.getDownloadURL();
+
+      if (mounted) {
+        setState(() {
+          imageURL = downloadURL;
+        });
+      }
+    } on PlatformException catch (e) {
+      print('Failed to pick the image: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -165,15 +318,11 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        //Username textfield
                         InputBigTextField(
                             controller: nameController,
                             labelText: "Titular",
                             obscureText: false),
-
                         const SizedBox(height: 15),
-
-                        //Email address textfield
                         DescriptionVeryBigTextField(
                             controller: descriptionController,
                             labelText: "Descripción de la noticia",
@@ -189,20 +338,39 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
-                    //Sign up button
                     RedButton(
                       buttonText: "PUBLICAR",
                       onTap: createNew,
                     ),
+                    if (_isUploading) // Mostrar el indicador de carga si está subiendo
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: MediaQuery.of(context).size.width - 95,
+                        child: Center(
+                          child: SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                              backgroundColor: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(0.5),
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 4,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).secondaryHeaderColor),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
+                padding: const EdgeInsets.fromLTRB(40, 0, 40, 15),
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
@@ -242,166 +410,5 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
         ),
       ),
     );
-  }
-
-  Widget imageNew() {
-    return Stack(
-      children: [
-        _tempImageFile != null
-            ? Container(
-                width: MediaQuery.of(context).size.width,
-                height: 150,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: FileImage(_tempImageFile!),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius:
-                      BorderRadius.circular(17.5), // Radio de los bordes
-                ),
-              )
-            : Container(
-                width: MediaQuery.of(context).size.width,
-                height: 150,
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('images/new.png'),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius:
-                      BorderRadius.circular(17.5), // Radio de los bordes
-                ),
-              ),
-        Positioned(
-          bottom: 2,
-          right: 2,
-          child: InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                builder: ((builder) => bottomSheet()),
-              );
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.amber,
-                borderRadius: BorderRadius.circular(17.5),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.fromLTRB(13, 13, 12, 12),
-                child: Icon(
-                  Icons.camera_alt,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget bottomSheet() {
-    return Container(
-      height: 215,
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25.0),
-          topRight: Radius.circular(25.0),
-        ),
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Choose an entity photo",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(
-            height: 45,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).splashColor,
-                  shape: BoxShape.circle,
-                ),
-                child: InkWell(
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onTap: () {
-                    pickAnImage(ImageSource.camera);
-                    //pickImageFromGallery(ImageSource.camera);
-                    Navigator.pop(context);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 40,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).splashColor,
-                  shape: BoxShape.circle,
-                ),
-                child: InkWell(
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onTap: () {
-                    pickAnImage(ImageSource.gallery);
-
-                    //pickImageFromGallery(ImageSource.gallery);
-                    Navigator.pop(context);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Icon(
-                      Icons.image,
-                      color: Colors.white,
-                      semanticLabel: "Gallery",
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  Future<void> uploadImageToFirebase() async {
-    try {
-      final storage = FirebaseStorage.instance;
-
-      var snapshot = await storage
-          .ref()
-          .child('news/${nameController.text}/picture')
-          .putFile(_tempImageFile!);
-      var downloadURL = await snapshot.ref.getDownloadURL();
-
-      if (mounted) {
-        setState(() {
-          imageURL = downloadURL;
-        });
-      }
-    } on PlatformException catch (e) {
-      // ignore: avoid_print
-      print('Failed to pick the image: $e');
-    }
   }
 }

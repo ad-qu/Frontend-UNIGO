@@ -14,8 +14,7 @@ class HistoryButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-            border: Border.all(
-                color: const Color.fromARGB(55, 56, 142, 60), width: 1),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 1),
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(17.5)),
         child: Padding(
@@ -29,7 +28,7 @@ class HistoryButton extends StatelessWidget {
                     Icons.manage_search_rounded,
                     color: Theme.of(context).secondaryHeaderColor,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 17,
                   ),
                   Text(

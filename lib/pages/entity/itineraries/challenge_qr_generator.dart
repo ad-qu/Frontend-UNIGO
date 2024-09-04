@@ -151,28 +151,32 @@ class _ChallengeQRGeneratorState extends State<ChallengeQRGenerator> {
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Center(
               child: RepaintBoundary(
                 key: _qrkey,
-                child: QrImageView(
-                  backgroundColor: Theme.of(context).secondaryHeaderColor,
-                  data: data,
-                  version: QrVersions.auto,
-                  size: 250.0,
-                  gapless: true,
-                  errorStateBuilder: (ctx, err) {
-                    return const Center(
-                      child: Text(
-                        'Error',
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                      20), // Aquí defines el radio de los bordes redondeados
+                  child: QrImageView(
+                    backgroundColor: Theme.of(context).secondaryHeaderColor,
+                    data: data,
+                    version: QrVersions.auto,
+                    size: 250.0,
+                    gapless: true,
+                    errorStateBuilder: (ctx, err) {
+                      return const Center(
+                        child: Text(
+                          'Error',
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
               child: Column(
@@ -187,9 +191,9 @@ class _ChallengeQRGeneratorState extends State<ChallengeQRGenerator> {
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
+              padding: const EdgeInsets.fromLTRB(40, 0, 40, 15),
               child: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(

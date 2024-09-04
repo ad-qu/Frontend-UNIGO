@@ -10,6 +10,9 @@ ThemeData lightMode = ThemeData(
   hoverColor: const Color.fromARGB(25, 217, 59, 60),
   dividerColor: Color.fromARGB(255, 230, 230, 230),
   cardColor: const Color.fromARGB(255, 197, 197, 197),
+  hintColor: const Color.fromARGB(255, 67, 164, 82),
+  highlightColor: const Color.fromARGB(255, 251, 198, 44),
+  shadowColor: const Color.fromARGB(255, 175, 175, 175),
   textTheme: TextTheme(
     //Welcome slogan
     titleLarge: GoogleFonts.inter(
@@ -64,6 +67,9 @@ ThemeData darkMode = ThemeData(
   hoverColor: const Color.fromARGB(25, 217, 59, 60),
   dividerColor: const Color.fromARGB(255, 30, 30, 30),
   cardColor: const Color.fromARGB(255, 23, 23, 23),
+  hintColor: const Color.fromARGB(255, 51, 151, 67),
+  highlightColor: const Color.fromARGB(255, 251, 198, 44),
+  shadowColor: const Color.fromARGB(255, 175, 175, 175),
   textTheme: TextTheme(
     //Welcome slogan
     titleLarge: GoogleFonts.inter(

@@ -73,12 +73,15 @@ class AuthService {
           "name": name,
           "surname": surname,
           "username": (Random().nextInt(99999 - 10000 + 1) + 10000).toString(),
-          "email": user.email,
-          "password": user.uid
+          "email": user.email.toString(),
+          "password": user.uid.toString(),
         },
       );
+      print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
+      print(response.statusCode);
       print(response);
+      print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
       if (response.statusCode == 201) {
         print('User registration successful');
@@ -89,13 +92,15 @@ class AuthService {
         final surname = data['surname'];
         final username = data['username'];
         final imageURL = data['imageURL'];
-        final campus = data['campus'];
-        final latitude = data['latitude'];
-        final longitude = data['longitude'];
         final level = data['level'];
         final experience = data['experience'];
+        print("123");
+        print(idUser);
+
+        print("321");
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
+
         prefs.setString('token', token);
         prefs.setString('idUser', idUser);
         prefs.setString('name', name);
@@ -103,12 +108,11 @@ class AuthService {
         prefs.setString('username', username);
         prefs.setString('email', user.email!);
         prefs.setString('password', user.uid);
-        prefs.setString('campus', campus ?? '');
-        prefs.setString('latitude', latitude ?? '');
-        prefs.setString('longitude', longitude ?? '');
         prefs.setString('imageURL', imageURL ?? '');
         prefs.setInt('level', level);
         prefs.setInt('experience', experience);
+
+        print("finalaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       } else {
         print(
             'User registration failed with status code: ${response.statusCode}');
@@ -136,7 +140,6 @@ class AuthService {
         final surname = data['surname'];
         final username = data['username'];
         final imageURL = data['imageURL'];
-        final campus = data['campus'];
         final latitude = data['latitude'];
         final longitude = data['longitude'];
         final level = data['level'];
@@ -150,7 +153,6 @@ class AuthService {
         prefs.setString('username', username);
         prefs.setString('email', user.email!);
         prefs.setString('password', user.uid);
-        prefs.setString('campus', campus ?? '');
         prefs.setString('latitude', latitude ?? '');
         prefs.setString('longitude', longitude ?? '');
         prefs.setString('imageURL', imageURL ?? '');

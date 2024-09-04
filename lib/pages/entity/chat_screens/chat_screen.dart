@@ -28,7 +28,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late bool _isLoading;
+  bool _isLoading = true;
   ScrollController _scrollController = ScrollController();
 
   late IO.Socket socket;
@@ -43,11 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     _isLoading = true;
-    Future.delayed(const Duration(milliseconds: 750), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
 
     getUserInfo();
     getChat(widget.idEntity);
@@ -124,12 +119,16 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         listMessage = chatMessages;
         _idChat = chatId;
+        _isLoading = false;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
     } catch (e) {
       print(e);
+      setState(() {
+        _isLoading = false; // Cambiamos el estado de carga a falso
+      });
     }
   }
 
@@ -186,144 +185,260 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: _isLoading
+            ? Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(30)),
-                        child: Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "Chat",
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.transparent,
-                        size: 27.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: listMessage.length,
-                    itemBuilder: (context, index) {
-                      if (listMessage[index].idUser == _idUser) {
-                        return OwnMessageCard(msg: listMessage[index].message);
-                      } else {
-                        return ReplyCard(
-                            msg: listMessage[index].message,
-                            sender: listMessage[index].senderName);
-                      }
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _msgController,
-                        cursorWidth: 1,
-                        maxLength: 12,
-                        style: Theme.of(context).textTheme.labelMedium,
-                        decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Theme.of(context).dividerColor,
-                                width: 1),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(25)),
-                          ),
-                          contentPadding: const EdgeInsets.all(17),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Theme.of(context).dividerColor,
-                                width: 1),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(25)),
-                          ),
-                          labelText: "Escribe un mensaje...",
-                          labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 138, 138, 138),
-                            fontSize: 14,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          fillColor: Theme.of(context).cardColor,
-                          filled: true,
-                          counterText: '',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    GestureDetector(
-                      onTap: () async {
-                        if (_msgController.text.isNotEmpty) {
-                          try {
-                            await sendMessageToDB();
-                            sendMessageToRoom(_msgController.text);
-                            _msgController.clear();
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text('Error al enviar el mensaje'),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: Container(
-                        width: 52.5,
-                        height: 52.5,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).splashColor,
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 3.5),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30)),
                             child: Icon(
-                              Icons.send_rounded,
+                              Icons.arrow_back_ios_new_rounded,
                               color: Theme.of(context).secondaryHeaderColor,
-                              size: 24,
                             ),
                           ),
+                          Text(
+                            "Chat",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.transparent,
+                              size: 27.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Theme.of(context).hoverColor,
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 5,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).splashColor),
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                  ],
+                ),
+              )
+            : Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "Chat",
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: Colors.transparent,
+                              size: 27.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: listMessage.isNotEmpty
+                          ? ListView.builder(
+                              controller: _scrollController,
+                              itemCount: listMessage.length,
+                              itemBuilder: (context, index) {
+                                if (listMessage[index].idUser == _idUser) {
+                                  return OwnMessageCard(
+                                      msg: listMessage[index].message);
+                                } else {
+                                  return ReplyCard(
+                                      msg: listMessage[index].message,
+                                      sender: listMessage[index].senderName);
+                                }
+                              })
+                          : Container(
+                              height:
+                                  MediaQuery.of(context).size.height / 2 + 160,
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'No hay\nmensajes disponibles',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.copyWith(
+                                                  color: Theme.of(context)
+                                                      .shadowColor),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Icon(
+                                          Icons.message_rounded,
+                                          size: 125,
+                                          color: Theme.of(context).shadowColor,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: GoogleFonts.inter(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'Sé el primero en\nescribir un mensaje',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _msgController,
+                              cursorWidth: 1,
+                              maxLength: 12,
+                              style: Theme.of(context).textTheme.labelMedium,
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Theme.of(context).dividerColor,
+                                      width: 1),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(25)),
+                                ),
+                                contentPadding: const EdgeInsets.all(17),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Theme.of(context).dividerColor,
+                                      width: 1),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(25)),
+                                ),
+                                labelText: "Escribe un mensaje...",
+                                labelStyle: const TextStyle(
+                                  color: Color.fromARGB(255, 138, 138, 138),
+                                  fontSize: 14,
+                                ),
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
+                                fillColor: Theme.of(context).cardColor,
+                                filled: true,
+                                counterText: '',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          GestureDetector(
+                            onTap: () async {
+                              if (_msgController.text.isNotEmpty) {
+                                try {
+                                  await sendMessageToDB();
+                                  sendMessageToRoom(_msgController.text);
+                                  _msgController.clear();
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      backgroundColor: Colors.red,
+                                      content:
+                                          Text('Error al enviar el mensaje'),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: Container(
+                              width: 52.5,
+                              height: 52.5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Theme.of(context).splashColor,
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 3.5),
+                                  child: Icon(
+                                    Icons.send_rounded,
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                    size: 24,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

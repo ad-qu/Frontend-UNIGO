@@ -11,10 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class EntityScreen extends StatefulWidget {
   const EntityScreen({super.key});
 
@@ -23,18 +19,12 @@ class EntityScreen extends StatefulWidget {
 }
 
 class _EntityScreenState extends State<EntityScreen> {
-  late bool _isLoading;
+  bool _isLoading = true;
   List<Entity> entityList = [];
   String? _idUser = "";
 
   @override
   void initState() {
-    _isLoading = true;
-    Future.delayed(const Duration(milliseconds: 750), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
     super.initState();
     getUserInfo();
     getEntities();
@@ -51,6 +41,7 @@ class _EntityScreenState extends State<EntityScreen> {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     String path = 'http://${dotenv.env['API_URL']}/entity/following/$_idUser';
+
     try {
       var response = await Dio().get(
         path,
@@ -61,17 +52,50 @@ class _EntityScreenState extends State<EntityScreen> {
           },
         ),
       );
-      print(response);
 
-      var following = response.data as List;
-      print(following);
-      setState(() {
-        entityList =
-            following.map((entities) => Entity.fromJson2(entities)).toList();
-        print(entityList);
-      });
+      print(
+          "Response data: ${response.data}"); // Imprime la respuesta para verificar
+
+      if (response.data is List) {
+        var following = response.data as List;
+        setState(() {
+          entityList =
+              following.map((entities) => Entity.fromJson2(entities)).toList();
+          _isLoading = false;
+        });
+      } else if (response.data is Map) {
+        // Maneja el caso cuando la respuesta es un mapa
+        var mapData = response.data as Map<String, dynamic>;
+        print("Map data: $mapData"); // Imprime el mapa para verificar
+        // Ajusta esto según la estructura de tu mapa
+        if (mapData.containsKey('entities') && mapData['entities'] is List) {
+          var following = mapData['entities'] as List;
+          setState(() {
+            entityList = following
+                .map((entities) => Entity.fromJson2(entities))
+                .toList();
+            _isLoading = false;
+          });
+        } else {
+          // Maneja el caso cuando la respuesta del mapa no tiene la clave 'entities'
+          setState(() {
+            entityList = [];
+            _isLoading = false;
+          });
+        }
+      } else {
+        // Maneja el caso cuando la respuesta no es ni una lista ni un mapa
+        setState(() {
+          entityList = [];
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       print(e);
+      setState(() {
+        entityList = [];
+        _isLoading = false;
+      });
     }
   }
 
@@ -120,28 +144,18 @@ class _EntityScreenState extends State<EntityScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 175,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(37.5),
+                    Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Theme.of(context).hoverColor,
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 5,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).splashColor),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 175,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(37.5),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 25),
                   ],
                 ))
             : Container(
@@ -154,14 +168,24 @@ class _EntityScreenState extends State<EntityScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           GestureDetector(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.bottomToTop,
                                   child: const EntityAddScreen(),
                                 ),
                               );
+                              if (result == true) {
+                                print(
+                                    "Entity created successfully, updating list.");
+                                setState(() {
+                                  getEntities();
+                                });
+                              } else {
+                                print(
+                                    "Entity creation failed or was canceled.");
+                              }
                             },
                             child: Container(
                               padding: const EdgeInsets.all(15),
@@ -206,99 +230,153 @@ class _EntityScreenState extends State<EntityScreen> {
                       ),
                     ),
                     Expanded(
-                      child: RefreshIndicator(
-                        displacement: 0,
-                        backgroundColor: Theme.of(context).cardColor,
-                        color: Theme.of(context).secondaryHeaderColor,
-                        onRefresh: _refreshEntities,
-                        child: CustomScrollView(
-                          slivers: [
-                            if (entityList.isNotEmpty)
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (BuildContext context, int index) {
-                                    try {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0,
-                                        ),
-                                        child: EntityCard(
-                                          idUserSession: _idUser!,
-                                          idEntity: entityList[index].idEntity,
-                                          attr1: entityList[index]
-                                                  .imageURL
-                                                  ?.toString() ??
-                                              '',
-                                          attr2: entityList[index].name,
-                                          attr3: entityList[index].description,
-                                          attr4: entityList[index].verified,
-                                          attr5: entityList[index].admin,
-                                          isFollowed: true,
-                                          onRefresh: () {
-                                            getEntities(); // Call refresh on fetchEntities
-                                          },
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox();
-                                    }
-                                  },
-                                  childCount: entityList.length,
-                                ),
-                              )
-                            else
-                              SliverToBoxAdapter(
-                                child: Container(
-                                  height:
-                                      100, // Ajusta la altura según sea necesario
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            style: GoogleFonts.inter(
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.color,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    'No entities you follow were found\nPress ',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                              WidgetSpan(
-                                                child: Icon(
-                                                  Icons.search,
-                                                  size:
-                                                      16, // Ajusta el tamaño del ícono según sea necesario
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor,
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text:
-                                                    ' to find entities to follow',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                      child: CustomScrollView(
+                        slivers: [
+                          if (entityList.isNotEmpty)
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  try {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
                                       ),
-                                    ],
-                                  ),
+                                      child: EntityCard(
+                                        idUserSession: _idUser!,
+                                        idEntity: entityList[index].idEntity,
+                                        attr1: entityList[index]
+                                                .imageURL
+                                                ?.toString() ??
+                                            '',
+                                        attr2: entityList[index].name,
+                                        attr3: entityList[index].description,
+                                        attr4: entityList[index].verified,
+                                        attr5: entityList[index].admin,
+                                        isFollowed: true,
+                                        onRefresh: () {
+                                          getEntities();
+                                        },
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    return const SizedBox();
+                                  }
+                                },
+                                childCount: entityList.length,
+                              ),
+                            )
+                          else
+                            SliverToBoxAdapter(
+                              child: Container(
+                                height: MediaQuery.of(context).size.height / 2 +
+                                    160,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'No sigues\nninguna entidad',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall
+                                                ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .shadowColor),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Icon(
+                                            Icons.view_agenda_rounded,
+                                            size: 125,
+                                            color:
+                                                Theme.of(context).shadowColor,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          RichText(
+                                            textAlign: TextAlign.center,
+                                            text: TextSpan(
+                                              style: GoogleFonts.inter(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.color,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: 'Presiona ',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium,
+                                                ),
+                                                WidgetSpan(
+                                                  child: Icon(
+                                                    Icons.search,
+                                                    size:
+                                                        16, // Ajusta el tamaño del ícono según sea necesario
+                                                    color: Theme.of(context)
+                                                        .secondaryHeaderColor,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text:
+                                                      ' para buscar entidades',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          RichText(
+                                            textAlign: TextAlign.center,
+                                            text: TextSpan(
+                                              style: GoogleFonts.inter(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.color,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text: 'o presiona ',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium,
+                                                ),
+                                                WidgetSpan(
+                                                  child: Icon(
+                                                    Icons.add,
+                                                    size:
+                                                        16, // Ajusta el tamaño del ícono según sea necesario
+                                                    color: Theme.of(context)
+                                                        .secondaryHeaderColor,
+                                                  ),
+                                                ),
+                                                TextSpan(
+                                                  text: ' para crear una',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
                     ),
                   ],

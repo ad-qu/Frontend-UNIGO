@@ -12,18 +12,21 @@ class ChallengeCard extends StatefulWidget {
   final String latitude;
   final String longitude;
   final int experience;
+  final String idUser;
+  final String admin;
   final VoidCallback onChange;
 
-  const ChallengeCard({
-    super.key,
-    required this.idChallenge,
-    required this.name,
-    required this.description,
-    required this.latitude,
-    required this.longitude,
-    required this.experience,
-    required this.onChange,
-  });
+  const ChallengeCard(
+      {super.key,
+      required this.idChallenge,
+      required this.name,
+      required this.description,
+      required this.latitude,
+      required this.longitude,
+      required this.experience,
+      required this.idUser,
+      required this.admin,
+      required this.onChange});
 
   @override
   State<ChallengeCard> createState() => _ChallengeCardState();
@@ -63,10 +66,13 @@ class _ChallengeCardState extends State<ChallengeCard> {
                       textAlign: TextAlign.start,
                     ),
                   ),
-                  ChallengeMoreButton(
-                    idChallenge: widget.idChallenge,
-                    onChange: widget.onChange,
-                  ),
+                  if (widget.admin == widget.idUser)
+                    ChallengeMoreButton(
+                      idChallenge: widget.idChallenge,
+                      onChange: widget.onChange,
+                    )
+                  else
+                    const SizedBox(height: 54)
                 ],
               ),
             ),
@@ -96,20 +102,21 @@ class _ChallengeCardState extends State<ChallengeCard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 28, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 14, 34, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
                         width: 65,
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(15),
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
-                            bottomRight: Radius.circular(15),
-                          ),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                           color: Theme.of(context).cardColor,
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .dividerColor, // Color del borde
+                            width: 1, // Ancho del borde
+                          ),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(2, 4, 3.5, 5),
@@ -129,7 +136,7 @@ class _ChallengeCardState extends State<ChallengeCard> {
                             ],
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -150,6 +157,8 @@ class MiniMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return SizedBox(
       height: 100,
       width: MediaQuery.of(context).size.width - 84,
@@ -165,6 +174,8 @@ class MiniMap extends StatelessWidget {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                tileBuilder: isDarkMode ? _darkModeTileBuilder : null,
               ),
               MarkerLayer(
                 markers: [
@@ -186,4 +197,20 @@ class MiniMap extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _darkModeTileBuilder(
+  BuildContext context,
+  Widget tileWidget,
+  TileImage tile,
+) {
+  return ColorFiltered(
+    colorFilter: const ColorFilter.matrix(<double>[
+      -0.2126, -0.7152, -0.0722, 0, 255, // Red channel
+      -0.2126, -0.7152, -0.0722, 0, 255, // Green channel
+      -0.2126, -0.7152, -0.0722, 0, 255, // Blue channel
+      0, 0, 0, 1, 0, // Alpha channel
+    ]),
+    child: tileWidget,
+  );
 }

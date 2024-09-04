@@ -12,10 +12,6 @@ import 'package:unigo/models/news.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/news/news_add.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class NewsScreen extends StatefulWidget {
   final String idUserSession;
   final String idEntity;
@@ -33,25 +29,20 @@ class NewsScreen extends StatefulWidget {
 }
 
 class _NewsScreenState extends State<NewsScreen> {
-  late bool _isLoading;
+  bool _isLoading = true;
   List<New> newsList = [];
   List<New> filteredNews = [];
 
   @override
-  void didChangeDependencies() {
-    _isLoading = true;
-    Future.delayed(const Duration(milliseconds: 750), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-    super.didChangeDependencies();
-    fetchNews();
+  void initState() {
+    super.initState();
+    getNews();
   }
 
-  Future<void> fetchNews() async {
+  Future<void> getNews() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
+
     try {
       var response = await Dio().get(
         'http://${dotenv.env['API_URL']}/new/get/entityNews/${widget.idEntity}',
@@ -62,14 +53,18 @@ class _NewsScreenState extends State<NewsScreen> {
           },
         ),
       );
+
       var list = response.data as List;
       setState(() {
         newsList = list.map((news) => New.fromJson2(news)).toList();
         filteredNews = newsList;
-        print(filteredNews.length);
+        _isLoading = false;
       });
     } catch (e) {
       print(e);
+      setState(() {
+        _isLoading = false; // Cambiamos el estado de carga a falso
+      });
     }
   }
 
@@ -82,15 +77,21 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
+  Future<void> _refreshNews() async {
+    await getNews();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: _isLoading
             ? Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: Column(
                   children: [
+                    // Barra superior de búsqueda
                     Padding(
                       padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
@@ -119,7 +120,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                 cursorWidth: 1,
                                 style: Theme.of(context).textTheme.labelMedium,
                                 decoration: InputDecoration(
-                                  hintText: "Busca una noticia...",
+                                  hintText: "Busca...",
                                   hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 138, 138, 138),
                                     fontSize: 14,
@@ -178,25 +179,34 @@ class _NewsScreenState extends State<NewsScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 390,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(37.5),
-                        ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: newsList.isNotEmpty ? newsList.length : 3,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 350,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(37.5),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
-                ))
+                ),
+              )
             : Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: Column(
                   children: [
+                    // Barra superior de búsqueda
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
+                      padding: const EdgeInsets.fromLTRB(30, 20, 28, 47.5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -234,7 +244,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                 cursorWidth: 1,
                                 style: Theme.of(context).textTheme.labelMedium,
                                 decoration: InputDecoration(
-                                  hintText: "Busca una noticia...",
+                                  hintText: "Busca...",
                                   hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 138, 138, 138),
                                     fontSize: 14,
@@ -277,8 +287,8 @@ class _NewsScreenState extends State<NewsScreen> {
                           ),
                           if (widget.idUserSession == widget.admin)
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
+                              onTap: () async {
+                                final result = await Navigator.push(
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.bottomToTop,
@@ -286,6 +296,13 @@ class _NewsScreenState extends State<NewsScreen> {
                                         idEntity: widget.idEntity),
                                   ),
                                 );
+                                if (result == true) {
+                                  print(
+                                      "New created successfully, updating list.");
+                                  getNews();
+                                } else {
+                                  print("New creation failed or was canceled.");
+                                }
                               },
                               child: Padding(
                                 padding: const EdgeInsets.fromLTRB(25, 0, 0, 0),
@@ -305,6 +322,7 @@ class _NewsScreenState extends State<NewsScreen> {
                         ],
                       ),
                     ),
+                    // Mostrar noticias ya descargadas
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -319,7 +337,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16.0),
                                         child: NewCard(
+                                          idUser: widget.idUserSession,
                                           idNew: filteredNews[index].idNew,
+                                          admin: widget.admin,
                                           title: filteredNews[index].title,
                                           description:
                                               filteredNews[index].description,
@@ -328,6 +348,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                                   ?.toString() ??
                                               '',
                                           date: filteredNews[index].date,
+                                          onChange: _refreshNews,
                                         ),
                                       );
                                     } catch (e) {
@@ -341,41 +362,41 @@ class _NewsScreenState extends State<NewsScreen> {
                               SliverToBoxAdapter(
                                 child: Container(
                                   height:
-                                      100, // Ajusta la altura según sea necesario
+                                      MediaQuery.of(context).size.height / 2 +
+                                          160,
                                   alignment: Alignment.center,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        child: RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            style: GoogleFonts.inter(
-                                              color: Theme.of(context)
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .center, // Centra el contenido verticalmente
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .center, // Centra el contenido horizontalmente
+                                          children: [
+                                            Text(
+                                              'Esta entidad\nno tiene noticias',
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
                                                   .textTheme
-                                                  .bodySmall
-                                                  ?.color,
+                                                  .titleSmall
+                                                  ?.copyWith(
+                                                      color: Theme.of(context)
+                                                          .shadowColor),
                                             ),
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    'Esta entidad no tiene noticias ',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                              WidgetSpan(
-                                                child: Icon(
-                                                  Icons
-                                                      .sentiment_dissatisfied_rounded,
-                                                  size:
-                                                      16, // Ajusta el tamaño del ícono según sea necesario
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+
+                                            const SizedBox(
+                                                height:
+                                                    16), // Espacio entre el texto y el ícono, ajusta según sea necesario
+                                            Icon(
+                                              Icons.newspaper_rounded,
+                                              size:
+                                                  125, // Ajusta el tamaño del ícono según sea necesario
+                                              color:
+                                                  Theme.of(context).shadowColor,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],

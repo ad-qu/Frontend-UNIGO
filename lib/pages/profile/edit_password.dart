@@ -1,6 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:unigo/pages/startup/login.dart';
 import 'package:unigo/pages/navbar.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +17,6 @@ import 'package:unigo/components/credential_screen/password_textfield.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class EditPasswordScreen extends StatefulWidget {
   const EditPasswordScreen({super.key});
 
@@ -25,13 +25,9 @@ class EditPasswordScreen extends StatefulWidget {
 }
 
 class _EditPasswordScreenState extends State<EditPasswordScreen> {
-  final nameController = TextEditingController();
-  final surnameController = TextEditingController();
-  final usernameController = TextEditingController();
   final previouspassController = TextEditingController();
   final passwordController = TextEditingController();
   final passControllerVerify = TextEditingController();
-  final textController = TextEditingController();
   bool _isStrong = false;
 
   // ignore: unused_field
@@ -45,14 +41,20 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
   late String password;
   String text = "";
   Color colorPasswordIndicator = Colors.black;
+  bool _isPasswordEightCharacters = false;
+  bool _hasPasswordOneNumber = false;
+  bool passwordVisible1 = false;
+  bool passwordVisible2 = false;
+
+  bool _bothPasswordMatch = false;
   FirebaseAuth auth = FirebaseAuth.instance;
 
   bool passwordVisible = false;
   @override
   void initState() {
     super.initState();
-    passwordVisible = true;
-
+    passwordVisible1 = true;
+    passwordVisible2 = true;
     getUserInfo();
   }
 
@@ -67,6 +69,32 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
       _token = prefs.getString('token');
       _idUser = prefs.getString('idUser');
       _password = prefs.getString('password');
+    });
+  }
+
+  onPasswordChangedConditions(String password) {
+    final numericRegex = RegExp(r'[0-9]');
+    setState(() {
+      _isPasswordEightCharacters = false;
+      if (password.length >= 8) _isPasswordEightCharacters = true;
+
+      _hasPasswordOneNumber = false;
+      if (numericRegex.hasMatch(password)) _hasPasswordOneNumber = true;
+      _bothPasswordMatch = false;
+      if (((passControllerVerify.text != '') &&
+          (passwordController.text == passControllerVerify.text))) {
+        _bothPasswordMatch = true;
+      }
+    });
+  }
+
+  onPasswordChangedMatch(String password) {
+    setState(() {
+      _bothPasswordMatch = false;
+      if (((passControllerVerify.text != '') &&
+          (passwordController.text == passControllerVerify.text))) {
+        _bothPasswordMatch = true;
+      }
     });
   }
 
@@ -203,15 +231,11 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
                 duration: const Duration(seconds: 3),
               ),
             );
-
             auth.signOut();
             GoogleSignIn().signOut();
+            FirebaseFirestore.instance.clearPersistence;
             clearInfo();
-            Navigator.pushReplacement(
-                context,
-                PageTransition(
-                    type: PageTransitionType.leftToRight,
-                    child: const LoginScreen()));
+            Restart.restartApp();
           } else if (response.statusCode == 400) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -255,233 +279,376 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
       }
     }
 
-    void checkPassword(String value) {
-      password = value.trim();
-
-      if (password.isEmpty) {
-        setState(() {
-          strength = 0;
-          text = AppLocalizations.of(context)!.enterpass;
-        });
-      } else if (password.length < 4) {
-        setState(() {
-          strength = 1 / 5;
-          colorPasswordIndicator = const Color.fromARGB(255, 222, 66, 66);
-          text = AppLocalizations.of(context)!.shortpass;
-        });
-      } else if (password.length < 6) {
-        setState(() {
-          strength = 2 / 4;
-          colorPasswordIndicator = Colors.orange;
-          text = AppLocalizations.of(context)!.charpass;
-        });
-      } else {
-        if (!letterReg.hasMatch(password) || !numReg.hasMatch(password)) {
-          setState(() {
-            strength = 3 / 4;
-            colorPasswordIndicator = Colors.amber;
-            text = AppLocalizations.of(context)!.numpass;
-          });
-        } else {
-          setState(() {
-            strength = 1;
-            colorPasswordIndicator = Colors.green;
-            text = AppLocalizations.of(context)!.greatpass;
-            _isStrong = true;
-          });
-        }
-      }
-    }
-
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           color: Theme.of(context).scaffoldBackgroundColor,
           child: Column(
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 25, 0, 25),
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.leftToRight,
-                                child: const NavBar()));
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
                       },
-                      backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-                      child: const Icon(Icons.arrow_back_rounded,
-                          color: Colors.white),
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    Text(
+                      "Editar contraseña",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleSmall?.color,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Icon(
+                        Icons.close_rounded,
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        size: 27.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Expanded(
-                child: Center(
-                  child: SizedBox(
-                    width: 1080,
-                    child: SingleChildScrollView(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+                  child: SingleChildScrollView(
+                    child: Column(children: <Widget>[
+                      Column(
+                        children: [
+                          //Previous password textfield
+                          PasswordTextField(
+                              controller: previouspassController,
+                              labelText:
+                                  AppLocalizations.of(context)!.pass_label,
+                              obscureText: false),
+
+                          const SizedBox(height: 10),
+
+                          //Password textfield
+                          TextField(
+                            onChanged: (password) =>
+                                onPasswordChangedConditions(password),
+                            controller: passwordController,
+                            obscureText: passwordVisible1,
+                            cursorWidth: 1,
+                            style: Theme.of(context).textTheme.labelMedium,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              contentPadding: const EdgeInsets.all(17),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              labelText: AppLocalizations.of(context)!.password,
+                              labelStyle: const TextStyle(
+                                color: Color.fromARGB(255, 138, 138, 138),
+                                fontSize: 14,
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              fillColor: Theme.of(context).cardColor,
+                              filled: true,
+                              suffixIcon: Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      passwordVisible1 = !passwordVisible1;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.transparent,
+                                    ),
+                                    child: Icon(
+                                      passwordVisible1
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          //Password textfield
+                          TextField(
+                            onChanged: (password) =>
+                                onPasswordChangedMatch(password),
+                            controller: passControllerVerify,
+                            obscureText: passwordVisible2,
+                            cursorWidth: 1,
+                            style: Theme.of(context).textTheme.labelMedium,
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              contentPadding: const EdgeInsets.all(17),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 1,
+                                ),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(17.5)),
+                              ),
+                              labelText:
+                                  AppLocalizations.of(context)!.repeat_password,
+                              labelStyle: const TextStyle(
+                                color: Color.fromARGB(255, 138, 138, 138),
+                                fontSize: 14,
+                              ),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.never,
+                              fillColor: Theme.of(context).cardColor,
+                              filled: true,
+                              suffixIcon: Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      passwordVisible2 = !passwordVisible2;
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: Colors.transparent,
+                                    ),
+                                    child: Icon(
+                                      passwordVisible2
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          if (passwordController.text != "")
                             Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 0, 10, 27.5),
-                                child: Column(
-                                  children: [
-                                    //Previous password textfield
-                                    PasswordTextField(
-                                        controller: previouspassController,
-                                        labelText: AppLocalizations.of(context)!
-                                            .pass_label,
-                                        obscureText: false),
-
-                                    const SizedBox(height: 10),
-
-                                    //Password textfield
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: TextField(
-                                        onChanged: (val) => checkPassword(val),
-                                        controller: passwordController,
-                                        obscureText: passwordVisible,
-                                        cursorColor: const Color.fromARGB(
-                                            255, 222, 66, 66),
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.color,
-                                            fontSize: 17),
-                                        decoration: InputDecoration(
-                                          suffixIcon: Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 12.0),
-                                            child: IconButton(
-                                              icon: Icon(
-                                                  passwordVisible
-                                                      ? Icons.visibility
-                                                      : Icons.visibility_off,
-                                                  color: const Color.fromARGB(
-                                                      255, 222, 66, 66)),
-                                              onPressed: () {
-                                                setState(
-                                                  () {
-                                                    passwordVisible =
-                                                        !passwordVisible;
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.fromLTRB(
-                                                  25, 25, 25, 25),
-                                          border: const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20)),
-                                          ),
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color.fromARGB(
-                                                    255, 222, 66, 66),
-                                                width: 3),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(20)),
-                                          ),
-                                          labelText:
-                                              AppLocalizations.of(context)!
-                                                  .new_pass_label,
-                                          labelStyle: const TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 146, 146, 146),
-                                              fontSize: 17),
-                                          floatingLabelBehavior:
-                                              FloatingLabelBehavior.never,
-                                          fillColor: const Color.fromARGB(
-                                              255, 242, 242, 242),
-                                          filled: true,
-                                        ),
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 2),
-
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 30.0),
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        //borderRadius: BorderRadius.circular(  10.0), // Establece el radio de los bordes
-                                        child: SizedBox(
-                                          height:
-                                              4.0, // Ajusta la altura del indicador de progreso según sea necesario
-                                          child: LinearProgressIndicator(
-                                            value: strength,
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 146, 146, 146),
-                                            color: colorPasswordIndicator,
+                              padding: const EdgeInsets.fromLTRB(10, 30, 0, 0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 100),
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                            color: _isPasswordEightCharacters
+                                                ? const Color.fromARGB(
+                                                    255, 51, 151, 67)
+                                                : Colors.transparent,
+                                            border: _isPasswordEightCharacters
+                                                ? Border.all(
+                                                    color: Colors.transparent)
+                                                : Border.all(
+                                                    color: const Color.fromARGB(
+                                                        255, 138, 138, 138)),
+                                            borderRadius:
+                                                BorderRadius.circular(50)),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.check,
+                                            color: _isPasswordEightCharacters
+                                                ? const Color.fromARGB(
+                                                    255, 227, 227, 227)
+                                                : const Color.fromARGB(
+                                                    255, 138, 138, 138),
+                                            size: 15,
                                           ),
                                         ),
                                       ),
-                                    ),
-
-                                    const SizedBox(height: 5),
-
-                                    Text(
-                                      AppLocalizations.of(context)!.enterpass,
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.color,
-                                          fontSize: 14),
-                                    ),
-
-                                    const SizedBox(height: 5),
-
-                                    //Password textfield
-                                    PasswordTextField(
-                                        controller: passControllerVerify,
-                                        labelText: AppLocalizations.of(context)!
-                                            .repeat_pass_label,
-                                        obscureText: true),
-
-                                    const SizedBox(height: 30),
-
-                                    //Sign up button
-                                    RedButton(
-                                      buttonText: "EDITAR",
-                                      onTap: editAccount,
-                                    ),
-
-                                    const SizedBox(height: 5),
-
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      child: Text(
-                                        text = AppLocalizations.of(context)!
-                                            .edit_warning,
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.color,
-                                          fontSize: 11,
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .characters,
+                                        style: GoogleFonts.inter(
+                                            color: _isPasswordEightCharacters
+                                                ? const Color.fromARGB(
+                                                    255, 227, 227, 227)
+                                                : const Color.fromARGB(
+                                                    255, 138, 138, 138)),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 100),
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                            color: _hasPasswordOneNumber
+                                                ? const Color.fromARGB(
+                                                    255, 51, 151, 67)
+                                                : Colors.transparent,
+                                            border: _hasPasswordOneNumber
+                                                ? Border.all(
+                                                    color: Colors.transparent)
+                                                : Border.all(
+                                                    color: const Color.fromARGB(
+                                                        255, 138, 138, 138)),
+                                            borderRadius:
+                                                BorderRadius.circular(50)),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.check,
+                                            color: _hasPasswordOneNumber
+                                                ? const Color.fromARGB(
+                                                    255, 227, 227, 227)
+                                                : const Color.fromARGB(
+                                                    255, 138, 138, 138),
+                                            size: 15,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                )),
-                          ]),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!.number,
+                                        style: GoogleFonts.inter(
+                                            color: _hasPasswordOneNumber
+                                                ? const Color.fromARGB(
+                                                    255, 227, 227, 227)
+                                                : const Color.fromARGB(
+                                                    255, 138, 138, 138)),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 100),
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                            color: _bothPasswordMatch
+                                                ? const Color.fromARGB(
+                                                    255, 51, 151, 67)
+                                                : Colors.transparent,
+                                            border: _bothPasswordMatch
+                                                ? Border.all(
+                                                    color: Colors.transparent)
+                                                : Border.all(
+                                                    color: const Color.fromARGB(
+                                                        255, 138, 138, 138)),
+                                            borderRadius:
+                                                BorderRadius.circular(50)),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.check,
+                                            color: _bothPasswordMatch
+                                                ? const Color.fromARGB(
+                                                    255, 227, 227, 227)
+                                                : const Color.fromARGB(
+                                                    255, 138, 138, 138),
+                                            size: 15,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        AppLocalizations.of(context)!.match,
+                                        style: GoogleFonts.inter(
+                                            color: _bothPasswordMatch
+                                                ? const Color.fromARGB(
+                                                    255, 227, 227, 227)
+                                                : const Color.fromARGB(
+                                                    255, 138, 138, 138)),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+              //Sign up button
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                child: RedButton(
+                  buttonText: "EDITAR CONTRASEÑA",
+                  onTap: editAccount,
+                ),
+              ),
+
+              const SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(50, 0, 50, 15),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                      fontSize: 12,
                     ),
+                    children: [
+                      TextSpan(
+                        text:
+                            "Para aplicar los cambios, será necesario volver a iniciar sesión en UNIGO!",
+                      ),
+                    ],
                   ),
                 ),
               ),

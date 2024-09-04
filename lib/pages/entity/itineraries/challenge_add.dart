@@ -45,9 +45,9 @@ class _ChallengeAddState extends State<ChallengeAdd> {
   int selectedAnswerIndex = -1;
   bool showQuestionSection = false;
   bool showXPSection = false;
-  int xpValue = 0;
   String longitude = "";
   String latitude = "";
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -80,43 +80,80 @@ class _ChallengeAddState extends State<ChallengeAdd> {
   @override
   Widget build(BuildContext context) {
     Future createChallenge() async {
-      final prefs = await SharedPreferences.getInstance();
-      final String token = prefs.getString('token') ?? "";
-      updateQuestionArray();
-      try {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-
-        print(nameController.text);
-        print(descriptionController.text);
-        print(latitude);
-        print(longitude);
-        print(questionArray);
-        print(selectedAnswer);
-        print(widget.idItinerary);
-
-        await Dio().post(
-          'http://${dotenv.env['API_URL']}/challenge/add',
-          data: {
-            "name": nameController.text,
-            "description": descriptionController.text,
-            "latitude": latitude,
-            "longitude": longitude,
-            "question": questionArray,
-            "answer": selectedAnswer,
-            "itinerary": widget.idItinerary,
-            "experience": 100,
-          },
-          options: Options(
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer $token",
-            },
+      if (nameController.text == '' ||
+          descriptionController.text == '' ||
+          latitude == '' ||
+          longitude == '') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme.of(context).splashColor,
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).secondaryHeaderColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.5)),
+            margin: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: Text(
+                AppLocalizations.of(context)!.empty_fields,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
           ),
         );
-      } catch (e) {
-        // ignore: avoid_print
-        print(e);
+      } else {
+        setState(() {
+          _isUploading = true;
+        });
+
+        final prefs = await SharedPreferences.getInstance();
+        final String token = prefs.getString('token') ?? "";
+        updateQuestionArray();
+        try {
+          // ignore: use_build_context_synchronously
+
+          print(nameController.text);
+          print(descriptionController.text);
+          print(latitude);
+          print(longitude);
+          print(questionArray);
+          print(selectedAnswer);
+          print(widget.idItinerary);
+          if (xpController.text == '') {
+            xpController.text = "0";
+          }
+          await Dio().post(
+            'http://${dotenv.env['API_URL']}/challenge/add',
+            data: {
+              "name": nameController.text,
+              "description": descriptionController.text,
+              "latitude": latitude,
+              "longitude": longitude,
+              "question": questionArray,
+              "answer": selectedAnswer,
+              "experience": xpController.text,
+              "itinerary": widget.idItinerary,
+            },
+            options: Options(
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer $token",
+              },
+            ),
+          );
+          Navigator.pop(context, true);
+        } catch (e) {
+          print(e);
+        } finally {
+          setState(() {
+            _isUploading = false;
+          });
+        }
       }
     }
 
@@ -512,11 +549,12 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         else
                           GestureDetector(
                             onTap: () async {
-                              final result = await Navigator.push(
-                                context,
-                                PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const ChallengeLocationPicker(),
+                              final result = await Navigator.of(context,
+                                      rootNavigator: true)
+                                  .push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ChallengeLocationPicker(),
                                 ),
                               );
 
@@ -555,9 +593,15 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                                         Container(
                                           padding: const EdgeInsets.all(15),
                                           decoration: BoxDecoration(
-                                            color: Theme.of(context).cardColor,
+                                            color:
+                                                Theme.of(context).dividerColor,
                                             borderRadius:
                                                 BorderRadius.circular(30),
+                                            border: Border.all(
+                                              color: Theme.of(context)
+                                                  .dividerColor, // Color del borde
+                                              width: 1, // Ancho del borde
+                                            ),
                                           ),
                                           child: Icon(
                                             Icons.edit,
@@ -581,14 +625,34 @@ class _ChallengeAddState extends State<ChallengeAdd> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
                     // Botón para crear el reto
                     RedButton(
                       buttonText: "CREAR",
                       onTap: createChallenge,
                     ),
+                    if (_isUploading) // Mostrar el indicador de carga si está subiendo
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: MediaQuery.of(context).size.width - 95,
+                        child: Center(
+                          child: SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                              backgroundColor: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(0.5),
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 4,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).secondaryHeaderColor),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -658,6 +722,8 @@ class _MiniMapState extends State<MiniMap> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return SizedBox(
       height: 100,
       width: MediaQuery.of(context).size.width - 67.5,
@@ -674,6 +740,8 @@ class _MiniMapState extends State<MiniMap> {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                tileBuilder: isDarkMode ? _darkModeTileBuilder : null,
               ),
               MarkerLayer(
                 markers: [
@@ -682,7 +750,7 @@ class _MiniMapState extends State<MiniMap> {
                     width: 35,
                     point: LatLng(widget.latitude, widget.longitude),
                     child: Icon(
-                      Icons.location_pin,
+                      Icons.location_on,
                       color: Theme.of(context).splashColor,
                       size: 35.0,
                     ),
@@ -695,4 +763,20 @@ class _MiniMapState extends State<MiniMap> {
       ),
     );
   }
+}
+
+Widget _darkModeTileBuilder(
+  BuildContext context,
+  Widget tileWidget,
+  TileImage tile,
+) {
+  return ColorFiltered(
+    colorFilter: const ColorFilter.matrix(<double>[
+      -0.2126, -0.7152, -0.0722, 0, 255, // Red channel
+      -0.2126, -0.7152, -0.0722, 0, 255, // Green channel
+      -0.2126, -0.7152, -0.0722, 0, 255, // Blue channel
+      0, 0, 0, 1, 0, // Alpha channel
+    ]),
+    child: tileWidget,
+  );
 }

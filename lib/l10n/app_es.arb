@@ -73,7 +73,7 @@
 
   "@---------------- QR_SCREEN ------------------": {
   },
-  "scan_OK": "Reto escaneado correctamente",
+  "scan_OK": "Escaneado correctamente",
   "challenge_OK": "¡RETO SUPERADO!",
   "add_exp": "¡Enhorabuena!\n\nSe te sumará una experiencia a tu cuenta de",
   "go_back": "Volver",

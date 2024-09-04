@@ -14,21 +14,16 @@ import '../../components/profile_screen/user_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class EntityPeople extends StatefulWidget {
-  final String idEntity;
-  final String admin;
-
-  const EntityPeople({
+class FollowingScreen extends StatefulWidget {
+  const FollowingScreen({
     super.key,
-    required this.idEntity,
-    required this.admin,
   });
 
   @override
-  State<EntityPeople> createState() => _EntityPeopleState();
+  State<FollowingScreen> createState() => _FollowingScreenState();
 }
 
-class _EntityPeopleState extends State<EntityPeople> {
+class _FollowingScreenState extends State<FollowingScreen> {
   bool _isLoading = true;
   List<User> peopleList = [];
   List<User> filteredUsers = [];
@@ -38,7 +33,7 @@ class _EntityPeopleState extends State<EntityPeople> {
   void initState() {
     super.initState();
     getUserInfo();
-    getFollowingPeople();
+    getFollowing();
   }
 
   Future<void> getUserInfo() async {
@@ -48,11 +43,10 @@ class _EntityPeopleState extends State<EntityPeople> {
     });
   }
 
-  Future getFollowingPeople() async {
+  Future getFollowing() async {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
-    String path =
-        'http://${dotenv.env['API_URL']}/entity/get/followingPeople/${widget.idEntity}';
+    String path = 'http://${dotenv.env['API_URL']}/user/following/$_idUser';
     try {
       var response = await Dio().get(
         path,
@@ -69,7 +63,6 @@ class _EntityPeopleState extends State<EntityPeople> {
       setState(() {
         peopleList = users.map((user) => User.fromJson2(user)).toList();
         peopleList = peopleList.where((user) => user.active == true).toList();
-        peopleList.removeWhere((user) => user.idUser == widget.admin);
 
         filteredUsers = peopleList;
         _isLoading = false;
@@ -80,16 +73,6 @@ class _EntityPeopleState extends State<EntityPeople> {
         _isLoading = false; // Cambiamos el estado de carga a falso
       });
     }
-  }
-
-  void _runFilter(String enteredKeyword) {
-    setState(() {
-      filteredUsers = peopleList.where((user) {
-        final lowerCaseKeyword = enteredKeyword.toLowerCase();
-        return user.username.toLowerCase().startsWith(lowerCaseKeyword) &&
-            user.active == true;
-      }).toList();
-    });
   }
 
   @override
@@ -171,8 +154,10 @@ class _EntityPeopleState extends State<EntityPeople> {
                               SliverList(
                                 delegate: SliverChildBuilderDelegate(
                                   (BuildContext context, int index) {
-                                    try {
-                                      return Padding(
+                                    return IgnorePointer(
+                                      ignoring:
+                                          true, // Esto desactiva la interacción
+                                      child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16.0),
                                         child: MyUserCard(
@@ -189,10 +174,8 @@ class _EntityPeopleState extends State<EntityPeople> {
                                               .toString(),
                                           following: false,
                                         ),
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox();
-                                    }
+                                      ),
+                                    );
                                   },
                                   childCount: filteredUsers.length,
                                 ),
@@ -215,7 +198,7 @@ class _EntityPeopleState extends State<EntityPeople> {
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Esta entidad no\ntiene seguidores',
+                                              'Esta cuenta no\ntiene seguidores',
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)
                                                   .textTheme
@@ -241,7 +224,7 @@ class _EntityPeopleState extends State<EntityPeople> {
                           ],
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),

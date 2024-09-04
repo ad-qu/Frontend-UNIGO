@@ -20,7 +20,7 @@ class EntityCard extends StatefulWidget {
   final String? attr4;
   final bool isFollowed;
   final String attr5;
-  final VoidCallback? onRefresh; // Callback to notify when refresh is needed
+  final VoidCallback? onRefresh; 
 
   const EntityCard({
     super.key,

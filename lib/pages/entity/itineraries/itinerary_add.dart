@@ -16,10 +16,6 @@ import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class ItineraryAdd extends StatefulWidget {
   final String idEntity;
   const ItineraryAdd({
@@ -36,6 +32,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
   final descriptionController = TextEditingController();
   String imageURL = "";
   File? _tempImageFile;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -66,43 +63,69 @@ class _ItineraryAddState extends State<ItineraryAdd> {
 
   @override
   Widget build(BuildContext context) {
-    Future createEntity() async {
-      if (_tempImageFile != null) {
-        await uploadImageToFirebase();
-      }
-      final prefs = await SharedPreferences.getInstance();
-      final String token = prefs.getString('token') ?? "";
-      try {
-        Navigator.pop(
-          // ignore: use_build_context_synchronously
-          context,
-          PageTransition(
-            type: PageTransitionType.topToBottom,
-            child: const EntityScreen(),
+    Future createItinerary() async {
+      if (nameController.text == '') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme.of(context).splashColor,
+            showCloseIcon: true,
+            closeIconColor: Theme.of(context).secondaryHeaderColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(17.5)),
+            margin: const EdgeInsets.fromLTRB(30, 0, 30, 60.75),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: Text(
+                AppLocalizations.of(context)!.empty_fields,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+              ),
+            ),
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
           ),
         );
-        await Dio().post(
-          'http://${dotenv.env['API_URL']}/itinerary/add/${widget.idEntity}',
-          data: {
-            "name": nameController.text,
-            "description": descriptionController.text,
-            "imageURL": imageURL,
-            "number": 0,
-          },
-          options: Options(
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": "Bearer $token",
+      } else {
+        setState(() {
+          _isUploading = true;
+        });
+
+        if (_tempImageFile != null) {
+          await uploadImageToFirebase();
+        }
+        final prefs = await SharedPreferences.getInstance();
+        final String token = prefs.getString('token') ?? "";
+        try {
+          await Dio().post(
+            'http://${dotenv.env['API_URL']}/itinerary/add/${widget.idEntity}',
+            data: {
+              "name": nameController.text,
+              "description": descriptionController.text,
+              "imageURL": imageURL,
+              "number": 0,
             },
-          ),
-        );
-      } catch (e) {
-        // ignore: avoid_print
-        print(e);
+            options: Options(
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer $token",
+              },
+            ),
+          );
+          Navigator.pop(context, true);
+        } catch (e) {
+          print(e);
+        } finally {
+          setState(() {
+            _isUploading = false;
+          });
+        }
       }
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -126,13 +149,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pop(
-                          context,
-                          PageTransition(
-                            type: PageTransitionType.topToBottom,
-                            child: const EntityScreen(),
-                          ),
-                        );
+                        Navigator.pop(context);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(15),
@@ -172,20 +189,39 @@ class _ItineraryAddState extends State<ItineraryAdd> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
-                    //Sign up button
                     RedButton(
                       buttonText: "CREAR",
-                      onTap: createEntity,
+                      onTap: createItinerary,
                     ),
+                    if (_isUploading) // Mostrar el indicador de carga si está subiendo
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: MediaQuery.of(context).size.width - 95,
+                        child: Center(
+                          child: SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                              backgroundColor: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(0.5),
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 4,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).secondaryHeaderColor),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
+                padding: const EdgeInsets.fromLTRB(40, 0, 40, 15),
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(

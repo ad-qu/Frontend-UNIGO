@@ -1,161 +1,156 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/components/input_widgets/red_button.dart';
 
-class ChallengeLocationPicker extends StatelessWidget {
-  const ChallengeLocationPicker({Key? key});
+class ChallengeLocationPicker extends StatefulWidget {
+  const ChallengeLocationPicker({super.key});
+
+  @override
+  State<ChallengeLocationPicker> createState() =>
+      _ChallengeLocationPickerState();
+}
+
+class _ChallengeLocationPickerState extends State<ChallengeLocationPicker> {
+  late MapController mapController;
+  String? latitude;
+  String? longitude;
+
+  @override
+  void initState() {
+    super.initState();
+    mapController = MapController();
+  }
+
+  Future<void> getCampusLocation() async {
+    final prefs = await SharedPreferences.getInstance();
+    latitude = prefs.getString('latitude');
+    longitude = prefs.getString('longitude');
+
+    if (latitude == null ||
+        longitude == null ||
+        latitude == '' ||
+        longitude == '') {
+      latitude = "41.38365114691718";
+      longitude = "2.115667142329124";
+    }
+  }
+
+  void centerUniversityLocation() {
+    if (latitude != null && longitude != null) {
+      LatLng center = LatLng(double.parse(latitude!), double.parse(longitude!));
+      mapController.move(center, 17);
+    } else {
+      LatLng defaultCenter = const LatLng(41.38365114691718, 2.115667142329124);
+      mapController.move(defaultCenter, 17);
+    }
+  }
+
+  void selectLocation() {
+    LatLng center = mapController.camera.center;
+    Navigator.of(context)
+        .pop({'latitude': center.latitude, 'longitude': center.longitude});
+  }
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 17.5, 15, 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: FutureBuilder(
+        future: getCampusLocation(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Stack(
+              children: [
+                FlutterMap(
+                  mapController: mapController,
+                  options: MapOptions(
+                    initialCenter: LatLng(
+                      double.parse(latitude!),
+                      double.parse(longitude!),
+                    ),
+                    initialZoom: 16.5,
+                    maxZoom: 20,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                      tileBuilder: isDarkMode ? _darkModeTileBuilder : null,
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: Center(
+                    child: Icon(
+                      Icons.location_on,
+                      color: Theme.of(context).splashColor,
+                      size: 50,
+                    ),
+                  ),
+                ),
+                Positioned(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    child: RedButton(
+                        buttonText: "SELECCIONA UBICACIÓN",
+                        onTap: selectLocation)),
+                Positioned(
+                  top: 55,
+                  left: 25,
+                  child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: const EntityScreen(),
-                        ),
-                      );
+                      Navigator.pop(context);
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(15),
+                      width: 62.5,
+                      height: 62.5,
                       decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: Theme.of(context).secondaryHeaderColor,
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).splashColor,
                       ),
-                    ),
-                  ),
-                  Text(
-                    "Ubicación",
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      size: 27.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: FlutterLocationPicker(
-                initZoom: 17,
-                minZoomLevel: 5,
-                maxZoomLevel: 18.25,
-                maxBounds: LatLngBounds(
-                  const LatLng(41, 1.65),
-                  const LatLng(41.6, 2.35),
-                ),
-                trackMyPosition: false,
-                showCurrentLocationPointer: false,
-                //Searchbar
-                showSearchBar: false,
-                searchbarBorderRadius: BorderRadius.circular(17.5),
-                initPosition: const LatLong(41.27561, 1.98722),
-                searchbarInputBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(17.5)),
-                searchBarBackgroundColor: Theme.of(context).cardColor,
-                searchbarInputFocusBorderp: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(17.5)),
-                //mapLoadingBackgroundColor: Colors.amber,
-                loadingWidget: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        backgroundColor: Theme.of(context).hoverColor,
-                        strokeCap: StrokeCap.round,
-                        strokeWidth: 5,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).splashColor),
-                      ),
-                    ],
-                  ),
-                ),
-                //Buttons
-
-                showZoomController: false,
-                showLocationController: false,
-
-                //SelectLocationButton
-                selectLocationButtonHeight: 55,
-                selectLocationButtonText: "SELECCIONAR UBICACIÓN",
-                selectLocationButtonPositionLeft: 20,
-                selectLocationButtonPositionRight: 20,
-                selectLocationButtonPositionBottom: 20,
-                selectedLocationButtonTextstyle:
-                    Theme.of(context).textTheme.labelLarge ??
-                        GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 227, 227, 227),
+                      child: const Center(
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          color: Colors.white,
+                          size: 30,
                         ),
-                selectLocationButtonStyle: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                    (states) {
-                      return Theme.of(context).splashColor;
-                    },
-                  ),
-                  overlayColor: MaterialStateProperty.resolveWith<Color>(
-                    (states) {
-                      return Colors
-                          .transparent; // Deshabilita el feedback visual
-                    },
-                  ),
-                  shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
-                    (states) {
-                      return RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(17.5),
-                      );
-                    },
+                      ),
+                    ),
                   ),
                 ),
-
-                //Marker
-                markerIconOffset: 40,
-                markerIcon: Icon(
-                  Icons.location_on,
-                  color: Theme.of(context).splashColor,
-                  size: 50,
-                ),
-
-                onPicked: (pickedData) {
-                  Navigator.pop(context, {
-                    'latitude': pickedData.latLong.latitude,
-                    'longitude': pickedData.latLong.longitude,
-                  });
-                },
-              ),
-            ),
-          ],
-        ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
+}
+
+Widget _darkModeTileBuilder(
+  BuildContext context,
+  Widget tileWidget,
+  TileImage tile,
+) {
+  return ColorFiltered(
+    colorFilter: const ColorFilter.matrix(<double>[
+      -0.2126, -0.7152, -0.0722, 0, 255, // Red channel
+      -0.2126, -0.7152, -0.0722, 0, 255, // Green channel
+      -0.2126, -0.7152, -0.0722, 0, 255, // Blue channel
+      0, 0, 0, 1, 0, // Alpha channel
+    ]),
+    child: tileWidget,
+  );
 }

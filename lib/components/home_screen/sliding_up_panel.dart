@@ -13,10 +13,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class SlidingUpPanelWidget extends StatefulWidget {
   const SlidingUpPanelWidget({
     super.key,
@@ -172,22 +168,11 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Itinerarios ",
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.titleSmall?.color,
-                fontSize: 18,
+            if (itineraryList.isNotEmpty)
+              Text(
+                "Itinerarios ",
+                style: Theme.of(context).textTheme.titleSmall,
               ),
-            ),
-            Text(
-              "(${itineraryList.length})",
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.normal,
-                color: Theme.of(context).textTheme.titleSmall?.color,
-                fontSize: 18,
-              ),
-            ),
           ],
         ),
         const SizedBox(height: 37.5),
@@ -195,31 +180,102 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
           child: CustomScrollView(
             controller: sc,
             slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          filterChallengesByItinerary(
-                              itineraryList[index].idItinerary);
-                        },
-                        child: ItineraryCardHome(
-                          idUser: idUser,
-                          idItinerary: itineraryList[index].idItinerary,
-                          name: itineraryList[index].name,
-                          imageURL:
-                              itineraryList[index].imageURL?.toString() ?? '',
-                          entityAdmin: "",
-                          number: itineraryList[index].number,
+              if (itineraryList.isNotEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            filterChallengesByItinerary(
+                                itineraryList[index].idItinerary);
+                          },
+                          child: ItineraryCardHome(
+                            idUser: idUser,
+                            idItinerary: itineraryList[index].idItinerary,
+                            name: itineraryList[index].name,
+                            imageURL:
+                                itineraryList[index].imageURL?.toString() ?? '',
+                            entityAdmin: "",
+                          ),
+                        );
+                      },
+                      childCount: itineraryList.length,
+                    ),
+                  ),
+                )
+              else
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: MediaQuery.of(context).size.height / 2 + 45,
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'No hay itinerarios\npara mostrar',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                        color: Theme.of(context).shadowColor),
+                              ),
+                              const SizedBox(height: 16),
+                              Icon(
+                                Icons.view_list_rounded,
+                                size: 125,
+                                color: Theme.of(context).shadowColor,
+                              ),
+                              const SizedBox(height: 16),
+                              RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  style: GoogleFonts.inter(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: 'Presiona ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                    WidgetSpan(
+                                      child: Icon(
+                                        Icons.view_agenda_rounded,
+                                        size:
+                                            16, // Ajusta el tamaño del ícono según sea necesario
+                                        color: Theme.of(context)
+                                            .secondaryHeaderColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          ' para ir a entidades\ny buscar más retos',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    },
-                    childCount: itineraryList.length,
+                      ],
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -262,19 +318,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
                   children: [
                     Text(
                       "Retos ",
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.titleSmall?.color,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      "(${filteredChallengeList.length})",
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.normal,
-                        color: Theme.of(context).textTheme.titleSmall?.color,
-                        fontSize: 18,
-                      ),
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ],
                 ),
@@ -287,35 +331,36 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
           child: CustomScrollView(
             controller: sc,
             slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: ChallengeCardHome(
-                          idChallenge: challengeList[index].idChallenge,
-                          name: challengeList[index].name,
-                          description: challengeList[index].description,
-                          latitude: challengeList[index].latitude,
-                          longitude: challengeList[index].longitude,
-                          question: challengeList[index].question,
-                          experience: challengeList[index].experience,
-                          itinerary: challengeList[index].itinerary,
-                          imageURL: challengeList[index].imageURL,
-                        ),
-                      );
-                    },
-                    childCount: challengeList.length,
+              if (challengeList.isNotEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: ChallengeCardHome(
+                            idChallenge: challengeList[index].idChallenge,
+                            name: challengeList[index].name,
+                            description: challengeList[index].description,
+                            latitude: challengeList[index].latitude,
+                            longitude: challengeList[index].longitude,
+                            question: challengeList[index].question,
+                            experience: challengeList[index].experience,
+                            itinerary: challengeList[index].itinerary,
+                            imageURL: challengeList[index].imageURL,
+                          ),
+                        );
+                      },
+                      childCount: challengeList.length,
+                    ),
                   ),
-                ),
-              ),
+                )
             ],
           ),
         ),

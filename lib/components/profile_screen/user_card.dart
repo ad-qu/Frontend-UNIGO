@@ -7,10 +7,6 @@ import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unigo/pages/profile/profile_viewer.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class MyUserCard extends StatefulWidget {
   final String idUserSession;
   final String idCardUser;
@@ -18,17 +14,18 @@ class MyUserCard extends StatefulWidget {
   final String attr2;
   final String attr3;
   final bool following;
+  final VoidCallback? onRefresh;
 
-  const MyUserCard(
-      {Key? key,
-      required this.idUserSession, //the id in shared preferences
-      required this.idCardUser, //the id of the user that appears in the card
-      required this.attr1, //photo url of the user
-      required this.attr2, //username
-      required this.attr3, //exp or level of the user
-      required this.following //if true it means that the user is following the one it has started session
-      })
-      : super(key: key);
+  const MyUserCard({
+    super.key,
+    required this.idUserSession, //the id in shared preferences
+    required this.idCardUser, //the id of the user that appears in the card
+    required this.attr1, //photo url of the user
+    required this.attr2, //username
+    required this.attr3, //exp or level of the user
+    required this.following, //if true it means that the user is following the one it has started session
+    this.onRefresh,
+  });
 
   @override
   State<MyUserCard> createState() => _MyUserCardState();
@@ -146,10 +143,15 @@ class _MyUserCardState extends State<MyUserCard> {
                 PageTransition(
                   type: PageTransitionType.rightToLeft,
                   child: ProfiletViewer(
-                      idCardUser: widget.idCardUser,
-                      isFollowed: widget.following),
+                    idCardUser: widget.idCardUser,
+                    isFollowed: widget.following,
+                  ),
                 ),
-              );
+              ).then((result) {
+                if (result == true) {
+                  widget.onRefresh?.call();
+                }
+              });
             },
             child: Container(
               height: 65,

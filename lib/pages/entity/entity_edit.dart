@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:unigo/pages/navbar.dart';
 import '../../components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -15,10 +16,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
-
-void main() async {
-  await dotenv.load();
-}
 
 class EntityEditScreen extends StatefulWidget {
   final String idEntity;
@@ -44,6 +41,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
   String imageURL = "";
   File? _tempImageFile;
   String? _deleteConfirmationText = "";
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -80,38 +78,88 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
     super.dispose();
   }
 
-  Future createEntity() async {
-    if (_tempImageFile != null) {
-      await uploadImageToFirebase();
-    }
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    try {
-      Navigator.pop(
-        // ignore: use_build_context_synchronously
-        context,
-        PageTransition(
-          type: PageTransitionType.topToBottom,
-          child: const EntityScreen(),
+  Future editEntity() async {
+    if (nameController.text == '' &&
+        descriptionController.text == '' &&
+        _tempImageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Theme.of(context).splashColor,
+          showCloseIcon: false,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
+          margin: const EdgeInsets.fromLTRB(30, 0, 30, 60),
+          content: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+            child: Text(
+              "Antes debes realizar algún cambio",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: Theme.of(context).secondaryHeaderColor,
+              ),
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
         ),
       );
-      await Dio().post(
-        'http://${dotenv.env['API_URL']}/entity/update/${widget.idEntity}',
-        data: {
-          "name": nameController.text,
-          "description": descriptionController.text,
-          "imageURL": imageURL,
-        },
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
+    } else {
+      setState(() {
+        _isUploading = true;
+      });
+
+      String namePlaceHolder, surnamePlaceHolder;
+      if (nameController.text != '') {
+        namePlaceHolder = nameController.text;
+      } else {
+        namePlaceHolder = widget.name;
+      }
+      if (descriptionController.text != '') {
+        surnamePlaceHolder = descriptionController.text;
+      } else {
+        surnamePlaceHolder = widget.description;
+      }
+
+      if (_tempImageFile != null) {
+        await uploadImageToFirebase();
+      } else {
+        imageURL = widget.imageURL ?? '';
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final String token = prefs.getString('token') ?? "";
+      try {
+        await Dio().post(
+          'http://${dotenv.env['API_URL']}/entity/update/${widget.idEntity}',
+          data: {
+            "name": namePlaceHolder,
+            "description": surnamePlaceHolder,
+            "imageURL": imageURL,
           },
-        ),
-      );
-    } catch (e) {
-      // ignore: avoid_print
-      print(e);
+          options: Options(
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token",
+            },
+          ),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: const EntityScreen(),
+          ),
+          (Route<dynamic> route) =>
+              false, // Elimina todas las pantallas anteriores
+        );
+      } catch (e) {
+        // ignore: avoid_print
+        print(e);
+      } finally {
+        setState(() {
+          _isUploading = false;
+        });
+      }
     }
   }
 
@@ -121,7 +169,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
     try {
       String path =
           'http://${dotenv.env['API_URL']}/entity/delete/${widget.idEntity}';
-      var response = await Dio().delete(
+      await Dio().delete(
         path,
         options: Options(
           headers: {
@@ -130,54 +178,6 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
           },
         ),
       );
-
-      if (response.statusCode == 200) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color.fromARGB(255, 56, 142, 60),
-            showCloseIcon: false,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                "Challenge successfully deleted",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      } else {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Theme.of(context).splashColor,
-            showCloseIcon: false,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                AppLocalizations.of(context)!.unable_to_proceed,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
     } catch (e) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
@@ -227,7 +227,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '¿Estás seguro de que quieres eliminar esta entidad? \n\nAl eliminar la entidad, esta quedará inaccesible y no podrás utilizarla. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación.',
+                    '¿Estás seguro de que quieres eliminar esta entidad? \n\nAl eliminar la entidad, esta quedará inaccesible y no podrá ser utilizada por nadie. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación.',
                     textAlign: TextAlign.start,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
@@ -241,14 +241,14 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                         });
                       }
                     },
-                    cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 25, 25, 25),
+                    cursorColor: Theme.of(context).splashColor,
+                    style: TextStyle(
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Theme.of(context).textTheme.bodyMedium?.color,
-                      hintText: 'Escribe "ELIMINAR" para confirmar',
+                      fillColor: Theme.of(context).cardColor,
+                      hintText: "Escribe 'ELIMINAR' para confirmar",
                       hintStyle: const TextStyle(
                         color: Color.fromARGB(255, 146, 146, 146),
                       ),
@@ -267,7 +267,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                     Navigator.of(context).pop();
                   },
                   style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all<Color>(
+                    foregroundColor: WidgetStateProperty.all<Color>(
                       const Color.fromARGB(255, 222, 66, 66),
                     ),
                   ),
@@ -276,8 +276,16 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                 TextButton(
                   onPressed: () {
                     if (_deleteConfirmationText == 'ELIMINAR') {
-                      deleteEntity(); // Llamar al método de eliminación
-                      Navigator.of(context).pop(); // Cerrar el diálogo
+                      deleteEntity(); // Asegúrate de que este método sea asíncrono si es necesario
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.leftToRight,
+                          child: const NavBar(),
+                        ),
+                        (Route<dynamic> route) =>
+                            false, // Elimina todas las pantallas anteriores
+                      );
                     } else {
                       Navigator.of(context).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -320,6 +328,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SizedBox(
@@ -333,7 +342,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        showDeleteConfirmationDialog(); // Mostrar el diálogo de confirmación
+                        showDeleteConfirmationDialog();
                       },
                       child: Container(
                         padding: const EdgeInsets.all(15),
@@ -411,14 +420,34 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
                     //Sign up button
                     RedButton(
                       buttonText: "EDITAR",
-                      onTap: createEntity,
+                      onTap: editEntity,
                     ),
+                    if (_isUploading)
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: MediaQuery.of(context).size.width - 95,
+                        child: Center(
+                          child: SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                              backgroundColor: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(0.5),
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 4,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).secondaryHeaderColor),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

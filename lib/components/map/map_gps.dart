@@ -12,7 +12,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:unigo/models/campus.dart';
 import 'package:unigo/models/challenge.dart';
-import 'package:unigo/pages/map/challenge_screen.dart';
+import 'package:unigo/pages/map/challenge_pop_up.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -58,8 +58,8 @@ class _MapGPSState extends State<MapGPS> {
     getLocationPermission();
     startGPS();
 
-    getCampusLocation();
     getChallenges();
+    getCampusLocation();
     getCampus();
   }
 
@@ -145,12 +145,13 @@ class _MapGPSState extends State<MapGPS> {
                     },
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                      child: MyChallengePage(
+                      child: ChallengePopUp(
                         selectedChallengeId: challenge.idChallenge,
                         nameChallenge: challenge.name,
                         descrChallenge: challenge.description,
                         expChallenge: challenge.experience.toString(),
                         questions: challenge.question,
+                        imageURL: challenge.imageURL,
                       ),
                     ),
                   );
@@ -445,6 +446,15 @@ class _MapGPSState extends State<MapGPS> {
                   if (selectedCampus != null) {
                     final prefs = await SharedPreferences.getInstance();
                     final String token = prefs.getString('token') ?? "";
+                    _idUser = prefs.getString('idUser');
+                    print(selectedCampus);
+                    print("1");
+
+                    print("id");
+                    print(_idUser);
+
+                    print("2");
+
                     String path =
                         'http://${dotenv.env['API_URL']}/user/update/$_idUser';
 
@@ -461,22 +471,24 @@ class _MapGPSState extends State<MapGPS> {
                           },
                         ),
                       );
+                      print(response.statusCode);
+                      print(response);
 
-                      prefs.setString('campus', selectedCampus?.idCampus ?? '');
-                      prefs.setString(
-                          'latitude', selectedCampus?.latitude ?? '');
-                      prefs.setString(
-                          'longitude', selectedCampus?.longitude ?? '');
+                      if (response.statusCode == 200) {
+                        prefs.setString(
+                            'campus', selectedCampus?.idCampus ?? '');
+                        prefs.setString(
+                            'latitude', selectedCampus?.latitude ?? '');
+                        prefs.setString(
+                            'longitude', selectedCampus?.longitude ?? '');
 
-                      Navigator.of(context)
-                          .pop(); // Cerrar el diálogo si la solicitud es exitosa
+                        Navigator.of(context).pop();
+                      } else {
+                        print("Error");
+                      }
                     } catch (e) {
                       // Manejar errores de solicitud
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error al realizar la solicitud: $e'),
-                        ),
-                      );
+                      print('Error al realizar la solicitud: $e');
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -544,16 +556,6 @@ class _MapGPSState extends State<MapGPS> {
               maxZoom: 20,
             ),
             children: [
-              RichAttributionWidget(
-                attributions: [
-                  TextSourceAttribution(
-                    'OpenStreetMap contributors',
-                    onTap: () => launchUrl(
-                      Uri.parse('https://openstreetmap.org/copyright'),
-                    ),
-                  ),
-                ],
-              ),
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'dev.fleaflet.flutter_map.example',

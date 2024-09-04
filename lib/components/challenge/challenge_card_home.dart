@@ -8,7 +8,7 @@ import 'package:unigo/components/challenge/challenge_menu.dart';
 import 'package:unigo/components/challenge/challenge_more_button.dart';
 import 'package:unigo/components/itinerary/itinerary_menu.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:unigo/pages/map/challenge_screen.dart';
+import 'package:unigo/pages/map/challenge_pop_up.dart';
 import 'package:unigo/pages/map/qr_screen.dart';
 
 class ChallengeCardHome extends StatefulWidget {
@@ -59,7 +59,7 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
           child: Slidable(
             key: ValueKey(widget.idChallenge),
             startActionPane: ActionPane(
-              extentRatio: 0.3,
+              extentRatio: 0.325,
               motion: const ScrollMotion(),
               children: [
                 SlidableAction(
@@ -73,12 +73,13 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
                           },
                           child: BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                            child: MyChallengePage(
+                            child: ChallengePopUp(
                               selectedChallengeId: widget.idChallenge,
                               nameChallenge: widget.name,
                               descrChallenge: widget.description,
                               expChallenge: widget.experience.toString(),
                               questions: widget.question,
+                              imageURL: widget.imageURL,
                             ),
                           ),
                         );
@@ -93,16 +94,14 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
               ],
             ),
             endActionPane: ActionPane(
-              extentRatio: 0.3,
+              extentRatio: 0.325,
               motion: const ScrollMotion(),
               children: [
                 SlidableAction(
                   onPressed: (context) {
-                    Navigator.pop(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.leftToRight,
-                        child: MyQR(
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                        builder: (context) => MyQR(
                           idChallenge: widget.idChallenge,
                           questions: widget.question ?? [],
                           expChallenge: widget.experience.toString(),
@@ -112,8 +111,8 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
                   },
                   backgroundColor: Theme.of(context).dividerColor,
                   foregroundColor: Colors.white,
-                  icon: Icons.camera_alt,
-                  label: 'Cámara',
+                  icon: Icons.qr_code_scanner_rounded,
+                  label: 'Escanear',
                 ),
               ],
             ),

@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:unigo/pages/profile/followers_screen.dart';
+import 'package:unigo/pages/profile/following_screen.dart';
 import 'package:unigo/pages/profile/history_home.dart';
 import 'package:unigo/pages/startup/login.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -43,7 +45,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late bool _isLoading;
+  bool _isLoading = false;
   String? _idUser = "";
   String? _name = "";
   String? _surname = "";
@@ -77,12 +79,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    _isLoading = true;
-    Future.delayed(const Duration(milliseconds: 750), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
     super.initState();
     getUserInfo();
     getFriendsInfo();
@@ -289,14 +285,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ));
         // ignore: avoid_print
         print(response);
-        if (mounted) {
-          setState(() {
-            imageURL = downloadURL;
-          });
-        }
+        if (mounted) {}
       }
     } on PlatformException catch (e) {
       // ignore: avoid_print
+
       print('Failed to pick the image: $e');
     }
   }
@@ -318,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _exp = prefs.getInt('experience')!;
           _campus = prefs.getString('campus')!;
           print("342342342342346237853gbedfgjhsdfjhksdfjhsdj");
-          print(_campus);
+          print(_level);
         } catch (e) {
           print(e);
           _level = 0;
@@ -330,6 +323,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future getFriendsInfo() async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var followersCount = await Dio().get(
           'http://${dotenv.env['API_URL']}/user/followers/count/${_idUser!}');
@@ -344,9 +340,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() {
           _following = followingCount.toString();
+          _isLoading = false;
         });
       }
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       print('Error in the counting of friends: $e');
     }
   }
@@ -693,28 +693,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget showBadges() {
     print("Estic al podium");
 
-    if (insigniasList.isEmpty) {
+    List<String> badgeLevels = [];
+    // Asumiendo que las imágenes están disponibles solo para los niveles 2, 4, y 6.
+    for (int level = 2; level <= _level; level += 2) {
+      if (level <= 6) {
+        badgeLevels.add('images/$level.png');
+      }
+    }
+
+    if (badgeLevels.isEmpty) {
       return SizedBox(
         height: 10,
       );
     } else {
       return SizedBox(
-        height: 37.5,
-        width: insigniasList.length * 45.0,
+        height: 30, // Altura ajustada para el tamaño de las insignias
+        width: badgeLevels.length * 35.0, // Ancho ajustado para cada insignia
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           shrinkWrap: false,
-          itemCount: insigniasList.length,
+          itemCount: badgeLevels.length,
           itemBuilder: (BuildContext context, int index) {
             try {
               return Row(
                 children: [
-                  CircleAvatar(
-                    radius: 17.5,
-                    backgroundImage:
-                        AssetImage('images/' + insigniasList[index] + '.png'),
+                  Container(
+                    width: 20.0, // Ancho ajustado de la insignia
+                    height: 20.0, // Altura ajustada de la insignia
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(badgeLevels[index]),
+                        fit: BoxFit.contain, // Ajusta la imagen sin cortarla
+                      ),
+                    ),
                   ),
-                  SizedBox(width: 5),
+                  SizedBox(width: 10),
                 ],
               );
             } catch (e) {
@@ -819,7 +832,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
                         child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 260,
+                          height: 350,
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(37.5),
@@ -956,8 +969,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       value: _exp.toDouble() / 100,
                                       backgroundColor: Theme.of(context)
                                           .secondaryHeaderColor,
-                                      color: const Color.fromARGB(
-                                          255, 247, 199, 18),
+                                      color: Theme.of(context).highlightColor,
                                     ),
                                   ),
                                 ),
@@ -969,20 +981,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _seeFollowing = !_seeFollowing;
-                                        if (_seeFollowing) {
-                                          _seeOptions = false;
-                                          _isFollowingHighlighted = true;
-                                          _isFollowersHighlighted = false;
-                                          _seeFollowers = false;
-                                        } else {
-                                          _seeOptions = true;
-                                          _isFollowingHighlighted = false;
-                                        }
-                                      });
-                                    }
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: const FollowingScreen(),
+                                      ),
+                                    );
                                   },
                                   child: Text(
                                     "$_following\n${AppLocalizations.of(context)!.following}",
@@ -995,20 +1000,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 const SizedBox(width: 100),
                                 GestureDetector(
                                   onTap: () {
-                                    if (mounted) {
-                                      setState(() {
-                                        _seeFollowers = !_seeFollowers;
-                                        if (_seeFollowers) {
-                                          _seeOptions = false;
-                                          _isFollowersHighlighted = true;
-                                          _isFollowingHighlighted = false;
-                                          _seeFollowing = false;
-                                        } else {
-                                          _seeOptions = true;
-                                          _isFollowersHighlighted = false;
-                                        }
-                                      });
-                                    }
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: const FollowerScreen(),
+                                      ),
+                                    );
                                   },
                                   child: Text(
                                     "$_followers\n${AppLocalizations.of(context)!.followers}",
@@ -1023,115 +1021,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 20),
                             // Following scroll page
-                            Visibility(
-                              visible:
-                                  _seeFollowing, // not visible if set false
-                              child: SizedBox(
-                                height: 325,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: followingList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    try {
-                                      return MyUserCard(
-                                        idUserSession: _idUser!,
-                                        idCardUser: followingList[index].idUser,
-                                        attr1: followingList[index]
-                                                .imageURL
-                                                ?.toString() ??
-                                            '',
-                                        attr2: followingList[index].username,
-                                        attr3: followingList[index]
-                                            .level
-                                            .toString(),
-                                        following: true,
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox();
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                            // Followers scroll view
-                            Visibility(
-                              visible:
-                                  _seeFollowers, // not visible if set false
-                              child: SizedBox(
-                                height: 325,
-                                child: ListView.builder(
-                                  itemCount: followersList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    try {
-                                      return MyUserCard(
-                                        idUserSession: _idUser!,
-                                        idCardUser: followersList[index].idUser,
-                                        attr1: followingList[index]
-                                                .imageURL
-                                                ?.toString() ??
-                                            '',
-                                        attr2: followersList[index].username,
-                                        attr3: followersList[index]
-                                            .level
-                                            .toString(),
-                                        following: true,
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox(); // Return an empty SizedBox if the index is out of range
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
 
-                            Visibility(
-                              visible: _seeOptions,
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 17.5),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: HistoryButton(
-                                        buttonText: "History",
-                                        onTap: seeHistory),
-                                  ),
-                                  const SizedBox(height: 38),
-                                  //const SizedBox(height: 17.5),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: EditAccountButton(
-                                        buttonText: "Edit account",
-                                        onTap: editAccount),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: EditPasswordButton(
-                                        buttonText: "Edit password",
-                                        onTap: editPassword),
-                                  ),
-                                  const SizedBox(height: 38),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: DeleteAccountButton(
-                                        buttonText: "Disable account",
-                                        onTap: showDisableConfirmation),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                    child: LogOutButton(
-                                        buttonText: "Log out", onTap: logOut),
-                                  ),
-                                ],
-                              ),
+                            Column(
+                              children: [
+                                const SizedBox(height: 17.5),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                  child: HistoryButton(
+                                      buttonText: "History", onTap: seeHistory),
+                                ),
+                                const SizedBox(height: 38),
+                                //const SizedBox(height: 17.5),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                  child: EditAccountButton(
+                                      buttonText: "Edit account",
+                                      onTap: editAccount),
+                                ),
+                                const SizedBox(height: 12),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                  child: EditPasswordButton(
+                                      buttonText: "Edit password",
+                                      onTap: editPassword),
+                                ),
+                                const SizedBox(height: 38),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                  child: DeleteAccountButton(
+                                      buttonText: "Disable account",
+                                      onTap: showDisableConfirmation),
+                                ),
+                                const SizedBox(height: 12),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                  child: LogOutButton(
+                                      buttonText: "Log out", onTap: logOut),
+                                ),
+                              ],
                             ),
                           ],
                         ),

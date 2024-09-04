@@ -15,10 +15,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unigo/pages/entity/itineraries/itinerary_add.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class ItineraryHome extends StatefulWidget {
   final String idEntity;
   final String admin;
@@ -30,18 +26,12 @@ class ItineraryHome extends StatefulWidget {
 }
 
 class _ItineraryHomeState extends State<ItineraryHome> {
-  late bool _isLoading;
+  bool _isLoading = true;
   List<Itinerary> itineraryList = [];
   String? _idUser = "";
 
   @override
   void initState() {
-    _isLoading = true;
-    Future.delayed(const Duration(milliseconds: 750), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
     super.initState();
     getItineraries();
     getUserInfo();
@@ -75,15 +65,14 @@ class _ItineraryHomeState extends State<ItineraryHome> {
       setState(() {
         itineraryList =
             list.map((itinerary) => Itinerary.fromJson2(itinerary)).toList();
+        _isLoading = false;
       });
     } catch (e) {
-      // ignore: avoid_print
-      print("Error $e");
+      print(e);
+      setState(() {
+        _isLoading = false;
+      });
     }
-  }
-
-  Future<void> _refreshItineraries() async {
-    await getItineraries();
   }
 
   @override
@@ -111,46 +100,51 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                             ),
                           ),
                           Text(
-                            "Itinerarios (${itineraryList.length})",
+                            "Itinerarios",
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(15),
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Color.fromARGB(255, 227, 227, 227),
-                              size: 27.5,
-                            ),
-                          ),
+                          if (widget.admin == _idUser)
+                            Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                color: Color.fromARGB(255, 227, 227, 227),
+                                size: 27.5,
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Icon(
+                                Icons.add,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                size: 27.5,
+                              ),
+                            )
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 65,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(37.5),
+                    Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Theme.of(context).hoverColor,
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 5,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).splashColor),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 65,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(37.5),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 25),
                   ],
                 ),
               )
@@ -187,20 +181,9 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                           Row(
                             children: [
                               Text(
-                                "Itinerarios ",
+                                "Itinerarios",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.color,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              Text(
-                                "(${itineraryList.length})",
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.normal,
                                   color: Theme.of(context)
                                       .textTheme
                                       .titleSmall
@@ -212,8 +195,8 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                           ),
                           if (widget.admin == _idUser)
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
+                              onTap: () async {
+                                final result = await Navigator.push(
                                   context,
                                   PageTransition(
                                     type: PageTransitionType.bottomToTop,
@@ -221,6 +204,13 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                         ItineraryAdd(idEntity: widget.idEntity),
                                   ),
                                 );
+                                if (result == true) {
+                                  print(
+                                      "New created successfully, updating list.");
+                                  getItineraries();
+                                } else {
+                                  print("New creation failed or was canceled.");
+                                }
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(15),
@@ -253,95 +243,79 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                       ),
                     ),
                     Expanded(
-                      child: RefreshIndicator(
-                        displacement: 0,
-                        backgroundColor: Theme.of(context).cardColor,
-                        color: Theme.of(context).secondaryHeaderColor,
-                        onRefresh: _refreshItineraries,
-                        child: CustomScrollView(
-                          slivers: [
-                            if (itineraryList.isNotEmpty)
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (BuildContext context, int index) {
-                                    try {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0,
-                                        ),
-                                        child: ItineraryCard(
-                                          idUser: _idUser,
-                                          entityAdmin: widget.admin,
-                                          idItinerary:
-                                              itineraryList[index].idItinerary,
-                                          name: itineraryList[index].name,
-                                          imageURL: itineraryList[index]
-                                                  .imageURL
-                                                  ?.toString() ??
-                                              '',
-                                          number: itineraryList[index].number,
-                                          onChange: _refreshItineraries,
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox();
-                                    }
-                                  },
-                                  childCount: itineraryList.length,
-                                ),
-                              )
-                            else
-                              SliverToBoxAdapter(
-                                child: Container(
-                                  height:
-                                      100, // Ajusta la altura según sea necesario
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: RichText(
-                                          textAlign: TextAlign.center,
-                                          text: TextSpan(
-                                            style: GoogleFonts.inter(
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.color,
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    'No itineraries were found\nPress ',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                              WidgetSpan(
-                                                child: Icon(
-                                                  Icons.add,
-                                                  size:
-                                                      16, // Ajusta el tamaño del ícono según sea necesario
-                                                  color: Theme.of(context)
-                                                      .secondaryHeaderColor,
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text: ' to create an itinerary',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                      child: CustomScrollView(
+                        slivers: [
+                          if (itineraryList.isNotEmpty)
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  try {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
                                       ),
-                                    ],
-                                  ),
+                                      child: ItineraryCard(
+                                        idUser: _idUser,
+                                        entityAdmin: widget.admin,
+                                        idItinerary:
+                                            itineraryList[index].idItinerary,
+                                        name: itineraryList[index].name,
+                                        imageURL: itineraryList[index]
+                                                .imageURL
+                                                ?.toString() ??
+                                            '',
+                                        number: itineraryList[index].number,
+                                        onChange: getItineraries,
+                                      ),
+                                    );
+                                  } catch (e) {
+                                    return const SizedBox();
+                                  }
+                                },
+                                childCount: itineraryList.length,
+                              ),
+                            )
+                          else
+                            SliverToBoxAdapter(
+                              child: Container(
+                                height: MediaQuery.of(context).size.height / 2 +
+                                    160,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .center, // Centra el contenido verticalmente
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center, // Centra el contenido horizontalmente
+                                        children: [
+                                          Text(
+                                            'Esta entidad\nno tiene itinerarios',
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall
+                                                ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .shadowColor),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Icon(
+                                            Icons.route_rounded,
+                                            size: 125,
+                                            color:
+                                                Theme.of(context).shadowColor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                          ],
-                        ),
+                            ),
+                        ],
                       ),
                     ),
                   ],

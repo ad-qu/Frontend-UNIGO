@@ -53,27 +53,15 @@ class _ItineraryCardState extends State<ItineraryCard> {
       padding: const EdgeInsets.fromLTRB(0, 2, 0, 13),
       child: GestureDetector(
         onTap: () {
-          if (widget.idUser == widget.entityAdmin) {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.rightToLeft,
-                child: ChallengeHome(
-                    idItinerary: widget.idItinerary,
-                    admin: widget.entityAdmin ?? ''),
-              ),
-            );
-          } else {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.rightToLeft,
-                child: ChallengeHome(
-                    idItinerary: widget.idItinerary,
-                    admin: widget.entityAdmin ?? ''),
-              ),
-            );
-          }
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: ChallengeHome(
+                  idItinerary: widget.idItinerary,
+                  admin: widget.entityAdmin ?? ''),
+            ),
+          );
         },
         child: Container(
           height: 65,
@@ -146,34 +134,26 @@ class _ItineraryCardState extends State<ItineraryCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            widget.name.length > 12
-                                ? '${widget.name.substring(0, 12)}...'
-                                : widget.name,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            '(${widget.number})',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ],
+                      Text(
+                        widget.name.length > 12
+                            ? '${widget.name.substring(0, 12)}...'
+                            : widget.name,
+                        style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ],
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 7.5, 0),
-                child: ItineraryMoreButton(
-                  idItinerary: widget.idItinerary,
-                  imageURL: widget.imageURL,
-                  name: widget.name,
-                  onChange: widget.onChange,
+              if (widget.entityAdmin == widget.idUser)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 7.5, 0),
+                  child: ItineraryMoreButton(
+                    idItinerary: widget.idItinerary,
+                    imageURL: widget.imageURL,
+                    name: widget.name,
+                    onChange: widget.onChange,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

@@ -16,10 +16,6 @@ import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/pages/startup/terms_of_use_privacy_policy.dart';
 
-void main() async {
-  await dotenv.load();
-}
-
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -168,14 +164,15 @@ class _SignupScreenState extends State<SignupScreen> {
               "password": passwordController.text,
             },
           );
-          if (response.statusCode == 200) {
+          print(response.statusCode);
+          if (response.statusCode == 201) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: const Color.fromARGB(255, 56, 142, 60),
                 showCloseIcon: false,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(17.5)),
-                margin: const EdgeInsets.fromLTRB(30, 0, 30, 12),
+                margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
                 content: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                   child: Text(
@@ -394,7 +391,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               Theme.of(context).secondaryHeaderColor,
                           isExpanded: true,
                           hint: Text(
-                          AppLocalizations.of(context)!.campus,
+                            AppLocalizations.of(context)!.campus,
                             style: const TextStyle(
                               color: Color.fromARGB(255, 138, 138, 138),
                               fontSize: 14,
