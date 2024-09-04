@@ -164,7 +164,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                                           idUserSession: _idUser!,
                                           idCardUser:
                                               filteredUsers[index].idUser,
-                                          attr1: peopleList[index]
+                                          attr1: filteredUsers[index]
                                                   .imageURL
                                                   ?.toString() ??
                                               '',

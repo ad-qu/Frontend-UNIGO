@@ -31,7 +31,7 @@ class ProfiletViewer extends StatefulWidget {
 }
 
 class _ProfiletViewerState extends State<ProfiletViewer> {
-  bool _isLoading = true;
+  bool _isLoading = false;
   String? _username = "";
   String? _idUser = "";
   String? _name = "";

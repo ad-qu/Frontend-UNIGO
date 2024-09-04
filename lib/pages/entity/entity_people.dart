@@ -171,15 +171,17 @@ class _EntityPeopleState extends State<EntityPeople> {
                               SliverList(
                                 delegate: SliverChildBuilderDelegate(
                                   (BuildContext context, int index) {
-                                    try {
-                                      return Padding(
+                                    return IgnorePointer(
+                                      ignoring:
+                                          true, // Esto desactiva la interacción
+                                      child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16.0),
                                         child: MyUserCard(
                                           idUserSession: _idUser!,
                                           idCardUser:
                                               filteredUsers[index].idUser,
-                                          attr1: peopleList[index]
+                                          attr1: filteredUsers[index]
                                                   .imageURL
                                                   ?.toString() ??
                                               '',
@@ -189,10 +191,8 @@ class _EntityPeopleState extends State<EntityPeople> {
                                               .toString(),
                                           following: false,
                                         ),
-                                      );
-                                    } catch (e) {
-                                      return const SizedBox();
-                                    }
+                                      ),
+                                    );
                                   },
                                   childCount: filteredUsers.length,
                                 ),

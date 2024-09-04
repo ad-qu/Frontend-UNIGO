@@ -64,28 +64,6 @@ class _NewsViewerState extends State<NewsViewer> {
       );
 
       if (response.statusCode == 200) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color.fromARGB(255, 56, 142, 60),
-            showCloseIcon: false,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                "New successfully deleted",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
         widget.onChange();
         Navigator.pop(context, true);
       } else {
