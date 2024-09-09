@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:unigo/pages/startup/welcome.dart';
-import 'package:unigo/pages/navbar.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
-import 'package:jwt_decode/jwt_decode.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:unigo/pages/navbar.dart';
+import 'package:unigo/pages/startup/welcome.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,22 +21,18 @@ class SplashScreenState extends State<SplashScreen> {
     _navigateToHome();
   }
 
-  // During 1500 ms, we verify if the credentials are available to Log In and if the response code is 222 to proceed
+  // During 1000 ms, we verify if the credentials are available to Log In and if the response code is 222 to proceed
   void _navigateToHome() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future.delayed(const Duration(milliseconds: 1000));
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? idUser = prefs.getString("idUser");
     String? email = prefs.getString("email");
     String? password = prefs.getString("password");
-    print(idUser);
-    print(email);
-    print(password);
 
     if (idUser == null) {
       _goToWelcomeScreen();
     } else {
-      print("23123123123131");
       try {
         var response = await Dio().post(
           'http://${dotenv.env['API_URL']}/auth/logIn',
@@ -73,9 +68,6 @@ class SplashScreenState extends State<SplashScreen> {
           prefs.setString('imageURL', imageURL ?? '');
           prefs.setInt('level', level);
           prefs.setInt('experience', experience);
-          print(latitude);
-          print(longitude);
-          print("233123123123123");
           _goToHomeScreen();
         } else {
           _goToWelcomeScreen();

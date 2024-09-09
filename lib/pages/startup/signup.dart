@@ -1,20 +1,20 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_literals_to_create_immutables
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/components/credential_screen/input_big_textfield.dart';
-import 'package:unigo/models/campus.dart';
-import 'package:unigo/pages/startup/login.dart';
-import '../../components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
+
+import 'package:unigo/models/campus.dart';
+import 'package:unigo/pages/startup/login.dart';
 import 'package:unigo/pages/startup/welcome.dart';
+import '../../components/input_widgets/red_button.dart';
 import 'package:unigo/components/language/language_button.dart';
-import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/pages/startup/terms_of_use_privacy_policy.dart';
+import 'package:unigo/components/credential_screen/input_short_textfield.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -34,17 +34,10 @@ class _SignupScreenState extends State<SignupScreen> {
   List<Campus> campusList = [];
   Campus? selectedCampus;
 
-  double strength = 0;
-  RegExp numReg = RegExp(r".*[0-9].*");
-  RegExp letterReg = RegExp(r".*[A-Aa-z].*");
-  late String password;
-  String text = "";
-  Color colorPasswordIndicator = Colors.black;
-  bool _isPasswordEightCharacters = false;
-  bool _hasPasswordOneNumber = false;
   bool passwordVisible1 = false;
   bool passwordVisible2 = false;
-
+  bool _isPasswordEightCharacters = false;
+  bool _hasPasswordOneNumber = false;
   bool _bothPasswordMatch = false;
 
   @override
@@ -70,7 +63,15 @@ class _SignupScreenState extends State<SignupScreen> {
         campusList = campus.map((campus) => Campus.fromJson2(campus)).toList();
       });
     } catch (e) {
-      print('Error: $e');
+      SnackBarProvider().showErrorSnackBar(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: use_build_context_synchronously
+          AppLocalizations.of(context)!.server_error,
+          30,
+          0,
+          30,
+          45);
     }
   }
 
@@ -85,73 +86,16 @@ class _SignupScreenState extends State<SignupScreen> {
             (passwordController.text == '') ||
             (passControllerVerify.text == '') ||
             (selectedCampus!.name == '')) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Theme.of(context).splashColor,
-              showCloseIcon: false,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.5)),
-              margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
-              content: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: Text(
-                  AppLocalizations.of(context)!.empty_fields,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    color: Theme.of(context).secondaryHeaderColor,
-                  ),
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackBarProvider().showErrorSnackBar(context,
+              AppLocalizations.of(context)!.empty_fields, 30, 0, 30, 60);
         } else if (!EmailValidator.validate(emailController.text)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: const Color.fromARGB(255, 196, 150, 11),
-              showCloseIcon: false,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.5)),
-              margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
-              content: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: Text(
-                  AppLocalizations.of(context)!.invalid_email,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackBarProvider().showWarningSnackBar(context,
+              AppLocalizations.of(context)!.invalid_email, 30, 0, 30, 60);
         } else if (!_isPasswordEightCharacters ||
             !_hasPasswordOneNumber ||
             !_bothPasswordMatch) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: const Color.fromARGB(255, 196, 150, 11),
-              showCloseIcon: false,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(17.5)),
-              margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
-              content: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: Text(
-                  AppLocalizations.of(context)!.password_rules,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                ),
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          SnackBarProvider().showErrorSnackBar(context,
+              AppLocalizations.of(context)!.password_rules, 30, 0, 30, 60);
         } else {
           var response = await Dio().post(
             "http://${dotenv.env['API_URL']}/auth/signup",
@@ -164,31 +108,19 @@ class _SignupScreenState extends State<SignupScreen> {
               "password": passwordController.text,
             },
           );
-          print(response.statusCode);
           if (response.statusCode == 201) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: const Color.fromARGB(255, 56, 142, 60),
-                showCloseIcon: false,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.5)),
-                margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
-                content: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                  child: Text(
-                    AppLocalizations.of(context)!.account_created,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            // ignore: use_build_context_synchronously
+            SnackBarProvider().showSuccessSnackBar(
+                context,
+                // ignore: use_build_context_synchronously
+                AppLocalizations.of(context)!.account_created,
+                30,
+                0,
+                30,
+                60);
 
             Navigator.pushReplacement(
+              // ignore: use_build_context_synchronously
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
@@ -196,73 +128,38 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             );
           } else if (response.statusCode == 220) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Theme.of(context).splashColor,
-                showCloseIcon: false,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.5)),
-                margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
-                content: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                  child: Text(
-                    AppLocalizations.of(context)!.used_email,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            SnackBarProvider().showErrorSnackBar(
+                // ignore: use_build_context_synchronously
+                context,
+                // ignore: use_build_context_synchronously
+                AppLocalizations.of(context)!.used_email,
+                30,
+                0,
+                30,
+                60);
           } else if (response.statusCode == 400) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Theme.of(context).splashColor,
-                showCloseIcon: false,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.5)),
-                margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
-                content: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                  child: Text(
-                    AppLocalizations.of(context)!.valid_values,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            // ignore: use_build_context_synchronously
+            SnackBarProvider().showErrorSnackBar(
+                // ignore: use_build_context_synchronously
+                context,
+                // ignore: use_build_context_synchronously
+                AppLocalizations.of(context)!.valid_values,
+                30,
+                0,
+                30,
+                60);
           }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Theme.of(context).splashColor,
-            showCloseIcon: false,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(30, 0, 30, 19.25),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                AppLocalizations.of(context)!.unable_to_proceed,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackBarProvider().showErrorSnackBar(
+            // ignore: use_build_context_synchronously
+            context,
+            // ignore: use_build_context_synchronously
+            AppLocalizations.of(context)!.server_error,
+            30,
+            0,
+            30,
+            60);
       }
     }
 
@@ -308,19 +205,21 @@ class _SignupScreenState extends State<SignupScreen> {
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.leftToRight,
-                                child: const WelcomeScreen()));
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.leftToRight,
+                            child: const WelcomeScreen(),
+                          ),
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
                         decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(30)),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_back_ios_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 25,
                         ),
                       ),
@@ -392,8 +291,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           isExpanded: true,
                           hint: Text(
                             AppLocalizations.of(context)!.campus,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 138, 138, 138),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
                               fontSize: 14,
                             ),
                           ),
@@ -452,7 +352,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   return item.value == selectedCampus
                                       ? Text(
                                           (item.value?.name ?? "").length > 32
-                                              ? ('${item.value!.name.substring(0, 32)}...') // Trunca el texto a 32 caracteres
+                                              ? ('${item.value!.name.substring(0, 32)}...')
                                               : item.value!.name,
                                           overflow: TextOverflow.ellipsis,
                                           softWrap: false,
@@ -495,8 +395,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                   const BorderRadius.all(Radius.circular(17.5)),
                             ),
                             labelText: AppLocalizations.of(context)!.password,
-                            labelStyle: const TextStyle(
-                              color: Color.fromARGB(255, 138, 138, 138),
+                            labelStyle: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
                               fontSize: 14,
                             ),
                             floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -558,8 +459,9 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             labelText:
                                 AppLocalizations.of(context)!.repeat_password,
-                            labelStyle: const TextStyle(
-                              color: Color.fromARGB(255, 138, 138, 138),
+                            labelStyle: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodySmall!.color,
                               fontSize: 14,
                             ),
                             floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -604,26 +506,34 @@ class _SignupScreenState extends State<SignupScreen> {
                                       width: 20,
                                       height: 20,
                                       decoration: BoxDecoration(
-                                          color: _isPasswordEightCharacters
-                                              ? const Color.fromARGB(
-                                                  255, 51, 151, 67)
-                                              : Colors.transparent,
-                                          border: _isPasswordEightCharacters
-                                              ? Border.all(
-                                                  color: Colors.transparent)
-                                              : Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 138, 138, 138)),
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
+                                        color: _isPasswordEightCharacters
+                                            ? Theme.of(context).hintColor
+                                            : Colors.transparent,
+                                        border: _isPasswordEightCharacters
+                                            ? Border.all(
+                                                color: Colors.transparent)
+                                            : Border.all(
+                                                color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall!
+                                                        .color ??
+                                                    const Color.fromARGB(
+                                                        255, 138, 138, 138),
+                                              ),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
                                       child: Center(
                                         child: Icon(
                                           Icons.check,
                                           color: _isPasswordEightCharacters
-                                              ? const Color.fromARGB(
-                                                  255, 227, 227, 227)
-                                              : const Color.fromARGB(
-                                                  255, 138, 138, 138),
+                                              ? Theme.of(context)
+                                                  .secondaryHeaderColor
+                                              : Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color ??
+                                                  const Color.fromARGB(
+                                                      255, 138, 138, 138),
                                           size: 15,
                                         ),
                                       ),
@@ -634,12 +544,17 @@ class _SignupScreenState extends State<SignupScreen> {
                                     Text(
                                       AppLocalizations.of(context)!.characters,
                                       style: GoogleFonts.inter(
-                                          color: _isPasswordEightCharacters
-                                              ? const Color.fromARGB(
-                                                  255, 227, 227, 227)
-                                              : const Color.fromARGB(
-                                                  255, 138, 138, 138)),
-                                    )
+                                        color: _isPasswordEightCharacters
+                                            ? Theme.of(context)
+                                                .secondaryHeaderColor
+                                            : Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color ??
+                                                const Color.fromARGB(
+                                                    255, 138, 138, 138),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 15),
@@ -651,26 +566,33 @@ class _SignupScreenState extends State<SignupScreen> {
                                       width: 20,
                                       height: 20,
                                       decoration: BoxDecoration(
-                                          color: _hasPasswordOneNumber
-                                              ? const Color.fromARGB(
-                                                  255, 51, 151, 67)
-                                              : Colors.transparent,
-                                          border: _hasPasswordOneNumber
-                                              ? Border.all(
-                                                  color: Colors.transparent)
-                                              : Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 138, 138, 138)),
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
+                                        color: _hasPasswordOneNumber
+                                            ? Theme.of(context).hintColor
+                                            : Colors.transparent,
+                                        border: _hasPasswordOneNumber
+                                            ? Border.all(
+                                                color: Colors.transparent)
+                                            : Border.all(
+                                                color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall!
+                                                        .color ??
+                                                    const Color.fromARGB(
+                                                        255, 138, 138, 138)),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
                                       child: Center(
                                         child: Icon(
                                           Icons.check,
                                           color: _hasPasswordOneNumber
-                                              ? const Color.fromARGB(
-                                                  255, 227, 227, 227)
-                                              : const Color.fromARGB(
-                                                  255, 138, 138, 138),
+                                              ? Theme.of(context)
+                                                  .secondaryHeaderColor
+                                              : Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color ??
+                                                  const Color.fromARGB(
+                                                      255, 138, 138, 138),
                                           size: 15,
                                         ),
                                       ),
@@ -681,11 +603,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                     Text(
                                       AppLocalizations.of(context)!.number,
                                       style: GoogleFonts.inter(
-                                          color: _hasPasswordOneNumber
-                                              ? const Color.fromARGB(
-                                                  255, 227, 227, 227)
-                                              : const Color.fromARGB(
-                                                  255, 138, 138, 138)),
+                                        color: _hasPasswordOneNumber
+                                            ? Theme.of(context)
+                                                .secondaryHeaderColor
+                                            : Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color ??
+                                                const Color.fromARGB(
+                                                    255, 138, 138, 138),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -698,26 +625,34 @@ class _SignupScreenState extends State<SignupScreen> {
                                       width: 20,
                                       height: 20,
                                       decoration: BoxDecoration(
-                                          color: _bothPasswordMatch
-                                              ? const Color.fromARGB(
-                                                  255, 51, 151, 67)
-                                              : Colors.transparent,
-                                          border: _bothPasswordMatch
-                                              ? Border.all(
-                                                  color: Colors.transparent)
-                                              : Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 138, 138, 138)),
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
+                                        color: _bothPasswordMatch
+                                            ? Theme.of(context).hintColor
+                                            : Colors.transparent,
+                                        border: _bothPasswordMatch
+                                            ? Border.all(
+                                                color: Colors.transparent)
+                                            : Border.all(
+                                                color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall!
+                                                        .color ??
+                                                    const Color.fromARGB(
+                                                        255, 138, 138, 138),
+                                              ),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
                                       child: Center(
                                         child: Icon(
                                           Icons.check,
                                           color: _bothPasswordMatch
-                                              ? const Color.fromARGB(
-                                                  255, 227, 227, 227)
-                                              : const Color.fromARGB(
-                                                  255, 138, 138, 138),
+                                              ? Theme.of(context)
+                                                  .secondaryHeaderColor
+                                              : Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color ??
+                                                  const Color.fromARGB(
+                                                      255, 138, 138, 138),
                                           size: 15,
                                         ),
                                       ),
@@ -726,11 +661,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                     Text(
                                       AppLocalizations.of(context)!.match,
                                       style: GoogleFonts.inter(
-                                          color: _bothPasswordMatch
-                                              ? const Color.fromARGB(
-                                                  255, 227, 227, 227)
-                                              : const Color.fromARGB(
-                                                  255, 138, 138, 138)),
+                                        color: _bothPasswordMatch
+                                            ? Theme.of(context)
+                                                .secondaryHeaderColor
+                                            : Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color ??
+                                                const Color.fromARGB(
+                                                    255, 138, 138, 138),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -782,8 +722,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 text:
                                     AppLocalizations.of(context)!.explanation2,
                                 style: GoogleFonts.inter(
-                                    color: const Color.fromARGB(255, 204, 49,
-                                        49)), // Cambia el color a rojo
+                                  color: Theme.of(context).splashColor,
+                                ), // Cambia el color a rojo
                               ),
                               TextSpan(
                                 text:
@@ -793,8 +733,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 text:
                                     AppLocalizations.of(context)!.explanation4,
                                 style: GoogleFonts.inter(
-                                    color: const Color.fromARGB(255, 204, 49,
-                                        49)), // Cambia el color a rojo
+                                  color: Theme.of(context).splashColor,
+                                ), // Cambia el color a rojo
                               ),
                               TextSpan(
                                 text:

@@ -1,17 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/components/challenge/challenge_card.dart';
-import 'package:unigo/models/challenge.dart';
-
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ignore_for_file: use_build_context_synchronously
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:page_transition/page_transition.dart';
-
-import 'package:unigo/pages/entity/itineraries/challenge_add.dart';
+import 'package:unigo/models/challenge.dart';
+import 'package:unigo/components/challenge/challenge_card.dart';
 
 class HistoryHome extends StatefulWidget {
   final String idUser;
@@ -26,12 +21,15 @@ class HistoryHome extends StatefulWidget {
 
 class _ChallengeHomeState extends State<HistoryHome> {
   bool _isLoading = true;
-  List<Challenge> challengeList = [];
+
   String? _idUser = "";
+
+  List<Challenge> challengeList = [];
 
   @override
   void initState() {
     super.initState();
+
     getChallenges();
     getUserInfo();
   }
@@ -47,7 +45,7 @@ class _ChallengeHomeState extends State<HistoryHome> {
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     String path =
-        'http://${dotenv.env['API_URL']}/user/get/history/${widget.idUser}';
+        'http://${dotenv.env['API_URL']}/challenge/get/history/${widget.idUser}';
     try {
       var response = await Dio().get(
         path,
@@ -58,7 +56,17 @@ class _ChallengeHomeState extends State<HistoryHome> {
           },
         ),
       );
+      print("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+      print(response);
+      print("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+      print(response.data);
+      print("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
       var list = response.data as List;
+      print(list);
+      print("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
       setState(() {
         challengeList =
@@ -66,6 +74,7 @@ class _ChallengeHomeState extends State<HistoryHome> {
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false;
@@ -98,7 +107,7 @@ class _ChallengeHomeState extends State<HistoryHome> {
                             ),
                           ),
                           Text(
-                            "Historial",
+                            AppLocalizations.of(context)!.history,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           Container(
@@ -158,7 +167,7 @@ class _ChallengeHomeState extends State<HistoryHome> {
                             ),
                           ),
                           Text(
-                            "Historial",
+                            AppLocalizations.of(context)!.history,
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.bold,
                               color:
@@ -233,7 +242,8 @@ class _ChallengeHomeState extends State<HistoryHome> {
                                             .center, // Centra el contenido horizontalmente
                                         children: [
                                           Text(
-                                            'Este usuario no ha\ncompletado ningún reto',
+                                            AppLocalizations.of(context)!
+                                                .user_no_challenges,
                                             textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme

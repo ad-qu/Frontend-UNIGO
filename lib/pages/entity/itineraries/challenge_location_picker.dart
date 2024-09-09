@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+
 import 'package:unigo/components/input_widgets/red_button.dart';
 
 class ChallengeLocationPicker extends StatefulWidget {
@@ -15,12 +17,14 @@ class ChallengeLocationPicker extends StatefulWidget {
 
 class _ChallengeLocationPickerState extends State<ChallengeLocationPicker> {
   late MapController mapController;
+
   String? latitude;
   String? longitude;
 
   @override
   void initState() {
     super.initState();
+
     mapController = MapController();
   }
 
@@ -104,7 +108,8 @@ class _ChallengeLocationPickerState extends State<ChallengeLocationPicker> {
                     left: 20,
                     right: 20,
                     child: RedButton(
-                        buttonText: "SELECCIONA UBICACIÓN",
+                        buttonText:
+                            AppLocalizations.of(context)!.select_location,
                         onTap: selectLocation)),
                 Positioned(
                   top: 55,
@@ -120,10 +125,10 @@ class _ChallengeLocationPickerState extends State<ChallengeLocationPicker> {
                         shape: BoxShape.circle,
                         color: Theme.of(context).splashColor,
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Icon(
                           Icons.arrow_back_rounded,
-                          color: Colors.white,
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 30,
                         ),
                       ),

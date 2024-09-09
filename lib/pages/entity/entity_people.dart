@@ -1,18 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/pages/discover/discover_home.dart';
-import 'package:unigo/pages/entity/entity_add.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/entity/entity_profile.dart';
-import 'package:unigo/pages/entity/entity_search.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../components/profile_screen/user_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../models/user.dart';
+import '../../components/profile_screen/user_card.dart';
 
 class EntityPeople extends StatefulWidget {
   final String idEntity;
@@ -30,13 +23,16 @@ class EntityPeople extends StatefulWidget {
 
 class _EntityPeopleState extends State<EntityPeople> {
   bool _isLoading = true;
+
+  String? _idUser = "";
+
   List<User> peopleList = [];
   List<User> filteredUsers = [];
-  String? _idUser = "";
 
   @override
   void initState() {
     super.initState();
+
     getUserInfo();
     getFollowingPeople();
   }
@@ -63,8 +59,8 @@ class _EntityPeopleState extends State<EntityPeople> {
           },
         ),
       );
-      print("asd");
       var users = response.data as List;
+      // ignore: avoid_print
       print(users);
       setState(() {
         peopleList = users.map((user) => User.fromJson2(user)).toList();
@@ -75,21 +71,12 @@ class _EntityPeopleState extends State<EntityPeople> {
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false; // Cambiamos el estado de carga a falso
       });
     }
-  }
-
-  void _runFilter(String enteredKeyword) {
-    setState(() {
-      filteredUsers = peopleList.where((user) {
-        final lowerCaseKeyword = enteredKeyword.toLowerCase();
-        return user.username.toLowerCase().startsWith(lowerCaseKeyword) &&
-            user.active == true;
-      }).toList();
-    });
   }
 
   @override
@@ -117,6 +104,22 @@ class _EntityPeopleState extends State<EntityPeople> {
                               color: Theme.of(context).secondaryHeaderColor,
                             ),
                           ),
+                          Text(
+                            AppLocalizations.of(context)!.followers,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              size: 27.5,
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -159,6 +162,22 @@ class _EntityPeopleState extends State<EntityPeople> {
                               ),
                             ),
                           ),
+                          Text(
+                            AppLocalizations.of(context)!.followers,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              size: 27.5,
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -215,7 +234,8 @@ class _EntityPeopleState extends State<EntityPeople> {
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Esta entidad no\ntiene seguidores',
+                                              AppLocalizations.of(context)!
+                                                  .entity_no_followers,
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)
                                                   .textTheme

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-// Screens
 import 'package:unigo/pages/map/map.dart';
+import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/profile/profile_home.dart';
 import 'package:unigo/pages/discover/discover_home.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NavBarState createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
@@ -91,7 +91,7 @@ class _NavBarState extends State<NavBar> {
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             color: Theme.of(context).secondaryHeaderColor,
             activeColor: Theme.of(context).canvasColor,
-            tabBackgroundColor: Theme.of(context).splashColor,
+            tabBackgroundColor: Theme.of(context).indicatorColor,
             duration: const Duration(milliseconds: 250),
             selectedIndex: _currentIndex,
             onTabChange: (index) {

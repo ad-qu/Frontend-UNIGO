@@ -1,20 +1,14 @@
-// ignore_for_file: library_private_types_in_public_api
-import 'dart:convert';
-
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:unigo/components/input_widgets/history_button.dart';
-
 import 'package:unigo/pages/profile/history_home.dart';
-
-import 'package:page_transition/page_transition.dart';
+import 'package:unigo/components/input_widgets/history_button.dart';
 
 class ProfiletViewer extends StatefulWidget {
   final String idCardUser;
@@ -27,16 +21,18 @@ class ProfiletViewer extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProfiletViewerState createState() => _ProfiletViewerState();
 }
 
 class _ProfiletViewerState extends State<ProfiletViewer> {
   bool _isLoading = false;
+
   String? _username = "";
   String? _idUser = "";
   String? _name = "";
 
-  // ignore: unused_field
+  // ignore: unused_field, prefer_final_fields
   String? _token = "";
   String? _followers = "";
   String? _following = "";
@@ -49,6 +45,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
   @override
   void initState() {
     super.initState();
+
     getUserInfo();
     getFriendsInfo();
 
@@ -120,7 +117,6 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
   }
 
   Future<void> getUserInfo() async {
-    print(widget.idCardUser);
     final prefs = await SharedPreferences.getInstance();
     final String token = prefs.getString('token') ?? "";
     _idUser = prefs.getString('idUser');
@@ -138,32 +134,21 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
         ),
       );
 
-      // Decodifica la respuesta JSON
-      var u = response
-          .data; // Usa response.data en lugar de json.decode(response.toString())
+      var u = response.data;
 
-      print("111111111111111111111111");
-      print(u);
-
-      // Accede a los valores del mapa con las llaves correctas y maneja valores null
       _username = u['username'];
       imageURL = u['imageURL'] ?? "";
       _level = u['level'];
       _experience = u['experience'];
-
-      _name = u['name'] ?? ""; // Usa una cadena vacía si es null
-
-      print(_name);
+      _name = u['name'] ?? "";
     } catch (e) {
+      // ignore: avoid_print
       print(e);
     }
   }
 
   Widget showBadges() {
-    print("Estic al podium");
-
     List<String> badgeLevels = [];
-    // Asumiendo que las imágenes están disponibles solo para los niveles 2, 4, y 6.
     for (int level = 2; level <= _level; level += 2) {
       if (level <= 6) {
         badgeLevels.add('images/$level.png');
@@ -171,7 +156,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
     }
 
     if (badgeLevels.isEmpty) {
-      return SizedBox(
+      return const SizedBox(
         height: 10,
       );
     } else {
@@ -196,11 +181,11 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                 ],
               );
             } catch (e) {
-              return SizedBox();
+              return const SizedBox();
             }
           },
         ),
@@ -210,6 +195,9 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
 
   Future getFriendsInfo() async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
       var followersCount = await Dio().get(
           'http://${dotenv.env['API_URL']}/user/followers/count/${widget.idCardUser}');
       if (mounted) {
@@ -223,9 +211,14 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
       if (mounted) {
         setState(() {
           _following = followingCount.toString();
+          _isLoading = false;
         });
       }
     } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // ignore: avoid_print
       print('Error in the counting of friends: $e');
     }
   }
@@ -307,9 +300,9 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                 decoration: BoxDecoration(
                                     color: Colors.transparent,
                                     borderRadius: BorderRadius.circular(30)),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.arrow_back_ios_rounded,
-                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   size: 25,
                                 ),
                               ),
@@ -327,7 +320,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                             ),
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(25, 2, 25, 25),
                           child: Container(
@@ -361,9 +354,10 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                   decoration: BoxDecoration(
                                       color: Colors.transparent,
                                       borderRadius: BorderRadius.circular(30)),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.arrow_back_ios_rounded,
-                                    color: Color.fromARGB(255, 227, 227, 227),
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
                                     size: 25,
                                   ),
                                 ),
@@ -433,14 +427,14 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                           ),
                                         ),
                                       ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 2.0),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: showBadges(),
-                                        ),
-                                      ),
+                                      // Padding(
+                                      //   padding:
+                                      //       const EdgeInsets.only(right: 2.0),
+                                      //   child: Align(
+                                      //     alignment: Alignment.centerRight,
+                                      //     child: showBadges(),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                   const SizedBox(height: 8.5),
@@ -454,7 +448,7 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                                         minHeight: 6.5,
                                         value: _experience.toDouble() / 100,
                                         backgroundColor: Theme.of(context)
-                                            .secondaryHeaderColor,
+                                            .dialogBackgroundColor,
                                         color: Theme.of(context).highlightColor,
                                       ),
                                     ),
@@ -492,123 +486,115 @@ class _ProfiletViewerState extends State<ProfiletViewer> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                           child: HistoryButton(
-                              buttonText: "See history", onTap: seeHistory),
+                              buttonText: AppLocalizations.of(context)!.history,
+                              onTap: seeHistory),
                         ),
                         const Spacer(),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(25, 0, 25, 10),
                           child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  followOrUnfollow();
-                                });
-                              },
-                              child: followParameter ?? false
-                                  ? Container(
-                                      padding: const EdgeInsets.all(14),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .scaffoldBackgroundColor,
-                                              width: 0),
-                                          color: const Color.fromARGB(
-                                              255, 19, 89, 168),
-                                          borderRadius:
-                                              BorderRadius.circular(17.5)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(1),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 0, 30, 0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.check,
-                                                    size: 20,
+                            onTap: () {
+                              setState(() {
+                                followOrUnfollow();
+                              });
+                            },
+                            child: followParameter ?? false
+                                ? Container(
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            width: 0),
+                                        color: const Color.fromARGB(
+                                            255, 19, 89, 168),
+                                        borderRadius:
+                                            BorderRadius.circular(17.5)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(1),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 30, 0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.check,
+                                                  size: 20,
+                                                  color: Theme.of(context)
+                                                      .dialogBackgroundColor,
+                                                ),
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Text(
+                                                  AppLocalizations.of(context)!
+                                                      .following,
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
-                                                        .secondaryHeaderColor,
+                                                        .dialogBackgroundColor,
                                                   ),
-                                                  const SizedBox(
-                                                    width: 12,
-                                                  ),
-                                                  Text(
-                                                    "Siguiendo",
-                                                    style: GoogleFonts.inter(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255,
-                                                              227,
-                                                              227,
-                                                              227),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  : Container(
-                                      padding: const EdgeInsets.all(14),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .scaffoldBackgroundColor,
-                                              width: 0),
-                                          color: Colors.blue.shade700,
-                                          borderRadius:
-                                              BorderRadius.circular(17.5)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(1),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 0, 30, 0),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.add,
-                                                    size: 20,
+                                    ),
+                                  )
+                                : Container(
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            width: 0),
+                                        color: Colors.blue.shade700,
+                                        borderRadius:
+                                            BorderRadius.circular(17.5)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(1),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 30, 0),
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.add,
+                                                  size: 20,
+                                                  color: Theme.of(context)
+                                                      .dialogBackgroundColor,
+                                                ),
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Text(
+                                                  AppLocalizations.of(context)!
+                                                      .follow,
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
                                                     color: Theme.of(context)
-                                                        .secondaryHeaderColor,
+                                                        .dialogBackgroundColor,
                                                   ),
-                                                  const SizedBox(
-                                                    width: 12,
-                                                  ),
-                                                  Text(
-                                                    "Seguir",
-                                                    style: GoogleFonts.inter(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255,
-                                                              227,
-                                                              227,
-                                                              227),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    )),
+                                    ),
+                                  ),
+                          ),
                         ),
                         const SizedBox(height: 15),
                       ],

@@ -1,12 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/pages/discover/discover_home.dart';
-import 'package:unigo/pages/entity/entity_add.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/entity/entity_profile.dart';
-import 'package:unigo/pages/entity/entity_search.dart';
 import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -57,9 +49,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
           },
         ),
       );
-      print("asd");
       var users = response.data as List;
-      print(users);
       setState(() {
         peopleList = users.map((user) => User.fromJson2(user)).toList();
         peopleList = peopleList.where((user) => user.active == true).toList();
@@ -68,6 +58,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false; // Cambiamos el estado de carga a falso
@@ -100,6 +91,22 @@ class _FollowingScreenState extends State<FollowingScreen> {
                               color: Theme.of(context).secondaryHeaderColor,
                             ),
                           ),
+                          Text(
+                            AppLocalizations.of(context)!.following,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              size: 27.5,
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -142,6 +149,22 @@ class _FollowingScreenState extends State<FollowingScreen> {
                               ),
                             ),
                           ),
+                          Text(
+                            AppLocalizations.of(context)!.following,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              size: 27.5,
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -198,7 +221,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
                                               CrossAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Esta cuenta no\ntiene seguidores',
+                                              AppLocalizations.of(context)!
+                                                  .account_no_following,
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)
                                                   .textTheme

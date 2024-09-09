@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/pages/startup/login.dart';
-import 'package:unigo/pages/startup/signup.dart';
-import 'package:unigo/services/auth.dart';
-import 'package:unigo/components/credential_screen/animated_background.dart';
-import 'package:unigo/components/input_widgets/google_button.dart';
-import 'package:unigo/components/input_widgets/red_button.dart';
-import 'package:unigo/components/language/language_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:unigo/services/auth.dart';
+import 'package:unigo/pages/startup/login.dart';
+import 'package:unigo/pages/startup/signup.dart';
+import 'package:unigo/components/input_widgets/red_button.dart';
+import 'package:unigo/components/language/language_button.dart';
+import 'package:unigo/components/input_widgets/google_button.dart';
+import 'package:unigo/components/credential_screen/animated_background.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -18,6 +19,8 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class WelcomeScreenState extends State<WelcomeScreen> {
+  bool _isSigningIn = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +38,16 @@ class WelcomeScreenState extends State<WelcomeScreen> {
         context,
         PageTransition(
             type: PageTransitionType.rightToLeft, child: const SignupScreen()));
+  }
+
+  void _signInWithGoogle() async {
+    setState(() {
+      _isSigningIn = true;
+    });
+    await AuthService().signInWithGoogle(context);
+    setState(() {
+      _isSigningIn = false;
+    });
   }
 
   @override
@@ -98,11 +111,36 @@ class WelcomeScreenState extends State<WelcomeScreen> {
                       onTap: signUp,
                     ),
                     const SizedBox(height: 15),
-                    GestureDetector(
-                      child: GoogleButton(
-                        buttonText: AppLocalizations.of(context)!.google_login,
-                        onTap: () => AuthService().signInWithGoogle(context),
-                      ),
+                    Stack(
+                      children: [
+                        GoogleButton(
+                          buttonText:
+                              AppLocalizations.of(context)!.google_login,
+                          onTap: _signInWithGoogle,
+                        ),
+                        if (_isSigningIn)
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: MediaQuery.of(context).size.width - 95,
+                            child: Center(
+                              child: SizedBox(
+                                width: 15,
+                                height: 15,
+                                child: CircularProgressIndicator(
+                                  backgroundColor: Theme.of(context)
+                                      .secondaryHeaderColor
+                                      .withOpacity(0.5),
+                                  strokeCap: StrokeCap.round,
+                                  strokeWidth: 4,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).secondaryHeaderColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -123,16 +161,17 @@ class WelcomeScreenState extends State<WelcomeScreen> {
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(17.5)),
                     child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.have_account,
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(AppLocalizations.of(context)!.login,
-                              style: Theme.of(context).textTheme.displayLarge),
-                        ]),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.have_account,
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(AppLocalizations.of(context)!.login,
+                            style: Theme.of(context).textTheme.displayLarge),
+                      ],
+                    ),
                   ),
                 ),
               ),

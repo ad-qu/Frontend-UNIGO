@@ -16,7 +16,7 @@ class DeleteAccountButton extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border.all(
                 color: Theme.of(context).scaffoldBackgroundColor, width: 0),
-            color: Theme.of(context).splashColor,
+            color: Theme.of(context).indicatorColor,
             borderRadius: BorderRadius.circular(17.5)),
         child: Padding(
           padding: const EdgeInsets.all(1),
@@ -30,7 +30,7 @@ class DeleteAccountButton extends StatelessWidget {
                     size: 20,
                     color: Theme.of(context).canvasColor,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 17,
                   ),
                   Text(

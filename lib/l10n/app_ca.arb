@@ -8,10 +8,8 @@
   "hype": "Uneix-te per a reptes, xats i més en aquesta aplicació creada a l'EETAC.",
   "get_stated": "Registra't amb el teu correu electrònic",
   "google_login": "Continua amb Google", 
-  "apple_login": "Continua amb Apple",
   "have_account": "Ja tens un compte?",
   "login": "Inicia sessió",
-  "double_back_to_close_app": "Toca enrere de nou per sortir",
 
   "@---------------- LOGIN ------------------": {
   },
@@ -24,7 +22,9 @@
   "faster2": "et recordarà",
   "faster3": " per a iniciar sessió.",
   "empty_fields": "Comproveu que no hi hagi camps buits",
-  "not_found": "L'usuari no existeix",
+  "verify_credentials": "Verifica les teves credencials",
+  "disabled_user": "Compte inhabilitat",
+  "server_error": "Error del servidor. Prova més tard",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -42,7 +42,6 @@
   "invalid_email": "Correu electrònic invàlid",
   "used_email": "Correu electrònic ja en ús",
   "valid_values": "Comprova que hi ha valors vàlids",
-  "unable_to_proceed": "No s'ha pogut continuar. Prova més tard",
   "i_accept": "Accepto els ",
   "terms": "Termes d'Ús i les Polítiques de Privacitat",
   "signup_button": "REGISTRA'T",
@@ -56,15 +55,22 @@
   "@---------------- PROFILE ------------------": {
   },
   "@@locale": "ca",
-  "information": "Historial",
+  "history": "Historial",
   "edit_account": "Editar compte",
+  "edit_password": "Editar contrasenya",
   "delete_account": "Eliminar compte",
+  "delete_account_explanation": "Estàs segur que vols eliminar el teu compte?\n\nEn eliminar el teu compte, aquesta quedarà inaccessible i no podràs utilitzar-la.\n\nPer a reactivar-la, serà necessari contactar amb el nostre equip de suport.\n\nEscriu el teu nom d'usuari per a confirmar:",
+  "wrong_username": "Nom d'usuari erroni",
+  "account_deleted": "Compte correctament eliminat",
   "log_out": "Tancar sessió",
   "following": "Seguits",
   "followers": "Seguidors",
   "level": "Nivell",
   "edit_warning": "Una vegada hagi fet els canvis, haurà d'iniciar sessió de nou",
-  
+  "user_no_challenges": "Aquest usuari no\nha completat cap repte",
+  "account_no_followers": "Aquest compte no\nté seguidors",
+  "account_no_following": "Aquest compte no\nsegueix a cap usuari",
+
   "@---------------- SNACKBARS ------------------": {
   },
   "problem_lvlUp": "Problema pujant de lvl. Fes log in de nou per a actualitzar",
@@ -73,7 +79,7 @@
 
   "@---------------- QR_SCREEN ------------------": {
   },
-  "scan_OK": "Repte escanejat correctament",
+  "scan_OK": "Escanejat correctament",
   "challenge_OK": "REPTE SUPERAT!",
   "add_exp": "Enhorabona!\n\nSe't sumarà una experiència al teu compte de",
   "go_back": "Tornar",
@@ -83,36 +89,117 @@
   "block_app": "L'aplicació procedirà a bloquejar-se durant 5 minuts.\n\nTorna a intentar-ho més tard...",
   "error": "ERROR!",
   "wrong_QR": "El repte que has escanejat no coincideix amb l'esperat 😢", 
-
-  "@---------------- NAVBAR ------------------": {
+ 
+ "@---------------- NAVBAR ------------------": {
   },
   "map": "Mapa",
   "discover": "Descubreix",
   "entities": "Entitats",
   "profile": "Perfil",
   
+  "@---------------- MAP ------------------": {
+  },
+  "itineraries": "Itineraris",
+  "challenges": "Reptes",
+  "no_itineraries_map": "No hi ha itineraris\nper a mostrar",
+  "press": "Pressiona ",
+  "to_go_to_entities": " per a anar a entitats\ni buscar més reptes",
+  "scan": "Escanejar",
+
   "@---------------- DISCOVER ------------------": {
   },
-  "filter_box": "Cerca...",
+  "search_account": "Cerca un compte...",
+  "do_not_follow_accounts": "No segueixes\ncap compte",
+  "to_find_accounts": " per trobar comptes",
+  "there_is_no_accounts_to_show": "No hi ha més\ncomptes per a mostrar",
+  "try_pressing": "Prova a pressionar ",
+  "to_find_accounts_other_campus": " per trobar comptes\nd'altres campus universitaris",
 
-  "@---------------- CHAT ------------------": {
+ "@---------------- ENTITIES ------------------": {
   },
-  "send_msg": "Envia un missatge...",
+  "do_not_follow_entities": "No segueixes\ncap entitat",
+  "to_find_entities": " per trobar entitats",
+  "or_press": "o pressiona ",
+  "to_create": " per crear una",
+
+  "create_entity": "Crear entitat",
+  "create_description": "Descripció",
+  "create_button": "CREAR",
+  "remember_entity1": "Recorda que l'entitat que creïs haurà de complir els ",
+  "of_UNIGO": " de UNIGO!",
+
+  "search_entity": "Cerca una entitat...",
+  "there_is_no_entities_to_show": "No hi ha més\nentitat per a mostrar",
+  "to_find_entities_other_campus": " per trobar\nentitats d'altes campus universitaris",
+  
+  "news": "Notícies",
+  "chat": "Xat",
+  "settings": "Ajustos",
+  "following": "Seguint",
+  "first_follow_entity": "Primer has de seguir l'entitat",
+  "follow": "Segueix",
+
+  "followers": "Seguidors",
+  "entity_no_followers": "Aquesta entitat no\nté seguidors",
+
+  "edit_entity": "Editar entitat",
+  "select_a_photo": "Tria una foto",
+  "edit_button": "EDITAR",
+  "remember_entity2": "Recorda que l'entitat que modifiquis haurà de complir els ",
+  
+  "delete_entity": "Eliminar entitat",
+  "delete_entity_explanation": "Estàs segur que vols eliminar aquesta entitat?\n\nEn eliminar l'entitat, aquesta quedarà inaccessible i no podrà ser utilitzada per ningú.\n\nSi us plau, considera aquesta opció amb cura abans de confirmar l'eliminació.",
+  "confirm": "Confirmar",
+  "confirm": "Cancel·lar",
+
+  "search_new": "Cerca una notícia...",
+  "no_news": "Aquesta entitat\nno té notícies",
+  "create_new": "Crear notícia",
+  "title_new": "Titular",
+  "body_new": "Cos de la notícia",
+  "publish": "PUBLICAR",
+  "remember_new": "Recorda que la notícia que creïs haurà de complir els ",
+  "delete_new": "Eliminar notícia",
+  "delete_new_explanation": "Segur que desitja eliminar aquesta notícia?\n\nAquesta decisió serà permanent.",
+
+  "no_messages": "No hi ha\nmissatges disponibles",
+  "be_first_message": "Sé el primer a\nescriure un missatge",
+  "send_message": "Envia un missatge...",
+
+  "no_itineraries_entity": "Aquesta entitat\nno té itineraris",
+
+  "create_itinerary": "Crear itinerari",
+  "remember_itinerary": "Recorda que l'itinerari que creïs haurà de complir els ",
+  
+  "delete_button": "Eliminar",
+  "delete_itinerary": "Eliminar itinerari",
+  "delete_itinerary_explanation": "Segur que desitja eliminar aquest itinerari?\n\nAquesta decisió serà permanent.",
+
+  "itinerary_no_challenges": "Aquest itinerary\nno té reptes",
+  
+  "create_challenges": "Crear repte",
+  "xp_question": "Desitja que aquest repte doni XP?",
+  "xp_input": "Ingressi la quantitat d'experiència (0-100):",
+  "question_question": "Desitja agregar una pregunta?",
+  "question_advice": "Recorda que hauran 3 possibles respostes.\nNomés una serà la correcta.",
+  "question": "Qüestió",
+  "answer": "Resposta",
+  "select_challenge_location": "A continuació, haurà de seleccionar la ubicació del repte en el mapa.",
+  "edit_challenge": "Editar",
+  "select_location": "SELECCIONA UBICACIÓ",
+  "download_QR": "Descarregar QR", 
+  "save_button": "GUARDAR",
+  "download_folder": "Es guardarà en la teva carpeta de ",
+  "download_red": "Descàrregues",
+  "QR_saved": "Codi QR guardat en la Galeria",
+
+  "delete_challenge": "Delete repte",
+  "delete_chalenge_explanation": "Segur que desitja eliminar aquest itinerari?\n\nAquesta decisió serà permanent.",
 
   "@---------------- LABELS ------------------": {
   },
   "pass_label": "Escriu la teva contrasenya",
   "new_pass_label": "Escriu la nova contrasenya",
   "repeat_pass_label": "Torna a escriure la contrasenya",
-  "edit_button": "EDITAR",
-
-  "@--- CHECK PASS ---": {
-  },
-  "enterpass": "Si us plau, introduïu una contrasenya",
-  "shortpass": "La contrasenya és massa curta",
-  "charpass": "La contrasenya hauria de tenir almenys 6 caràcters",
-  "numpass": "La contrasenya hauria de contenir almenys un número",
-  "greatpass": "La contrasenya està perfecta!",
-  "gigaterms": "Acceptació de les condicions: En accedir i utilitzar aquesta aplicació / servei, accepteu quedar vinculat per aquestes Condicions d'ús.\n\nResponsabilitats de l'usuari: Vostè és responsable de l'ús adequat de l'aplicació / servei i de complir amb les lleis i regulacions aplicables.\n\nPropietat intel·lectual: Tot el contingut i els materials proporcionats per l'aplicació / servei estan protegits per les lleis de propietat intel·lectual i resten propietat del propietari de l'aplicació / servei.\n\nLimitació de responsabilitat: El propietari de l'aplicació / servei no es fa responsable de cap dany o pèrdua inclosos en l'ús de l'aplicació / servei.\n\nTerminació: El propietari de l'aplicació / servei es reserva el dret de finalitzar o suspendre el vostre accés a l'aplicació / servei en qualsevol moment sense previ avís.\n\nRecopilació d'informació: Podem recopilar informació personal, com ara el nom i la adreça de correu electrònic, amb la finalitat de proporcionar i millorar l'aplicació / servei.\n\nÚs de la informació: Utilitzem la informació recopilada per personalitzar la vostra experiència, enviar actualitzacions i analitzar els patrons d'ús de l'aplicació / servei.\n\nCompartició de dades: No venem ni divulguem la vostra informació personal a tercers, excepte en els casos requerits per la llei o amb el vostre consentiment.\n\nSeguretat de les dades: Implementem mesures de seguretat raonables per protegir la vostra informació personal contra l'accés no autoritzat, l'alteració o la divulgació.\n\nGaletes: L'aplicació / servei pot utilitzar galetes o tecnologies similars per millorar l'experiència de l'usuari i recopilar dades d'ús.\n\nEnllaços de tercers: L'aplicació / servei pot contenir enllaços a llocs web o serveis de tercers, que tenen les seves pròpies pràctiques de privadesa. No ens fem responsables de les pràctiques de privadesa o el contingut d'aquests tercers.\n\nActualitzacions de la política de privadesa: Podem actualitzar la política de privadesa de tant en tant, i és responsabilitat vostra revisar-la periòdicament.",
-  "close": "Tancar"
+  "edit_button": "EDITAR"
 }

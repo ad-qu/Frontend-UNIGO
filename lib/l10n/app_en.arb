@@ -9,10 +9,8 @@
   "hype": "Join for challenges, chats, and more in this app created at EETAC.",
   "get_stated": "Sign up with your email address",
   "google_login": "Continue with Google", 
-  "apple_login": "Continue with Apple",
   "have_account": "Already have an account?",
   "login": "Log in",
-  "double_back_to_close_app": "Tap back again to leave",
 
   "@---------------- LOGIN ------------------": {
   },
@@ -25,7 +23,9 @@
   "faster2": "remember you",
   "faster3": " for faster logins.",
   "empty_fields": "Check that the fields are not empty",
-  "not_found": "User does not exist",
+  "verify_credentials": "Verify your credentials",
+  "disabled_user": "Disabled account",
+  "server_error": "Server Error. Try again later",
 
   "@---------------- REGISTER ------------------": {
   },
@@ -43,7 +43,6 @@
   "invalid_email": "Invalid email address",
   "used_email": "Email already in use",
   "valid_values": "Check that there are valid values",
-  "unable_to_proceed": "Unable to proceed. Try again later",
   "i_accept": "I accept the ",
   "terms": "Terms of Use and Privacy Policy",
   "signup_button": "SIGN UP",
@@ -57,15 +56,22 @@
  "@---------------- PROFILE ------------------": {
   },
   "@@locale": "en",
-  "information": "History",
+  "history": "History",
   "edit_account": "Edit account",
+  "edit_password": "Edit password",
   "delete_account": "Delete account",
+  "delete_account_explanation": "Are you sure you want to delete your account?\n\nDeleting your account will make it inaccessible and you will not be able to use it.\n\nTo reactivate it, you will need to contact our support team.\n\n\nEnter your username to confirm:",
+  "wrong_username": "Incorrect username",
+  "account_deleted": "Account successfully deleted",
   "log_out": "Log out",
   "following": "Following",
   "followers": "Followers",
   "level": "Level",
   "edit_warning": "Once the account updates, you will have to log in again",
-  
+  "user_no_challenges": "This user has not\ncompleted any challenges",
+  "account_no_followers": "This account has\nno followers",
+  "account_no_following": "This account does not\nfollow any user",
+
   "@---------------- SNACKBARS ------------------": {
   },
   "problem_lvlUp": "Problem leveling up. Log in again to update",
@@ -74,15 +80,15 @@
 
   "@---------------- QR_SCREEN ------------------": {
   },
-  "scan_OK": "Successfully scanned challenge",
+  "scan_OK": "Scanned successfully",
   "challenge_OK": "CHALLENGE PASSED!",
   "add_exp": "Congratulations!\n\nYou will be awarded an experience of",
   "go_back": "Go back",
   "almost": "WOA, ALMOST! 😔",
-  "answer": "Answer",
+  "answer": "Answer: ",
   "wrong": "WRONG",
   "block_app": "The application will proceed to lock for 5 minutes.\n\nTry again later...",
-  "error": "¡ERROR!",
+  "error": "ERROR!",
   "wrong_QR": "The challenge you have scanned does not match the expected one 😢",
   
   "@---------------- NAVBAR ------------------": {
@@ -92,28 +98,109 @@
   "entities": "Entities",
   "profile": "Profile",
 
+  "@---------------- MAP ------------------": {
+  },
+  "itineraries": "Itineraries",
+  "challenges": "Challenges",
+  "no_itineraries_map": "No itineraries\nto show",
+  "press": "Press ",
+  "to_go_to_entities": " to go to entities\nand look for more challenges",
+  "scan": "Scan",
+
   "@---------------- DISCOVER ------------------": {
   },
-  "filter_box": "Search...",
+  "search_account": "Search for an account...",
+  "do_not_follow_accounts": "You do not\nfollow any account",
+  "to_find_accounts": " to find accounts",
+  "there_is_no_accounts_to_show": "There is no more\naccounts to show",
+  "try_pressing": "Try pressing ",
+  "to_find_accounts_other_campus": " to find accounts\nfrom other university campuses",
 
-  "@---------------- CHAT ------------------": {
+ "@---------------- ENTITIES ------------------": {
   },
-  "send_msg": "Send a message...",
+  "do_not_follow_entities": "Yo do not\follow any entity",
+  "to_find_entities": " to find entities",
+  "or_press": "or press ",
+  "to_create": " to create one",
+
+  "create_entity": "Create entity",
+  "create_description": "Description",
+  "create_button": "CREATE",
+  "remember_entity1": "Remember that the entity you create must comply with the ",
+  "of_UNIGO": " of UNIGO!",
+
+  "search_entity": "Search for an entity...",
+  "there_is_no_entities_to_show": "There is no more\nentities to show",
+  "to_find_entities_other_campus": " to find entities\nfrom other university campuses",
+
+  "news": "News",
+  "chat": "Chat",
+  "settings": "Settings",
+  "following": "Following",
+  "first_follow_entity": "First you have to follow the entity",
+  "follow": "Follow",
+
+  "followers": "Followers",
+  "entity_no_followers": "This entity has\nno followers",
+
+  "edit_entity": "Edit entity",
+  "select_a_photo": "Choose a photo",
+  "edit_button": "EDIT",
+  "remember_entity2": "Remember that the entity you modify must comply with the ",
+  
+  "delete_entity": "Delete entity",
+  "delete_entity_explanation": "Are you sure you want to delete this entity?\n\nBy deleting the entity, it will become inaccessible and cannot be used by anyone.\n\nPlease consider this option carefully before confirming the deletion.",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+
+  "search_new": "Search for a new...",
+  "no_news": "This entity\nhas no news",
+  "create_new": "Create a new",
+  "title_new": "Headline",
+  "body_new": "News body",
+  "publish": "PUBLISH",
+  "remember_new": "Remember that the news you create must comply with the ",
+  "delete_new": "Delete new",
+  "delete_new_explanation": "Are you sure you want to delete this news?\n\nThis decision will be permanent.",
+
+  "no_messages": "No messages\navailable",
+  "be_first_message": "Be the first to\nwrite a message",
+  "send_message": "Send a message...",
+
+  "no_itineraries_entity": "This entity\nhas no itineraries",
+
+  "create_itinerary": "Create itinerary",
+  "remember_itinerary": "Remember that the itinerary you create must comply with the ",
+
+  "delete_button": "Delete",
+  "delete_itinerary": "Delete itinerary",
+  "delete_itinerary_explanation": "Are you sure you want to delete this itinerary?\n\nThis decision will be permanent.",
+
+  "itinerary_no_challenges": "This itinerary\nhas no challenges",
+
+  "create_challenges": "Create challenge",
+  "xp_question": "Should this challenge give XP?",
+  "xp_input": "Enter the amount of experience (0-100):",
+  "question_question": "Do you want to add a question?",
+  "question_advice": "Remember that there will be 3 possible answers.\nOnly one will be correct.",
+  "question": "Question",
+  "answer": "Answer",
+  "select_challenge_location": "You must then select the location of the challenge on the map.",
+  "edit_challenge": "Edit",
+  "select_location": "SELECT LOCATION",
+  "download_QR": "Download QR", 
+  "save_button": "SAVE",
+  "download_folder": "It will be saved in your ",
+  "download_red": "Downloads",
+  "qr_saved": "QR code saved to gallery",
+
+  "delete_challenge": "Delete challenge",
+  "delete_chalenge_explanation": "Are you sure you want to delete this challenge?\n\nThis decision will be permanent.",
 
   "@---------------- LABELS ------------------": {
   },
   "pass_label": "Write your password",
   "new_pass_label": "Write your new password",
   "repeat_pass_label": "Write again your new password",
-  "edit_button": "EDIT",
-
-  "@--- CHECK PASS ---": {
-  },
-  "enterpass": "Please enter a password",
-  "shortpass": "Your password is too short",
-  "charpass": "Your password should have at least 6 characters",
-  "numpass": "Your password should contain at least one number",
-  "greatpass": "Your password is great!",
-  "gigaterms": "Acceptance of Terms: By accessing and using this app/service, you agree to be bound by these Terms of Use.\n\nUser Responsibilities: You are responsible for the proper use of the app/service and complying with any applicable laws and regulations.\n\nIntellectual Property: All content and materials provided by the app/service are protected by intellectual property laws and remain the property of the app/service owner.\n\nLimitation of Liability: The app/service owner is not liable for any damages or losses incurred while using the app/service.\n\nTermination: The app/service owner reserves the right to terminate or suspend your access to the app/service at any time without prior notice.\n\nInformation Collection: We may collect personal information, such as name and email address, for the purpose of providing and improving the app/service.\n\nInformation Usage: We use the collected information to personalize your experience, send updates, and analyze app/service usage patterns.\n\nData Sharing: We do not sell or disclose your personal information to third parties, except in cases required by law or with your consent.\n\nData Security: We implement reasonable security measures to protect your personal information from unauthorized access, alteration, or disclosure.\n\nCookies: The app/service may use cookies or similar technologies to enhance user experience and collect usage data.\n\nThird-Party Links: The app/service may contain links to third-party websites or services, which have their own privacy practices. We are not responsible for the privacy practices or content of these third parties.\n\nUpdates to Privacy Policy: We may update the Privacy Policy from time to time, and it is your responsibility to review it periodically.",
-  "close": "Close"
+  "edit_button": "EDIT"
 }

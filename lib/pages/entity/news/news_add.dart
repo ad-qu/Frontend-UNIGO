@@ -1,22 +1,21 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:intl/intl.dart';
-import 'package:unigo/components/credential_screen/description_very_big_textfield.dart';
-import 'package:unigo/components/credential_screen/input_big_textfield.dart';
-import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/components/credential_screen/input_short_textfield.dart';
-import 'package:unigo/components/credential_screen/description_big_textfield.dart';
+import 'package:unigo/components/input_widgets/red_button.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
+import 'package:unigo/components/credential_screen/description_very_big_textfield.dart';
 
 class NewsAddScreen extends StatefulWidget {
   final String idEntity;
@@ -28,16 +27,19 @@ class NewsAddScreen extends StatefulWidget {
 }
 
 class _NewsAddScreenState extends State<NewsAddScreen> {
+  bool _isUploading = false;
+
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+
   String imageURL = "";
   File? _tempImageFile;
-  bool _isUploading = false;
 
   @override
   void dispose() {
     nameController.dispose();
     descriptionController.dispose();
+
     super.dispose();
   }
 
@@ -51,6 +53,7 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
         });
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Failed to pick the image: $e');
     }
   }
@@ -117,6 +120,7 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
         // ignore: use_build_context_synchronously
         Navigator.pop(context, true);
       } catch (e) {
+        // ignore: avoid_print
         print(e);
       } finally {
         setState(() {
@@ -152,8 +156,12 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                   width: MediaQuery.of(context).size.width,
                   height: 150,
                   decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage('images/new.png'),
+                    image: DecorationImage(
+                      image: AssetImage(
+                        Theme.of(context).brightness == Brightness.dark
+                            ? 'images/new_dark.png'
+                            : 'images/new_light.png',
+                      ),
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.circular(17.5),
@@ -179,7 +187,7 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
       child: Column(
         children: [
           Text(
-            "Choose a photo",
+            AppLocalizations.of(context)!.select_a_photo,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
@@ -200,11 +208,11 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                     pickAnImage(ImageSource.camera);
                     Navigator.pop(context);
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Icon(
                       Icons.camera_alt,
-                      color: Colors.white,
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
                 ),
@@ -224,12 +232,11 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                     pickAnImage(ImageSource.gallery);
                     Navigator.pop(context);
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Icon(
                       Icons.image,
-                      color: Colors.white,
-                      semanticLabel: "Gallery",
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
                 ),
@@ -257,6 +264,7 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
         });
       }
     } on PlatformException catch (e) {
+      // ignore: avoid_print
       print('Failed to pick the image: $e');
     }
   }
@@ -280,7 +288,7 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                         padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
                         child: Center(
                           child: Text(
-                            "Crear noticia",
+                            AppLocalizations.of(context)!.create_new,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -302,9 +310,9 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 27.5,
                         ),
                       ),
@@ -320,12 +328,12 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                       children: [
                         InputBigTextField(
                             controller: nameController,
-                            labelText: "Titular",
+                            labelText: AppLocalizations.of(context)!.title_new,
                             obscureText: false),
                         const SizedBox(height: 15),
                         DescriptionVeryBigTextField(
                             controller: descriptionController,
-                            labelText: "Descripción de la noticia",
+                            labelText: AppLocalizations.of(context)!.body_new,
                             obscureText: false),
                         const SizedBox(
                           height: 20,
@@ -341,10 +349,10 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                 child: Stack(
                   children: [
                     RedButton(
-                      buttonText: "PUBLICAR",
+                      buttonText: AppLocalizations.of(context)!.publish,
                       onTap: createNew,
                     ),
-                    if (_isUploading) // Mostrar el indicador de carga si está subiendo
+                    if (_isUploading)
                       Positioned(
                         top: 0,
                         bottom: 0,
@@ -379,15 +387,14 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                       fontSize: 12,
                     ),
                     children: [
-                      const TextSpan(
-                        text:
-                            "Recuerda que la noticia que crees deberá cumplir los ",
+                      TextSpan(
+                        text: AppLocalizations.of(context)!.remember_new,
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation2,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                          color: Theme.of(context).splashColor,
+                        ), // Cambia el color a rojo
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation3,
@@ -395,11 +402,11 @@ class _NewsAddScreenState extends State<NewsAddScreen> {
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation4,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                          color: Theme.of(context).splashColor,
+                        ), // Cambia el color a rojo
                       ),
-                      const TextSpan(
-                        text: " de UNIGO!",
+                      TextSpan(
+                        text: AppLocalizations.of(context)!.of_UNIGO,
                       ),
                     ],
                   ),

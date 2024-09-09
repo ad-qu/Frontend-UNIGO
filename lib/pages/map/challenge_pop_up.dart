@@ -1,10 +1,7 @@
-import 'dart:ui';
-
-import 'package:dio/dio.dart';
-import 'package:unigo/models/challenge.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:unigo/models/challenge.dart';
 import 'package:unigo/pages/map/qr_screen.dart';
 
 class ChallengePopUp extends StatefulWidget {
@@ -16,34 +13,34 @@ class ChallengePopUp extends StatefulWidget {
   final String? imageURL;
 
   const ChallengePopUp(
-      {Key? key,
+      {super.key,
       this.selectedChallengeId,
       this.nameChallenge,
       this.descrChallenge,
       this.expChallenge,
       this.questions,
-      this.imageURL})
-      : super(key: key);
+      this.imageURL});
 
   @override
   State<ChallengePopUp> createState() => _ChallengePopUpState();
 }
 
 class _ChallengePopUpState extends State<ChallengePopUp> {
-  Challenge? challenge;
-  String? _token = "";
-  String? _idChallenge = "";
-  List<String>? _questions = [];
   String? _name = "";
   String? _descr = "";
+
+  Challenge? challenge;
   String? _expChallenge;
-  // ignore: unused_field
-  String? _exp = "";
+  String? _idChallenge = "";
+
+  List<String>? _questions = [];
+
   bool isButtonPressed = false;
 
   @override
   void initState() {
     super.initState();
+
     getChallengeInfo().then((_) {});
   }
 
@@ -58,15 +55,12 @@ class _ChallengePopUpState extends State<ChallengePopUp> {
   }
 
   Future<void> getChallengeInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _token = prefs.getString('token');
       _idChallenge = widget.selectedChallengeId;
       _questions = widget.questions;
       _name = widget.nameChallenge;
       _descr = widget.descrChallenge;
       _expChallenge = widget.expChallenge;
-      _exp = prefs.getString('exp');
     });
   }
 

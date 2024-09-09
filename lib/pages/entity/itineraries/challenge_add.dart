@@ -1,22 +1,20 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:unigo/components/credential_screen/description_short_textfield.dart';
-import 'package:unigo/components/credential_screen/input_big_textfield.dart';
-import 'package:unigo/components/credential_screen/question_textfield.dart';
-import 'package:unigo/components/input_widgets/red_button.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/components/input_widgets/red_button.dart';
+import 'package:unigo/components/credential_screen/question_textfield.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 import 'package:unigo/pages/entity/itineraries/challenge_location_picker.dart';
-import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
 
 class ChallengeAdd extends StatefulWidget {
@@ -31,6 +29,8 @@ class ChallengeAdd extends StatefulWidget {
 }
 
 class _ChallengeAddState extends State<ChallengeAdd> {
+  bool _isUploading = false;
+
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   TextEditingController xpController = TextEditingController();
@@ -41,13 +41,14 @@ class _ChallengeAddState extends State<ChallengeAdd> {
     3,
     (index) => TextEditingController(),
   );
+
   String selectedAnswer = '';
   int selectedAnswerIndex = -1;
   bool showQuestionSection = false;
   bool showXPSection = false;
+
   String longitude = "";
   String latitude = "";
-  bool _isUploading = false;
 
   @override
   void initState() {
@@ -115,15 +116,6 @@ class _ChallengeAddState extends State<ChallengeAdd> {
         final String token = prefs.getString('token') ?? "";
         updateQuestionArray();
         try {
-          // ignore: use_build_context_synchronously
-
-          print(nameController.text);
-          print(descriptionController.text);
-          print(latitude);
-          print(longitude);
-          print(questionArray);
-          print(selectedAnswer);
-          print(widget.idItinerary);
           if (xpController.text == '') {
             xpController.text = "0";
           }
@@ -146,13 +138,17 @@ class _ChallengeAddState extends State<ChallengeAdd> {
               },
             ),
           );
+          // ignore: use_build_context_synchronously
           Navigator.pop(context, true);
         } catch (e) {
+          // ignore: avoid_print
           print(e);
         } finally {
-          setState(() {
-            _isUploading = false;
-          });
+          setState(
+            () {
+              _isUploading = false;
+            },
+          );
         }
       }
     }
@@ -174,7 +170,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
                         child: Center(
                           child: Text(
-                            "Crear reto",
+                            AppLocalizations.of(context)!.create_challenges,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -196,9 +192,9 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 25,
                         ),
                       ),
@@ -215,7 +211,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         // Nombre del reto
                         InputBigTextField(
                           controller: nameController,
-                          labelText: "Nombre",
+                          labelText: AppLocalizations.of(context)!.name,
                           obscureText: false,
                         ),
                         const SizedBox(height: 15),
@@ -223,11 +219,11 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         // Descripción del reto
                         DescriptionBigTextField(
                           controller: descriptionController,
-                          labelText: "Descripción",
+                          labelText:
+                              AppLocalizations.of(context)!.create_description,
                           obscureText: false,
                         ),
                         const SizedBox(height: 35),
-
                         // Interruptor para otorgar XP
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -235,7 +231,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                "¿Desea que este reto dé XP?",
+                                AppLocalizations.of(context)!.xp_question,
                                 style: GoogleFonts.inter(
                                   color: Theme.of(context).secondaryHeaderColor,
                                   fontSize: 14,
@@ -263,7 +259,6 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         ),
                         const SizedBox(height: 15),
 
-                        // Mostrar el TextField de XP si el interruptor está activado
                         if (showXPSection) ...[
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
@@ -271,7 +266,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    "Ingrese la cantidad de experiencia (0-100):",
+                                    AppLocalizations.of(context)!.xp_input,
                                     style: GoogleFonts.inter(
                                       color: Theme.of(context)
                                           .textTheme
@@ -285,8 +280,6 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             ),
                           ),
                           const SizedBox(height: 15),
-
-                          // TextField para ingresar el XP con el nuevo diseño
                           TextField(
                             controller: xpController,
                             keyboardType: TextInputType.number,
@@ -347,7 +340,6 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                               }
                             },
                           ),
-
                           const SizedBox(height: 20),
                         ],
 
@@ -358,7 +350,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                "¿Desea agregar una pregunta?",
+                                AppLocalizations.of(context)!.question_question,
                                 style: GoogleFonts.inter(
                                   color: Theme.of(context).secondaryHeaderColor,
                                   fontSize: 14,
@@ -394,7 +386,8 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    "Recuerda que habrán 3 posibles respuestas.\nSolo una será la correcta.",
+                                    AppLocalizations.of(context)!
+                                        .question_advice,
                                     style: GoogleFonts.inter(
                                       color: Theme.of(context)
                                           .textTheme
@@ -412,7 +405,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                           // Pregunta del reto
                           QuestionTextField(
                             controller: questionController,
-                            labelText: "Pregunta",
+                            labelText: AppLocalizations.of(context)!.question,
                             obscureText: false,
                           ),
                           const SizedBox(height: 7),
@@ -428,7 +421,8 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                                     Expanded(
                                       child: InputBigTextField(
                                         controller: answerControllers[index],
-                                        labelText: "Respuesta ${index + 1}",
+                                        labelText:
+                                            "${AppLocalizations.of(context)!.answer} ${index + 1}",
                                         obscureText: false,
                                       ),
                                     ),
@@ -452,14 +446,14 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                         ],
                         const SizedBox(height: 15),
 
-                        // Selección de ubicación del reto
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Row(
                             children: [
                               Flexible(
                                 child: Text(
-                                  "A continuación, deberá seleccionar la ubicación del reto en el mapa.",
+                                  AppLocalizations.of(context)!
+                                      .select_challenge_location,
                                   style: GoogleFonts.inter(
                                     color: Theme.of(context)
                                         .textTheme
@@ -524,11 +518,12 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                                                   .secondaryHeaderColor,
                                               size: 20,
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 8,
                                             ),
                                             Text(
-                                              "Editar",
+                                              AppLocalizations.of(context)!
+                                                  .edit_challenge,
                                               style: GoogleFonts.inter(
                                                 color: Theme.of(context)
                                                     .textTheme
@@ -629,7 +624,7 @@ class _ChallengeAddState extends State<ChallengeAdd> {
                   children: [
                     // Botón para crear el reto
                     RedButton(
-                      buttonText: "CREAR",
+                      buttonText: AppLocalizations.of(context)!.create_button,
                       onTap: createChallenge,
                     ),
                     if (_isUploading) // Mostrar el indicador de carga si está subiendo
@@ -665,29 +660,6 @@ class _ChallengeAddState extends State<ChallengeAdd> {
   }
 }
 
-class _XPInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    // Limitar la entrada a valores entre 0 y 100
-    if (newValue.text.isEmpty) {
-      return newValue.copyWith(text: '');
-    }
-    int value = int.parse(newValue.text);
-    if (value < 0) {
-      value = 0;
-    } else if (value > 100) {
-      value = 100;
-    }
-    return TextEditingValue(
-      text: value.toString(),
-      selection: newValue.selection,
-    );
-  }
-}
-
 class MiniMap extends StatefulWidget {
   final double latitude;
   final double longitude;
@@ -699,6 +671,7 @@ class MiniMap extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _MiniMapState createState() => _MiniMapState();
 }
 

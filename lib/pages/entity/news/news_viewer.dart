@@ -1,17 +1,11 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/components/input_widgets/red_button.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
 
 class NewsViewer extends StatefulWidget {
   final String idUser;
@@ -40,8 +34,6 @@ class NewsViewer extends StatefulWidget {
 }
 
 class _NewsViewerState extends State<NewsViewer> {
-  String? _deleteConfirmationText = "";
-
   @override
   void initState() {
     super.initState();
@@ -65,53 +57,32 @@ class _NewsViewerState extends State<NewsViewer> {
 
       if (response.statusCode == 200) {
         widget.onChange();
+        // ignore: use_build_context_synchronously
         Navigator.pop(context, true);
       } else {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Theme.of(context).splashColor,
-            showCloseIcon: false,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                AppLocalizations.of(context)!.unable_to_proceed,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
+        SnackBarProvider().showErrorSnackBar(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: use_build_context_synchronously
+          AppLocalizations.of(context)!.server_error,
+          30,
+          0,
+          30,
+          30,
         );
       }
     } catch (e) {
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).splashColor,
-          showCloseIcon: false,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
-          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-          content: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-            child: Text(
-              AppLocalizations.of(context)!.unable_to_proceed,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
+      SnackBarProvider().showErrorSnackBar(
+        // ignore: use_build_context_synchronously
+        context,
+        // ignore: use_build_context_synchronously
+        AppLocalizations.of(context)!.server_error,
+        30,
+        0,
+        30,
+        30,
       );
     }
   }
@@ -130,13 +101,13 @@ class _NewsViewerState extends State<NewsViewer> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(35.0),
             ),
-            title: Text('Eliminar notícia',
+            title: Text(AppLocalizations.of(context)!.delete_new,
                 style: Theme.of(context).textTheme.titleSmall),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "¿Seguro que desea eliminar esta notícia?\n\nEsta decisión será permanente.",
+                  AppLocalizations.of(context)!.delete_new_explanation,
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
@@ -152,7 +123,7 @@ class _NewsViewerState extends State<NewsViewer> {
                     Theme.of(context).splashColor,
                   ),
                 ),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               TextButton(
                 onPressed: () async {
@@ -165,7 +136,7 @@ class _NewsViewerState extends State<NewsViewer> {
                     Theme.of(context).splashColor,
                   ),
                 ),
-                child: const Text('Confirmar'),
+                child: Text(AppLocalizations.of(context)!.confirm),
               ),
             ],
           )
@@ -181,7 +152,6 @@ class _NewsViewerState extends State<NewsViewer> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Botones superiores
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
               child: Row(
@@ -222,7 +192,6 @@ class _NewsViewerState extends State<NewsViewer> {
                 ],
               ),
             ),
-            // Contenido desplazable
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(

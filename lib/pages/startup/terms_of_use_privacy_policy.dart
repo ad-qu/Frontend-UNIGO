@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:unigo/pages/startup/login.dart';
 
 class TermsScreen extends StatefulWidget {
@@ -56,9 +57,9 @@ class _TermsScreenState extends State<TermsScreen> {
                           decoration: BoxDecoration(
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(30)),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close_rounded,
-                            color: Color.fromARGB(255, 227, 227, 227),
+                            color: Theme.of(context).secondaryHeaderColor,
                             size: 25,
                           ),
                         ),

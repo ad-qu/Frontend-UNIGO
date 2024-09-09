@@ -1,16 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/pages/discover/discover_home.dart';
-import 'package:unigo/pages/entity/entity_add.dart';
-import 'package:unigo/pages/entity/entity_search.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../components/profile_screen/user_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../models/user.dart';
+import '../../components/profile_screen/user_card.dart';
 
 class DiscoverSearchScreen extends StatefulWidget {
   const DiscoverSearchScreen({super.key});
@@ -64,11 +61,11 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
         notFriendsList =
             notFriendsList.where((user) => user.active == true).toList();
         filteredUsers = notFriendsList;
-        print("Entities fetched: ${filteredUsers.length}");
         _isLoading = false;
         _runFilter("");
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false;
@@ -85,8 +82,6 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                 user.active == true;
         final matchesCampus =
             _isCampusFilterEnabled ? (user.campus == _campus) : true;
-        print(
-            "User: ${user.name}, Matches Keyword: $matchesKeyword, Matches Campus: $matchesCampus"); // Debugging line
         return matchesKeyword && matchesCampus;
       }).toList();
     });
@@ -120,9 +115,9 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back_ios_rounded,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color: Theme.of(context).secondaryHeaderColor,
                                 size: 25,
                               ),
                             ),
@@ -133,14 +128,13 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                   borderRadius: BorderRadius.circular(100.0),
                                 ),
                                 child: TextFormField(
-                                  cursorColor:
-                                      const Color.fromARGB(255, 222, 66, 66),
+                                  cursorColor: Theme.of(context).splashColor,
                                   cursorWidth: 1,
                                   style:
                                       Theme.of(context).textTheme.labelMedium,
                                   decoration: InputDecoration(
                                     hintText: AppLocalizations.of(context)!
-                                        .filter_box,
+                                        .search_account,
                                     hintStyle: const TextStyle(
                                       color: Color.fromARGB(255, 138, 138, 138),
                                       fontSize: 14,
@@ -217,9 +211,9 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.arrow_back_ios_rounded,
-                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   size: 25,
                                 ),
                               ),
@@ -232,14 +226,13 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                 ),
                                 child: TextFormField(
                                   onChanged: (value) => _runFilter(value),
-                                  cursorColor:
-                                      const Color.fromARGB(255, 222, 66, 66),
+                                  cursorColor: Theme.of(context).splashColor,
                                   cursorWidth: 1,
                                   style:
                                       Theme.of(context).textTheme.labelMedium,
                                   decoration: InputDecoration(
                                     hintText: AppLocalizations.of(context)!
-                                        .filter_box,
+                                        .search_account,
                                     hintStyle: const TextStyle(
                                       color: Color.fromARGB(255, 138, 138, 138),
                                       fontSize: 14,
@@ -358,7 +351,8 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                                 CrossAxisAlignment.center,
                                             children: [
                                               Text(
-                                                'No hay más\ncuentas a mostrar',
+                                                AppLocalizations.of(context)!
+                                                    .there_is_no_accounts_to_show,
                                                 textAlign: TextAlign.center,
                                                 style: Theme.of(context)
                                                     .textTheme
@@ -386,8 +380,9 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                                   ),
                                                   children: [
                                                     TextSpan(
-                                                      text:
-                                                          'Prueba a presionar ',
+                                                      text: AppLocalizations.of(
+                                                              context)!
+                                                          .try_pressing,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .titleMedium,
@@ -402,8 +397,9 @@ class _DiscoverSearchScreenState extends State<DiscoverSearchScreen> {
                                                       ),
                                                     ),
                                                     TextSpan(
-                                                      text:
-                                                          ' para encontrar\ncuentas de otros campus universitarios',
+                                                      text: AppLocalizations.of(
+                                                              context)!
+                                                          .to_find_accounts_other_campus,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .titleMedium,

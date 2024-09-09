@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:unigo/pages/discover/discover_search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../models/user.dart';
 import '../../components/profile_screen/user_card.dart';
+import 'package:unigo/pages/discover/discover_search.dart';
 
 class DiscoverScreen extends StatefulWidget {
   const DiscoverScreen({super.key});
@@ -50,19 +52,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         ),
       );
 
-      // Verificamos si la respuesta es una lista o un mapa
       List<dynamic> users;
 
       if (response.data is List) {
-        // Si la respuesta es una lista, la usamos directamente
         users = response.data as List;
       } else if (response.data is Map) {
-        // Si la respuesta es un mapa, buscamos la clave que contiene la lista
         var mapData = response.data as Map<String, dynamic>;
-        // Asumimos que la lista está bajo la clave 'users'
         users = mapData['users'] as List<dynamic>? ?? [];
       } else {
-        // Si no es ni una lista ni un mapa con la clave esperada, usamos una lista vacía
         users = [];
       }
       setState(() {
@@ -72,15 +69,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
-        _isLoading = false; // Cambiamos el estado de carga a falso
+        _isLoading = false;
       });
     }
-  }
-
-  Future<void> _refreshFriends() async {
-    await getFriends();
   }
 
   @override
@@ -219,7 +213,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'No sigues\nninguna cuenta',
+                                            AppLocalizations.of(context)!
+                                                .do_not_follow_accounts,
                                             textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme
@@ -247,7 +242,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                               ),
                                               children: [
                                                 TextSpan(
-                                                  text: 'Presiona ',
+                                                  text: AppLocalizations.of(
+                                                          context)!
+                                                      .press,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium,
@@ -262,8 +259,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text:
-                                                      ' para encontrar cuentas',
+                                                  text: AppLocalizations.of(
+                                                          context)!
+                                                      .to_find_accounts,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium,

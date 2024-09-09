@@ -1,14 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/pages/entity/chat_screens/chat_screen.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
+
 import 'package:unigo/pages/entity/entity_people.dart';
-import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
 import 'package:unigo/pages/entity/news/news_home.dart';
+import 'package:unigo/pages/entity/chat_screens/chat_screen.dart';
+import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
 
 class EntityProfileViewer extends StatefulWidget {
   final String idUserSession;
@@ -159,21 +161,17 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                               8), // Espacio entre el texto y el icono
                                       if (widget.attr4 == "true")
                                         Container(
-                                          width: 16.5, // Ancho del contenedor
-                                          height: 16.5, // Alto del contenedor
+                                          width: 16.5,
+                                          height: 16.5,
                                           decoration: BoxDecoration(
-                                            color: Colors.blue
-                                                .shade700, // Color de fondo azul
-                                            shape: BoxShape
-                                                .circle, // Forma circular
+                                            color: Colors.blue.shade700,
+                                            shape: BoxShape.circle,
                                           ),
-                                          child: const Center(
-                                            child: Icon(
-                                              Icons.check,
-                                              size: 12,
-                                              color: Colors
-                                                  .white, // Color del tick blanco
-                                            ),
+                                          child: Center(
+                                            child: Icon(Icons.check,
+                                                size: 12,
+                                                color: Theme.of(context)
+                                                    .dialogBackgroundColor),
                                           ),
                                         ),
                                     ],
@@ -188,7 +186,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                       type: PageTransitionType.rightToLeft,
                                       child: EntityPeople(
                                           idEntity: widget.idEntity,
-                                          admin: widget.attr5!),
+                                          admin: widget.attr5),
                                     ),
                                   );
                                 },
@@ -275,7 +273,7 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                   idUserSession:
                                                       widget.idUserSession,
                                                   idEntity: widget.idEntity,
-                                                  admin: widget.attr5!),
+                                                  admin: widget.attr5),
                                             ),
                                           );
                                         },
@@ -309,7 +307,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                       width: 17,
                                                     ),
                                                     Text(
-                                                      "Noticias",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .news,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .labelMedium,
@@ -370,7 +370,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                       width: 17,
                                                     ),
                                                     Text(
-                                                      "Chat",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .chat,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .labelMedium,
@@ -434,7 +436,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                       width: 17,
                                                     ),
                                                     Text(
-                                                      "Itinerarios",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .itineraries,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .labelMedium,
@@ -488,17 +492,16 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                           0, 0, 30, 0),
                                       child: Row(
                                         children: [
-                                          Icon(
-                                            Icons.check,
-                                            size: 20,
-                                            color: Theme.of(context)
-                                                .secondaryHeaderColor,
-                                          ),
+                                          Icon(Icons.check,
+                                              size: 20,
+                                              color: Theme.of(context)
+                                                  .dialogBackgroundColor),
                                           const SizedBox(
                                             width: 12,
                                           ),
                                           Text(
-                                            "Siguiendo",
+                                            AppLocalizations.of(context)!
+                                                .following,
                                             style: GoogleFonts.inter(
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold,
@@ -559,26 +562,20 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
-                                      const SizedBox(
-                                          width:
-                                              8), // Espacio entre el texto y el icono
+                                      const SizedBox(width: 8),
                                       if (widget.attr4 == "true")
                                         Container(
-                                          width: 16.5, // Ancho del contenedor
-                                          height: 16.5, // Alto del contenedor
+                                          width: 16.5,
+                                          height: 16.5,
                                           decoration: BoxDecoration(
-                                            color: Colors.blue
-                                                .shade700, // Color de fondo azul
-                                            shape: BoxShape
-                                                .circle, // Forma circular
+                                            color: Colors.blue.shade700,
+                                            shape: BoxShape.circle,
                                           ),
-                                          child: const Center(
-                                            child: Icon(
-                                              Icons.check,
-                                              size: 12,
-                                              color: Colors
-                                                  .white, // Color del tick blanco
-                                            ),
+                                          child: Center(
+                                            child: Icon(Icons.check,
+                                                size: 12,
+                                                color: Theme.of(context)
+                                                    .dialogBackgroundColor),
                                           ),
                                         ),
                                     ],
@@ -587,32 +584,14 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 196, 150, 11),
-                                      showCloseIcon: false,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(17.5)),
-                                      margin: const EdgeInsets.fromLTRB(
-                                          15, 0, 15, 30),
-                                      content: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 2, 0, 2.5),
-                                        child: Text(
-                                          "Primero debes seguir a la entidad",
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.inter(
-                                            color: Theme.of(context)
-                                                .scaffoldBackgroundColor,
-                                          ),
-                                        ),
-                                      ),
-                                      behavior: SnackBarBehavior.floating,
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
+                                  SnackBarProvider().showWarningSnackBar(
+                                      context,
+                                      AppLocalizations.of(context)!
+                                          .first_follow_entity,
+                                      15,
+                                      0,
+                                      15,
+                                      15);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(15),
@@ -681,33 +660,14 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                   const SizedBox(height: 12),
                                   GestureDetector(
                                     onTap: () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 196, 150, 11),
-                                          showCloseIcon: false,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(17.5)),
-                                          margin: const EdgeInsets.fromLTRB(
-                                              15, 0, 15, 42.1),
-                                          content: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 2, 0, 2.5),
-                                            child: Text(
-                                              "Primero debes seguir a la entidad",
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.inter(
-                                                color: Theme.of(context)
-                                                    .scaffoldBackgroundColor,
-                                              ),
-                                            ),
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                          duration: const Duration(seconds: 2),
-                                        ),
-                                      );
+                                      SnackBarProvider().showWarningSnackBar(
+                                          context,
+                                          AppLocalizations.of(context)!
+                                              .first_follow_entity,
+                                          15,
+                                          0,
+                                          15,
+                                          15);
                                     },
                                     child: Column(
                                       children: [
@@ -741,7 +701,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                       width: 17,
                                                     ),
                                                     Text(
-                                                      "Noticias",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .news,
                                                       style: GoogleFonts.inter(
                                                         fontSize: 14,
                                                         color: const Color
@@ -793,7 +755,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                       width: 17,
                                                     ),
                                                     Text(
-                                                      "Chat",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .chat,
                                                       style: GoogleFonts.inter(
                                                         fontSize: 14,
                                                         color: const Color
@@ -845,7 +809,9 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                                       width: 17,
                                                     ),
                                                     Text(
-                                                      "Itinerarios",
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .itineraries,
                                                       style: GoogleFonts.inter(
                                                         fontSize: 14,
                                                         color: const Color
@@ -906,18 +872,19 @@ class _EntityProfileViewerState extends State<EntityProfileViewer> {
                                             Icons.add,
                                             size: 20,
                                             color: Theme.of(context)
-                                                .secondaryHeaderColor,
+                                                .dialogBackgroundColor,
                                           ),
                                           const SizedBox(
                                             width: 12,
                                           ),
                                           Text(
-                                            "Seguir",
+                                            AppLocalizations.of(context)!
+                                                .follow,
                                             style: GoogleFonts.inter(
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold,
-                                              color: const Color.fromARGB(
-                                                  255, 227, 227, 227),
+                                              color: Theme.of(context)
+                                                  .dialogBackgroundColor,
                                             ),
                                           ),
                                         ],

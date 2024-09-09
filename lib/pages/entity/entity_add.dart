@@ -6,20 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/models/campus.dart';
-import '../../components/input_widgets/red_button.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/startup/welcome.dart';
+
+import '../../components/input_widgets/red_button.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
-
-void main() async {
-  await dotenv.load();
-}
 
 class EntityAddScreen extends StatefulWidget {
   const EntityAddScreen({super.key});
@@ -29,8 +22,11 @@ class EntityAddScreen extends StatefulWidget {
 }
 
 class _EntityAddScreenState extends State<EntityAddScreen> {
+  bool _isUploading = false;
+
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+
   String? _idUser = "";
   String imageURL = "";
   File? _tempImageFile;
@@ -38,8 +34,9 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
 
   @override
   void initState() {
-    getUserInfo();
     super.initState();
+
+    getUserInfo();
   }
 
   Future<void> getUserInfo() async {
@@ -47,8 +44,6 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
     setState(() {
       _idUser = prefs.getString('idUser');
       _campus = prefs.getString('campus');
-
-      print(_campus);
     });
   }
 
@@ -71,11 +66,15 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
   void dispose() {
     nameController.dispose();
     descriptionController.dispose();
+
     super.dispose();
   }
 
   Future createEntity() async {
     try {
+      setState(() {
+        _isUploading = true;
+      });
       if (_tempImageFile != null) {
         await uploadImageToFirebase();
       }
@@ -98,18 +97,20 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
           },
         ),
       );
-
-      print("Response status: ${response.statusCode}");
-
       if (response.statusCode == 200) {
         // ignore: use_build_context_synchronously
         Navigator.pop(context, true);
-        print("Response status:423423423424");
       } else {
+        // ignore: avoid_print
         print("Failed to create entity: ${response.data}");
       }
     } catch (e) {
+      // ignore: avoid_print
       print("Error during entity creation: $e");
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
     }
   }
 
@@ -132,7 +133,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
                         child: Center(
                           child: Text(
-                            "Crear entidad",
+                            AppLocalizations.of(context)!.create_entity,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -148,9 +149,9 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 27.5,
                         ),
                       ),
@@ -171,7 +172,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         //Username textfield
                         InputShortTextField(
                             controller: nameController,
-                            labelText: "Nombre",
+                            labelText: AppLocalizations.of(context)!.name,
                             obscureText: false),
 
                         const SizedBox(height: 15),
@@ -179,7 +180,8 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                         //Email address textfield
                         DescriptionBigTextField(
                             controller: descriptionController,
-                            labelText: "Descripción",
+                            labelText: AppLocalizations.of(context)!
+                                .create_description,
                             obscureText: false),
                       ],
                     ),
@@ -188,14 +190,33 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Stack(
                   children: [
-                    //Sign up button
                     RedButton(
-                      buttonText: "CREAR",
+                      buttonText: AppLocalizations.of(context)!.create_button,
                       onTap: createEntity,
                     ),
+                    if (_isUploading)
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: MediaQuery.of(context).size.width - 95,
+                        child: Center(
+                          child: SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                              backgroundColor: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(0.5),
+                              strokeCap: StrokeCap.round,
+                              strokeWidth: 4,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).secondaryHeaderColor),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -211,14 +232,12 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                     ),
                     children: [
                       TextSpan(
-                        text:
-                            "Recuerda que la entidad que crees deberá cumplir los ",
+                        text: AppLocalizations.of(context)!.remember_entity1,
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation2,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                            color: Theme.of(context).splashColor),
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation3,
@@ -226,11 +245,10 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation4,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                            color: Theme.of(context).splashColor),
                       ),
                       TextSpan(
-                        text: " de UNIGO!",
+                        text: AppLocalizations.of(context)!.of_UNIGO,
                       ),
                     ],
                   ),
@@ -268,8 +286,8 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
               );
             },
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.amber,
+              decoration: BoxDecoration(
+                color: Theme.of(context).highlightColor,
                 shape: BoxShape.circle,
               ),
               child: const Padding(
@@ -302,7 +320,7 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
       child: Column(
         children: [
           Text(
-            "Choose an entity photo",
+            AppLocalizations.of(context)!.select_a_photo,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
@@ -355,7 +373,6 @@ class _EntityAddScreenState extends State<EntityAddScreen> {
                     child: Icon(
                       Icons.image,
                       color: Colors.white,
-                      semanticLabel: "Gallery",
                     ),
                   ),
                 ),

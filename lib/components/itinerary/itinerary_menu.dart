@@ -1,13 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:ui';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
 
 class ItineraryMenu extends StatefulWidget {
   final String idItinerary;
@@ -46,13 +44,13 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(35.0),
             ),
-            title: Text('Eliminar itinerario',
+            title: Text(AppLocalizations.of(context)!.delete_itinerary,
                 style: Theme.of(context).textTheme.titleSmall),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "¿Seguro que desea eliminar este itinerario?\n\nEsta decisión será permanente.",
+                  AppLocalizations.of(context)!.delete_itinerary_explanation,
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
@@ -68,11 +66,12 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
                     Theme.of(context).splashColor,
                   ),
                 ),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               TextButton(
                 onPressed: () async {
                   await deleteItinerary();
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                   widget.onChange();
                 },
@@ -81,7 +80,7 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
                     Theme.of(context).splashColor,
                   ),
                 ),
-                child: const Text('Confirmar'),
+                child: Text(AppLocalizations.of(context)!.confirm),
               ),
             ],
           )
@@ -96,7 +95,7 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
     String path =
         'http://${dotenv.env['API_URL']}/itinerary/delete/${widget.idItinerary}';
     try {
-      var response = await Dio().delete(
+      await Dio().delete(
         path,
         options: Options(
           headers: {
@@ -107,26 +106,16 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
       );
     } catch (e) {
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).splashColor,
-          showCloseIcon: false,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
-          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-          content: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-            child: Text(
-              AppLocalizations.of(context)!.unable_to_proceed,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
+
+      SnackBarProvider().showErrorSnackBar(
+        // ignore: use_build_context_synchronously
+        context,
+        // ignore: use_build_context_synchronously
+        AppLocalizations.of(context)!.server_error,
+        15,
+        0,
+        15,
+        15,
       );
     }
   }
@@ -144,7 +133,7 @@ class _ItineraryMenuState extends State<ItineraryMenu> {
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Center(
               child: Text(
-                'Eliminar',
+                AppLocalizations.of(context)!.delete_button,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   color: Theme.of(context).secondaryHeaderColor,

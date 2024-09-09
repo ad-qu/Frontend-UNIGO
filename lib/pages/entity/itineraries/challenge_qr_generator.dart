@@ -1,14 +1,16 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:unigo/components/input_widgets/red_button.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/components/input_widgets/red_button.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
 
 class ChallengeQRGenerator extends StatefulWidget {
   final String idChallenge;
@@ -72,31 +74,13 @@ class _ChallengeQRGeneratorState extends State<ChallengeQRGenerator> {
       await file.writeAsBytes(pngBytes);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: const Color.fromARGB(255, 56, 142, 60),
-          showCloseIcon: false,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
-          margin: const EdgeInsets.fromLTRB(30, 0, 30, 12),
-          content: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-            child: Text(
-              "QR code saved to gallery",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+
+      SnackBarProvider().showSuccessSnackBar(
+          context, AppLocalizations.of(context)!.qr_saved, 30, 0, 30, 45);
     } catch (e) {
       if (!mounted) return;
-      const snackBar = SnackBar(content: Text('Error'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      SnackBarProvider().showErrorSnackBar(
+          context, AppLocalizations.of(context)!.server_error, 30, 0, 30, 12);
     }
   }
 
@@ -133,7 +117,7 @@ class _ChallengeQRGeneratorState extends State<ChallengeQRGenerator> {
                     ),
                   ),
                   Text(
-                    "Descargar QR",
+                    AppLocalizations.of(context)!.download_QR,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   Container(
@@ -183,7 +167,7 @@ class _ChallengeQRGeneratorState extends State<ChallengeQRGenerator> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   RedButton(
-                    buttonText: "GUARDAR",
+                    buttonText: AppLocalizations.of(context)!.save_button,
                     onTap: () {
                       _captureAndSavePng();
                     },
@@ -203,13 +187,13 @@ class _ChallengeQRGeneratorState extends State<ChallengeQRGenerator> {
                   ),
                   children: [
                     TextSpan(
-                      text: "Se guardará en tu carpeta de ",
+                      text: AppLocalizations.of(context)!.download_folder,
                     ),
                     TextSpan(
-                      text: "Descargas",
+                      text: AppLocalizations.of(context)!.download_red,
                       style: GoogleFonts.inter(
-                          color: const Color.fromARGB(
-                              255, 204, 49, 49)), // Cambia el color a rojo
+                        color: Theme.of(context).splashColor,
+                      ), // Cambia el color a rojo
                     ),
                   ],
                 ),

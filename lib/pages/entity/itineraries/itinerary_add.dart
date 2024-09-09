@@ -6,15 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/components/input_widgets/red_button.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/startup/welcome.dart';
+
+import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
-import 'package:unigo/components/credential_screen/description_big_textfield.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
 
 class ItineraryAdd extends StatefulWidget {
   final String idEntity;
@@ -28,11 +26,13 @@ class ItineraryAdd extends StatefulWidget {
 }
 
 class _ItineraryAddState extends State<ItineraryAdd> {
+  bool _isUploading = false;
+
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+
   String imageURL = "";
   File? _tempImageFile;
-  bool _isUploading = false;
 
   @override
   void initState() {
@@ -58,6 +58,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
   void dispose() {
     nameController.dispose();
     descriptionController.dispose();
+
     super.dispose();
   }
 
@@ -65,28 +66,8 @@ class _ItineraryAddState extends State<ItineraryAdd> {
   Widget build(BuildContext context) {
     Future createItinerary() async {
       if (nameController.text == '') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Theme.of(context).splashColor,
-            showCloseIcon: true,
-            closeIconColor: Theme.of(context).secondaryHeaderColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(30, 0, 30, 60.75),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                AppLocalizations.of(context)!.empty_fields,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackBarProvider().showErrorSnackBar(context,
+            AppLocalizations.of(context)!.empty_fields, 30, 0, 30, 60.75);
       } else {
         setState(() {
           _isUploading = true;
@@ -113,8 +94,10 @@ class _ItineraryAddState extends State<ItineraryAdd> {
               },
             ),
           );
+          // ignore: use_build_context_synchronously
           Navigator.pop(context, true);
         } catch (e) {
+          // ignore: avoid_print
           print(e);
         } finally {
           setState(() {
@@ -141,7 +124,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                         padding: const EdgeInsets.fromLTRB(60, 0, 0, 0),
                         child: Center(
                           child: Text(
-                            "Crear itinerario",
+                            AppLocalizations.of(context)!.create_itinerary,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                         ),
@@ -157,9 +140,9 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 25,
                         ),
                       ),
@@ -180,7 +163,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                         //Username textfield
                         InputShortTextField(
                             controller: nameController,
-                            labelText: "Nombre",
+                            labelText: AppLocalizations.of(context)!.name,
                             obscureText: false),
                       ],
                     ),
@@ -192,7 +175,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                 child: Stack(
                   children: [
                     RedButton(
-                      buttonText: "CREAR",
+                      buttonText: AppLocalizations.of(context)!.create_button,
                       onTap: createItinerary,
                     ),
                     if (_isUploading) // Mostrar el indicador de carga si está subiendo
@@ -231,14 +214,12 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                     ),
                     children: [
                       TextSpan(
-                        text:
-                            "Recuerda que el itinerario que crees deberá cumplir los ",
+                        text: AppLocalizations.of(context)!.remember_itinerary,
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation2,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                            color: Theme.of(context).splashColor),
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation3,
@@ -246,11 +227,10 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation4,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                            color: Theme.of(context).splashColor),
                       ),
                       TextSpan(
-                        text: " de UNIGO!",
+                        text: AppLocalizations.of(context)!.of_UNIGO,
                       ),
                     ],
                   ),
@@ -288,15 +268,15 @@ class _ItineraryAddState extends State<ItineraryAdd> {
               );
             },
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.amber,
+              decoration: BoxDecoration(
+                color: Theme.of(context).highlightColor,
                 shape: BoxShape.circle,
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(6),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
                 child: Icon(
                   Icons.camera_alt,
-                  color: Colors.white,
+                  color: Theme.of(context).secondaryHeaderColor,
                   size: 20.0,
                 ),
               ),
@@ -322,7 +302,7 @@ class _ItineraryAddState extends State<ItineraryAdd> {
       child: Column(
         children: [
           Text(
-            "Choose an itinerary photo",
+            AppLocalizations.of(context)!.select_a_photo,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
@@ -341,14 +321,13 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                   splashColor: Colors.transparent,
                   onTap: () {
                     pickAnImage(ImageSource.camera);
-                    //pickImageFromGallery(ImageSource.camera);
                     Navigator.pop(context);
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Icon(
                       Icons.camera_alt,
-                      color: Colors.white,
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
                 ),
@@ -366,16 +345,13 @@ class _ItineraryAddState extends State<ItineraryAdd> {
                   splashColor: Colors.transparent,
                   onTap: () {
                     pickAnImage(ImageSource.gallery);
-
-                    //pickImageFromGallery(ImageSource.gallery);
                     Navigator.pop(context);
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Icon(
                       Icons.image,
-                      color: Colors.white,
-                      semanticLabel: "Gallery",
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
                 ),

@@ -1,14 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/components/new/new_card.dart';
+
 import 'package:unigo/models/news.dart';
+import 'package:unigo/components/new/new_card.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/news/news_add.dart';
 
@@ -36,6 +34,7 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   void initState() {
     super.initState();
+
     getNews();
   }
 
@@ -61,6 +60,7 @@ class _NewsScreenState extends State<NewsScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false; // Cambiamos el estado de carga a falso
@@ -91,7 +91,6 @@ class _NewsScreenState extends State<NewsScreen> {
                 color: Theme.of(context).scaffoldBackgroundColor,
                 child: Column(
                   children: [
-                    // Barra superior de búsqueda
                     Padding(
                       padding: const EdgeInsets.fromLTRB(28, 20, 28, 47.5),
                       child: Row(
@@ -102,9 +101,9 @@ class _NewsScreenState extends State<NewsScreen> {
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.arrow_back_ios_rounded,
-                              color: Color.fromARGB(255, 227, 227, 227),
+                              color: Theme.of(context).secondaryHeaderColor,
                             ),
                           ),
                           const SizedBox(width: 25),
@@ -115,12 +114,12 @@ class _NewsScreenState extends State<NewsScreen> {
                               ),
                               child: TextFormField(
                                 onChanged: (value) => _runFilter(value),
-                                cursorColor:
-                                    const Color.fromARGB(255, 222, 66, 66),
+                                cursorColor: Theme.of(context).splashColor,
                                 cursorWidth: 1,
                                 style: Theme.of(context).textTheme.labelMedium,
                                 decoration: InputDecoration(
-                                  hintText: "Busca...",
+                                  hintText:
+                                      AppLocalizations.of(context)!.search_new,
                                   hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 138, 138, 138),
                                     fontSize: 14,
@@ -169,9 +168,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.add,
-                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   size: 30,
                                 ),
                               ),
@@ -180,23 +179,17 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                     ),
                     Expanded(
-                      child: ListView.builder(
-                        itemCount: newsList.isNotEmpty ? newsList.length : 3,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 2, 16, 13),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 350,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(37.5),
-                              ),
-                            ),
-                          );
-                        },
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Theme.of(context).hoverColor,
+                          strokeCap: StrokeCap.round,
+                          strokeWidth: 5,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).splashColor),
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 25),
                   ],
                 ),
               )
@@ -225,9 +218,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back_ios_rounded,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color: Theme.of(context).secondaryHeaderColor,
                               ),
                             ),
                           ),
@@ -239,12 +232,12 @@ class _NewsScreenState extends State<NewsScreen> {
                               ),
                               child: TextFormField(
                                 onChanged: (value) => _runFilter(value),
-                                cursorColor:
-                                    const Color.fromARGB(255, 222, 66, 66),
+                                cursorColor: Theme.of(context).splashColor,
                                 cursorWidth: 1,
                                 style: Theme.of(context).textTheme.labelMedium,
                                 decoration: InputDecoration(
-                                  hintText: "Busca...",
+                                  hintText:
+                                      AppLocalizations.of(context)!.search_new,
                                   hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 138, 138, 138),
                                     fontSize: 14,
@@ -297,11 +290,7 @@ class _NewsScreenState extends State<NewsScreen> {
                                   ),
                                 );
                                 if (result == true) {
-                                  print(
-                                      "New created successfully, updating list.");
                                   getNews();
-                                } else {
-                                  print("New creation failed or was canceled.");
                                 }
                               },
                               child: Padding(
@@ -311,9 +300,10 @@ class _NewsScreenState extends State<NewsScreen> {
                                     color: Colors.transparent,
                                     borderRadius: BorderRadius.circular(30),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.add,
-                                    color: Color.fromARGB(255, 227, 227, 227),
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
                                     size: 30,
                                   ),
                                 ),
@@ -376,7 +366,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                               .center, // Centra el contenido horizontalmente
                                           children: [
                                             Text(
-                                              'Esta entidad\nno tiene noticias',
+                                              AppLocalizations.of(context)!
+                                                  .no_news,
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)
                                                   .textTheme
@@ -385,14 +376,10 @@ class _NewsScreenState extends State<NewsScreen> {
                                                       color: Theme.of(context)
                                                           .shadowColor),
                                             ),
-
-                                            const SizedBox(
-                                                height:
-                                                    16), // Espacio entre el texto y el ícono, ajusta según sea necesario
+                                            const SizedBox(height: 16),
                                             Icon(
                                               Icons.newspaper_rounded,
-                                              size:
-                                                  125, // Ajusta el tamaño del ícono según sea necesario
+                                              size: 125,
                                               color:
                                                   Theme.of(context).shadowColor,
                                             ),

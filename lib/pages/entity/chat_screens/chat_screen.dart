@@ -1,19 +1,15 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/components/chat_screen/own_message_card.dart';
-import 'package:unigo/components/chat_screen/reply_card.dart';
-import 'package:unigo/components/itinerary/itinerary_card.dart';
-import 'package:unigo/models/message.dart';
-
-import 'package:unigo/pages/entity/entity_home.dart';
+// ignore: library_prefixes
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/material.dart';
-
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:unigo/models/message.dart';
+import 'package:unigo/components/chat_screen/reply_card.dart';
+import 'package:unigo/components/chat_screen/own_message_card.dart';
 
 class ChatScreen extends StatefulWidget {
   final String idEntity;
@@ -29,7 +25,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = true;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   late IO.Socket socket;
 
@@ -53,16 +49,14 @@ class _ChatScreenState extends State<ChatScreen> {
       'transports': ['websocket'],
     });
     socket.onConnect((_) {
-      print('Conectado al servidor SocketIO');
+      // ignore: avoid_print
+      print('Conneting SocketIO....');
 
       //Enviar evento 'join-room' al servidor
       socket.emit('join-room', widget.idEntity);
     });
-    socket.on('connected-users', (data) {
-      print('Número de usuarios conectados: $data');
-    });
+    socket.on('connected-users', (data) {});
     socket.on('message', (data) {
-      print('Mensaje recibido: $data');
       if (data['idUser'] != _idUser) {
         if (mounted) {
           setState(() {
@@ -72,7 +66,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 message: data['message'] ?? '');
             listMessage.add(msg);
 
-            // Scroll hasta el final de la lista
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _scrollController
                   .jumpTo(_scrollController.position.maxScrollExtent);
@@ -113,9 +106,6 @@ class _ChatScreenState extends State<ChatScreen> {
         return Messages.fromJson2(messageJson);
       }).toList();
 
-      print('Chat ID: $chatId');
-      print('Chat Messages: $chatMessages');
-
       setState(() {
         listMessage = chatMessages;
         _idChat = chatId;
@@ -125,6 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false; // Cambiamos el estado de carga a falso
@@ -169,13 +160,12 @@ class _ChatScreenState extends State<ChatScreen> {
       };
       socket.emit('message', data);
     } else {
-      // logica de reconexión
-      print('socket not connected');
+      // ignore: avoid_print
+      print('Socket not connected');
       socket.connect();
-      socket.onConnect((_) =>
-          // ignore: avoid_print
-          {
-            print('Reconectado al servidor SocketIO'),
+      socket.onConnect((_) => {
+            // ignore: avoid_print
+            print('Reconnecting...'),
             sendMessageToRoom(message)
           });
     }
@@ -206,7 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ),
                           Text(
-                            "Chat",
+                            AppLocalizations.of(context)!.chat,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           Container(
@@ -264,7 +254,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ),
                           Text(
-                            "Chat",
+                            AppLocalizations.of(context)!.chat,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           Container(
@@ -312,7 +302,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'No hay\nmensajes disponibles',
+                                          AppLocalizations.of(context)!
+                                              .no_messages,
                                           textAlign: TextAlign.center,
                                           style: Theme.of(context)
                                               .textTheme
@@ -339,8 +330,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                             ),
                                             children: [
                                               TextSpan(
-                                                text:
-                                                    'Sé el primero en\nescribir un mensaje',
+                                                text: AppLocalizations.of(
+                                                        context)!
+                                                    .be_first_message,
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .titleMedium,
@@ -381,7 +373,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(25)),
                                 ),
-                                labelText: "Escribe un mensaje...",
+                                labelText:
+                                    AppLocalizations.of(context)!.send_message,
                                 labelStyle: const TextStyle(
                                   color: Color.fromARGB(255, 138, 138, 138),
                                   fontSize: 14,
@@ -403,13 +396,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   sendMessageToRoom(_msgController.text);
                                   _msgController.clear();
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      backgroundColor: Colors.red,
-                                      content:
-                                          Text('Error al enviar el mensaje'),
-                                    ),
-                                  );
+                                  // ignore: avoid_print
+                                  print("Error $e");
                                 }
                               }
                             },
@@ -420,13 +408,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                 shape: BoxShape.circle,
                                 color: Theme.of(context).splashColor,
                               ),
-                              child: Center(
+                              child: const Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 3.5),
+                                  padding: EdgeInsets.only(left: 3.5),
                                   child: Icon(
                                     Icons.send_rounded,
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
+                                    color: Colors.white,
                                     size: 24,
                                   ),
                                 ),

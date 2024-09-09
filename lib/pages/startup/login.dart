@@ -1,21 +1,18 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:unigo/components/credential_screen/input_big_textfield.dart';
-import '../../models/user.dart';
 import 'package:flutter/material.dart';
-import 'package:unigo/pages/navbar.dart';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/pages/startup/welcome.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
+
+import 'package:unigo/pages/navbar.dart';
+import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/input_widgets/red_button.dart';
 import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/credential_screen/password_textfield.dart';
+import 'package:unigo/components/credential_screen/input_big_textfield.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,8 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
               "password": passwordController.text
             },
           );
-
-          print(response.data);
 
           if (response.statusCode == 222) {
             Map<String, dynamic> data = response.data;
@@ -74,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
             prefs.setInt('experience', experience);
 
             Navigator.push(
+              // ignore: use_build_context_synchronously
               context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
@@ -81,100 +77,75 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             );
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Theme.of(context).splashColor,
-                showCloseIcon: true,
-                closeIconColor: Theme.of(context).secondaryHeaderColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(17.5)),
-                margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
-                content: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                  child: Text(
-                    "Parece que ocurrió un error",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                  ),
-                ),
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            SnackBarProvider().showErrorSnackBar(
+                // ignore: use_build_context_synchronously
+                context,
+                // ignore: use_build_context_synchronously
+                AppLocalizations.of(context)!.server_error,
+                30,
+                0,
+                30,
+                45);
           }
         } on DioException catch (e) {
           if (e.response != null) {
             switch (e.response!.statusCode) {
               case 401:
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Theme.of(context).splashColor,
-                    showCloseIcon: true,
-                    closeIconColor: Theme.of(context).secondaryHeaderColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(17.5)),
-                    margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
-                    content: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                      child: Text(
-                        "Verifica tus credenciales",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
-                      ),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+                SnackBarProvider().showErrorSnackBar(
+                    context,
+                    AppLocalizations.of(context)!.verify_credentials,
+                    30,
+                    0,
+                    30,
+                    45);
                 break;
               case 404:
-                print('Error 404: Recurso no encontrado.');
+                SnackBarProvider().showErrorSnackBar(
+                    context,
+                    AppLocalizations.of(context)!.verify_credentials,
+                    30,
+                    0,
+                    30,
+                    45);
                 break;
               case 423:
-                print('Usuario inabilidado.');
+                SnackBarProvider().showErrorSnackBar(context,
+                    AppLocalizations.of(context)!.disabled_user, 30, 0, 30, 45);
                 break;
               case 500:
-                print('Error 500: Error en el servidor.');
+                SnackBarProvider().showErrorSnackBar(context,
+                    AppLocalizations.of(context)!.server_error, 30, 0, 30, 45);
                 break;
               default:
-                print('Error inesperado: ${e.response!.statusCode}');
+                SnackBarProvider().showErrorSnackBar(context,
+                    AppLocalizations.of(context)!.server_error, 30, 0, 30, 45);
                 break;
             }
           } else {
-            // Error sin respuesta del servidor
-            print('Error sin respuesta del servidor: ${e.message}');
+            SnackBarProvider().showErrorSnackBar(
+                // ignore: use_build_context_synchronously
+                context,
+                // ignore: use_build_context_synchronously
+                AppLocalizations.of(context)!.server_error,
+                30,
+                0,
+                30,
+                45);
           }
         } catch (e) {
-          // Otros errores que no son de Dio
-          print('Ocurrió un error inesperado: $e');
+          SnackBarProvider().showErrorSnackBar(
+              // ignore: use_build_context_synchronously
+              context,
+              // ignore: use_build_context_synchronously
+              AppLocalizations.of(context)!.server_error,
+              30,
+              0,
+              30,
+              45);
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Theme.of(context).splashColor,
-            showCloseIcon: true,
-            closeIconColor: Theme.of(context).secondaryHeaderColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(17.5)),
-            margin: const EdgeInsets.fromLTRB(30, 0, 30, 45),
-            content: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: Text(
-                AppLocalizations.of(context)!.empty_fields,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).secondaryHeaderColor,
-                ),
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackBarProvider().showErrorSnackBar(
+            context, AppLocalizations.of(context)!.empty_fields, 30, 0, 30, 45);
       }
     }
 
@@ -207,9 +178,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(30)),
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_back_ios_rounded,
-                            color: Color.fromARGB(255, 227, 227, 227),
+                            color: Theme.of(context).secondaryHeaderColor,
                             size: 25,
                           ),
                         ),

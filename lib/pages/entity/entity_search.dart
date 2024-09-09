@@ -1,18 +1,12 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../../models/user.dart';
 import '../../models/entity.dart';
-import '../../components/profile_screen/user_card.dart';
 import '../../components/entity/entity_card.dart';
-import 'entity_home.dart';
 
 class EntitySearchScreen extends StatefulWidget {
   const EntitySearchScreen({super.key});
@@ -23,15 +17,18 @@ class EntitySearchScreen extends StatefulWidget {
 
 class _EntitySearchScreenState extends State<EntitySearchScreen> {
   bool _isLoading = true;
+
+  String? _idUser;
+  String? _campus;
+  bool _isCampusFilterEnabled = true;
+
   List<Entity> unFollowingList = [];
   List<Entity> filteredEntities = [];
-  String? _idUser;
-  bool _isCampusFilterEnabled = true;
-  String? _campus;
 
   @override
   void initState() {
     super.initState();
+
     getUserInfo();
     fetchEntities();
   }
@@ -41,7 +38,6 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
     setState(() {
       _idUser = prefs.getString('idUser');
       _campus = prefs.getString('campus');
-      print("User Campus: $_campus");
     });
   }
 
@@ -69,11 +65,11 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
         unFollowingList =
             unfollowing.map((entity) => Entity.fromJson2(entity)).toList();
         filteredEntities = unFollowingList;
-        print("Entities fetched: ${unFollowingList.length}");
         _isLoading = false;
         _runFilter("");
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false;
@@ -89,8 +85,6 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
             entity.name.toLowerCase().startsWith(lowerCaseKeyword);
         final matchesCampus =
             _isCampusFilterEnabled ? (entity.campus == _campus) : true;
-        print(
-            "Entity: ${entity.name}, Matches Keyword: $matchesKeyword, Matches Campus: $matchesCampus"); // Debugging line
         return matchesKeyword && matchesCampus;
       }).toList();
     });
@@ -124,9 +118,9 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back_ios_rounded,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color: Theme.of(context).secondaryHeaderColor,
                                 size: 25,
                               ),
                             ),
@@ -138,14 +132,13 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                 ),
                                 child: TextFormField(
                                   onChanged: (value) => _runFilter(value),
-                                  cursorColor:
-                                      const Color.fromARGB(255, 222, 66, 66),
+                                  cursorColor: Theme.of(context).splashColor,
                                   cursorWidth: 1,
                                   style:
                                       Theme.of(context).textTheme.labelMedium,
                                   decoration: InputDecoration(
                                     hintText: AppLocalizations.of(context)!
-                                        .filter_box,
+                                        .search_entity,
                                     hintStyle: const TextStyle(
                                       color: Color.fromARGB(255, 138, 138, 138),
                                       fontSize: 14,
@@ -189,11 +182,13 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                             const SizedBox(width: 25),
                             GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _isCampusFilterEnabled =
-                                      !_isCampusFilterEnabled;
-                                  _runFilter(""); // Apply filter when toggle
-                                });
+                                setState(
+                                  () {
+                                    _isCampusFilterEnabled =
+                                        !_isCampusFilterEnabled;
+                                    _runFilter("");
+                                  },
+                                );
                               },
                               child: Icon(
                                 _isCampusFilterEnabled
@@ -219,7 +214,8 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                       ),
                       const SizedBox(height: 25),
                     ],
-                  ))
+                  ),
+                )
               : Container(
                   color: Theme.of(context).scaffoldBackgroundColor,
                   child: Column(
@@ -238,9 +234,9 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.arrow_back_ios_rounded,
-                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   size: 25,
                                 ),
                               ),
@@ -253,14 +249,13 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                 ),
                                 child: TextFormField(
                                   onChanged: (value) => _runFilter(value),
-                                  cursorColor:
-                                      const Color.fromARGB(255, 222, 66, 66),
+                                  cursorColor: Theme.of(context).splashColor,
                                   cursorWidth: 1,
                                   style:
                                       Theme.of(context).textTheme.labelMedium,
                                   decoration: InputDecoration(
                                     hintText: AppLocalizations.of(context)!
-                                        .filter_box,
+                                        .search_entity,
                                     hintStyle: const TextStyle(
                                       color: Color.fromARGB(255, 138, 138, 138),
                                       fontSize: 14,
@@ -381,7 +376,8 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                                 CrossAxisAlignment.center,
                                             children: [
                                               Text(
-                                                'No hay más\nentidades a mostrar',
+                                                AppLocalizations.of(context)!
+                                                    .there_is_no_entities_to_show,
                                                 textAlign: TextAlign.center,
                                                 style: Theme.of(context)
                                                     .textTheme
@@ -409,8 +405,9 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                                   ),
                                                   children: [
                                                     TextSpan(
-                                                      text:
-                                                          'Prueba a presionar ',
+                                                      text: AppLocalizations.of(
+                                                              context)!
+                                                          .try_pressing,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .titleMedium,
@@ -425,8 +422,9 @@ class _EntitySearchScreenState extends State<EntitySearchScreen> {
                                                       ),
                                                     ),
                                                     TextSpan(
-                                                      text:
-                                                          ' para encontrar\nentidades de otros campus universitarios',
+                                                      text: AppLocalizations.of(
+                                                              context)!
+                                                          .to_find_entities_other_campus,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .titleMedium,

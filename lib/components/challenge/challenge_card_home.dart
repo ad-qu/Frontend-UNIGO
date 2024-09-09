@@ -1,15 +1,10 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/components/challenge/challenge_menu.dart';
-import 'package:unigo/components/challenge/challenge_more_button.dart';
-import 'package:unigo/components/itinerary/itinerary_menu.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:unigo/pages/map/challenge_pop_up.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:unigo/pages/map/qr_screen.dart';
+import 'package:unigo/pages/map/challenge_pop_up.dart';
 
 class ChallengeCardHome extends StatefulWidget {
   final String idChallenge;
@@ -87,7 +82,7 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
                     );
                   },
                   backgroundColor: Theme.of(context).dividerColor,
-                  foregroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).secondaryHeaderColor,
                   icon: Icons.info,
                   label: 'Info.',
                 ),
@@ -110,9 +105,9 @@ class _ChallengeCardHomeState extends State<ChallengeCardHome> {
                     );
                   },
                   backgroundColor: Theme.of(context).dividerColor,
-                  foregroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).secondaryHeaderColor,
                   icon: Icons.qr_code_scanner_rounded,
-                  label: 'Escanear',
+                  label: AppLocalizations.of(context)!.scan,
                 ),
               ],
             ),

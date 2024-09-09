@@ -1,18 +1,14 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/components/itinerary/itinerary_card.dart';
-import 'package:unigo/models/entity.dart';
-import 'package:unigo/models/itinerary.dart';
-import 'package:unigo/pages/entity/entity_add.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/entity/entity_profile.dart';
-import 'package:unigo/pages/entity/entity_search.dart';
-import 'package:unigo/components/entity/entity_card.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:unigo/models/itinerary.dart';
+import 'package:unigo/pages/entity/entity_home.dart';
+import 'package:unigo/components/itinerary/itinerary_card.dart';
 import 'package:unigo/pages/entity/itineraries/itinerary_add.dart';
 
 class ItineraryHome extends StatefulWidget {
@@ -27,12 +23,15 @@ class ItineraryHome extends StatefulWidget {
 
 class _ItineraryHomeState extends State<ItineraryHome> {
   bool _isLoading = true;
-  List<Itinerary> itineraryList = [];
+
   String? _idUser = "";
+
+  List<Itinerary> itineraryList = [];
 
   @override
   void initState() {
     super.initState();
+
     getItineraries();
     getUserInfo();
   }
@@ -61,13 +60,13 @@ class _ItineraryHomeState extends State<ItineraryHome> {
       );
 
       var list = response.data as List;
-      print(list);
       setState(() {
         itineraryList =
             list.map((itinerary) => Itinerary.fromJson2(itinerary)).toList();
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false;
@@ -100,7 +99,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                             ),
                           ),
                           Text(
-                            "Itinerarios",
+                            AppLocalizations.of(context)!.itineraries,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           if (widget.admin == _idUser)
@@ -110,9 +109,9 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.add,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color: Theme.of(context).secondaryHeaderColor,
                                 size: 27.5,
                               ),
                             )
@@ -181,7 +180,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                           Row(
                             children: [
                               Text(
-                                "Itinerarios",
+                                AppLocalizations.of(context)!.itineraries,
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context)
@@ -205,11 +204,7 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                   ),
                                 );
                                 if (result == true) {
-                                  print(
-                                      "New created successfully, updating list.");
                                   getItineraries();
-                                } else {
-                                  print("New creation failed or was canceled.");
                                 }
                               },
                               child: Container(
@@ -218,9 +213,9 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.add,
-                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   size: 27.5,
                                 ),
                               ),
@@ -292,7 +287,8 @@ class _ItineraryHomeState extends State<ItineraryHome> {
                                             .center, // Centra el contenido horizontalmente
                                         children: [
                                           Text(
-                                            'Esta entidad\nno tiene itinerarios',
+                                            AppLocalizations.of(context)!
+                                                .no_itineraries_entity,
                                             textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme

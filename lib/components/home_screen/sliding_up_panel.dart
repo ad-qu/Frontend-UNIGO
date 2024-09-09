@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:unigo/components/challenge/challenge_card.dart';
-import 'package:unigo/components/challenge/challenge_card_home.dart';
-import 'package:unigo/components/home_screen/card_challenge_widget.dart';
-import 'package:unigo/components/itinerary/itinerary_card.dart';
-import 'package:unigo/components/itinerary/itinerary_card_home.dart';
-import 'package:unigo/models/challenge.dart';
-import 'package:unigo/models/itinerary.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:unigo/models/challenge.dart';
+import 'package:unigo/models/itinerary.dart';
+import 'package:unigo/components/challenge/challenge_card_home.dart';
+import 'package:unigo/components/itinerary/itinerary_card_home.dart';
 
 class SlidingUpPanelWidget extends StatefulWidget {
   const SlidingUpPanelWidget({
@@ -35,6 +34,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
   @override
   void initState() {
     super.initState();
+
     getUserInfo();
     getItineraries();
     getChallenges();
@@ -68,6 +68,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
             list.map((itinerary) => Itinerary.fromJson2(itinerary)).toList();
       });
     } catch (e) {
+      // ignore: avoid_print
       print("Error $e");
     }
   }
@@ -93,6 +94,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
             list.map((challenge) => Challenge.fromJson2(challenge)).toList();
       });
     } catch (e) {
+      // ignore: avoid_print
       print("Error $e");
     }
   }
@@ -170,7 +172,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
           children: [
             if (itineraryList.isNotEmpty)
               Text(
-                "Itinerarios ",
+                AppLocalizations.of(context)!.itineraries,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
           ],
@@ -219,7 +221,8 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'No hay itinerarios\npara mostrar',
+                                AppLocalizations.of(context)!
+                                    .no_itineraries_map,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context)
                                     .textTheme
@@ -245,7 +248,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
                                   ),
                                   children: [
                                     TextSpan(
-                                      text: 'Presiona ',
+                                      text: AppLocalizations.of(context)!.press,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium,
@@ -253,15 +256,14 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
                                     WidgetSpan(
                                       child: Icon(
                                         Icons.view_agenda_rounded,
-                                        size:
-                                            16, // Ajusta el tamaño del ícono según sea necesario
+                                        size: 16,
                                         color: Theme.of(context)
                                             .secondaryHeaderColor,
                                       ),
                                     ),
                                     TextSpan(
-                                      text:
-                                          ' para ir a entidades\ny buscar más retos',
+                                      text: AppLocalizations.of(context)!
+                                          .to_go_to_entities,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium,
@@ -317,7 +319,7 @@ class _SlidingUpPanelWidgetState extends State<SlidingUpPanelWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Retos ",
+                      AppLocalizations.of(context)!.challenges,
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                   ],

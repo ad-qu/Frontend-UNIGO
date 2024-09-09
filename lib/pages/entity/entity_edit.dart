@@ -1,18 +1,20 @@
 import 'dart:io';
-import 'dart:async';
 import 'dart:ui';
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:unigo/pages/navbar.dart';
-import '../../components/input_widgets/red_button.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
+
+import 'package:unigo/pages/navbar.dart';
+import '../../components/input_widgets/red_button.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/components/credential_screen/input_short_textfield.dart';
 import 'package:unigo/components/credential_screen/description_big_textfield.dart';
@@ -35,18 +37,21 @@ class EntityEditScreen extends StatefulWidget {
 }
 
 class _EntityEditScreenState extends State<EntityEditScreen> {
+  bool _isUploading = false;
+
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+
+  // ignore: unused_field
   String? _idUser = "";
   String imageURL = "";
   File? _tempImageFile;
-  String? _deleteConfirmationText = "";
-  bool _isUploading = false;
 
   @override
   void initState() {
-    getUserInfo();
     super.initState();
+
+    getUserInfo();
   }
 
   Future<void> getUserInfo() async {
@@ -92,7 +97,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
           content: Padding(
             padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
             child: Text(
-              "Antes debes realizar algún cambio",
+              AppLocalizations.of(context)!.empty_fields,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 color: Theme.of(context).secondaryHeaderColor,
@@ -144,6 +149,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
           ),
         );
         Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           PageTransition(
             type: PageTransitionType.rightToLeft,
@@ -179,28 +185,15 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
         ),
       );
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).splashColor,
-          showCloseIcon: false,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
-          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-          content: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-            child: Text(
-              AppLocalizations.of(context)!.unable_to_proceed,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      SnackBarProvider().showErrorSnackBar(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: use_build_context_synchronously
+          AppLocalizations.of(context)!.server_error,
+          30,
+          0,
+          30,
+          60);
     }
   }
 
@@ -220,44 +213,16 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                 borderRadius: BorderRadius.circular(35.0),
               ),
               title: Text(
-                'Eliminar entidad',
+                AppLocalizations.of(context)!.delete_entity,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '¿Estás seguro de que quieres eliminar esta entidad? \n\nAl eliminar la entidad, esta quedará inaccesible y no podrá ser utilizada por nadie. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación.',
+                    AppLocalizations.of(context)!.delete_entity_explanation,
                     textAlign: TextAlign.start,
                     style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  const SizedBox(height: 25),
-                  TextField(
-                    onChanged: (value) {
-                      if (mounted) {
-                        setState(() {
-                          // Guardar el valor ingresado para la confirmación
-                          _deleteConfirmationText = value;
-                        });
-                      }
-                    },
-                    cursorColor: Theme.of(context).splashColor,
-                    style: TextStyle(
-                      color: Theme.of(context).secondaryHeaderColor,
-                    ),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Theme.of(context).cardColor,
-                      hintText: "Escribe 'ELIMINAR' para confirmar",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 146, 146, 146),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(17.5),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
-                    ),
                   ),
                 ],
               ),
@@ -268,54 +233,29 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   },
                   style: ButtonStyle(
                     foregroundColor: WidgetStateProperty.all<Color>(
-                      const Color.fromARGB(255, 222, 66, 66),
+                      Theme.of(context).splashColor,
                     ),
                   ),
-                  child: const Text('Cancelar'),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 TextButton(
                   onPressed: () {
-                    if (_deleteConfirmationText == 'ELIMINAR') {
-                      deleteEntity(); // Asegúrate de que este método sea asíncrono si es necesario
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.leftToRight,
-                          child: const NavBar(),
-                        ),
-                        (Route<dynamic> route) =>
-                            false, // Elimina todas las pantallas anteriores
-                      );
-                    } else {
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.amber,
-                          showCloseIcon: true,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                          content: const Text(
-                            'Texto de confirmación incorrecto',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
-                          closeIconColor: Colors.black,
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(seconds: 3),
-                        ),
-                      );
-                    }
+                    deleteEntity();
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.leftToRight,
+                        child: const NavBar(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
                   },
                   style: ButtonStyle(
                     foregroundColor: WidgetStateProperty.all<Color>(
-                      const Color.fromARGB(255, 222, 66, 66),
+                      Theme.of(context).splashColor,
                     ),
                   ),
-                  child: const Text('Confirmar'),
+                  child: Text(AppLocalizations.of(context)!.confirm),
                 ),
               ],
             ),
@@ -357,7 +297,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                       ),
                     ),
                     Text(
-                      "Editar entidad",
+                      AppLocalizations.of(context)!.edit_entity,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).textTheme.titleSmall?.color,
@@ -380,9 +320,9 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close_rounded,
-                          color: Color.fromARGB(255, 227, 227, 227),
+                          color: Theme.of(context).secondaryHeaderColor,
                           size: 27.5,
                         ),
                       ),
@@ -400,15 +340,11 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                         const SizedBox(
                           height: 37.5,
                         ),
-                        //Username textfield
                         InputShortTextField(
                             controller: nameController,
                             labelText: widget.name,
                             obscureText: false),
-
                         const SizedBox(height: 15),
-
-                        //Email address textfield
                         DescriptionBigTextField(
                             controller: descriptionController,
                             labelText: widget.description,
@@ -424,7 +360,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   children: [
                     //Sign up button
                     RedButton(
-                      buttonText: "EDITAR",
+                      buttonText: AppLocalizations.of(context)!.edit_button,
                       onTap: editEntity,
                     ),
                     if (_isUploading)
@@ -463,13 +399,13 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                     ),
                     children: [
                       TextSpan(
-                        text: "La entidad que modifiques deberá cumplir los ",
+                        text: AppLocalizations.of(context)!.remember_entity2,
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation2,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                          color: Theme.of(context).splashColor,
+                        ), // Cambia el color a rojo
                       ),
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation3,
@@ -477,11 +413,11 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                       TextSpan(
                         text: AppLocalizations.of(context)!.explanation4,
                         style: GoogleFonts.inter(
-                            color: const Color.fromARGB(
-                                255, 204, 49, 49)), // Cambia el color a rojo
+                          color: Theme.of(context).splashColor,
+                        ), // Cambia el color a rojo
                       ),
                       TextSpan(
-                        text: " de UNIGO!",
+                        text: AppLocalizations.of(context)!.of_UNIGO,
                       ),
                     ],
                   ),
@@ -521,8 +457,8 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
               );
             },
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.amber,
+              decoration: BoxDecoration(
+                color: Theme.of(context).highlightColor,
                 shape: BoxShape.circle,
               ),
               child: const Padding(
@@ -555,7 +491,7 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
       child: Column(
         children: [
           Text(
-            "Choose an entity photo",
+            AppLocalizations.of(context)!.select_a_photo,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
@@ -574,7 +510,6 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   splashColor: Colors.transparent,
                   onTap: () {
                     pickAnImage(ImageSource.camera);
-                    //pickImageFromGallery(ImageSource.camera);
                     Navigator.pop(context);
                   },
                   child: const Padding(
@@ -599,8 +534,6 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                   splashColor: Colors.transparent,
                   onTap: () {
                     pickAnImage(ImageSource.gallery);
-
-                    //pickImageFromGallery(ImageSource.gallery);
                     Navigator.pop(context);
                   },
                   child: const Padding(
@@ -608,7 +541,6 @@ class _EntityEditScreenState extends State<EntityEditScreen> {
                     child: Icon(
                       Icons.image,
                       color: Colors.white,
-                      semanticLabel: "Gallery",
                     ),
                   ),
                 ),

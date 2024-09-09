@@ -5,7 +5,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:unigo/pages/navbar.dart';
 // ignore: unnecessary_import
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -16,11 +15,11 @@ class MyQR extends StatefulWidget {
   final List<String> questions;
   final String expChallenge;
   const MyQR({
-    Key? key,
+    super.key,
     required this.idChallenge,
     required this.questions,
     required this.expChallenge,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _MyQRState();
@@ -491,10 +490,13 @@ class _MyQRState extends State<MyQR> {
                   color: Theme.of(context).splashColor,
                 ),
                 child: const Center(
-                  child: Icon(
-                    Icons.arrow_back_rounded,
-                    color: Colors.white,
-                    size: 30,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 5.0),
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                   ),
                 ),
               ),
@@ -599,7 +601,8 @@ class _MyQRState extends State<MyQR> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).scaffoldBackgroundColor,
                           shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(25)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(25)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),

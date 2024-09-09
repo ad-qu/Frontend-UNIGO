@@ -1,15 +1,15 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:unigo/components/itinerary/itinerary_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:unigo/models/entity.dart';
 import 'package:unigo/pages/entity/entity_add.dart';
 import 'package:unigo/pages/entity/entity_search.dart';
 import 'package:unigo/components/entity/entity_card.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EntityScreen extends StatefulWidget {
   const EntityScreen({super.key});
@@ -20,12 +20,14 @@ class EntityScreen extends StatefulWidget {
 
 class _EntityScreenState extends State<EntityScreen> {
   bool _isLoading = true;
-  List<Entity> entityList = [];
+
   String? _idUser = "";
+  List<Entity> entityList = [];
 
   @override
   void initState() {
     super.initState();
+
     getUserInfo();
     getEntities();
   }
@@ -53,9 +55,6 @@ class _EntityScreenState extends State<EntityScreen> {
         ),
       );
 
-      print(
-          "Response data: ${response.data}"); // Imprime la respuesta para verificar
-
       if (response.data is List) {
         var following = response.data as List;
         setState(() {
@@ -64,10 +63,7 @@ class _EntityScreenState extends State<EntityScreen> {
           _isLoading = false;
         });
       } else if (response.data is Map) {
-        // Maneja el caso cuando la respuesta es un mapa
         var mapData = response.data as Map<String, dynamic>;
-        print("Map data: $mapData"); // Imprime el mapa para verificar
-        // Ajusta esto según la estructura de tu mapa
         if (mapData.containsKey('entities') && mapData['entities'] is List) {
           var following = mapData['entities'] as List;
           setState(() {
@@ -77,30 +73,25 @@ class _EntityScreenState extends State<EntityScreen> {
             _isLoading = false;
           });
         } else {
-          // Maneja el caso cuando la respuesta del mapa no tiene la clave 'entities'
           setState(() {
             entityList = [];
             _isLoading = false;
           });
         }
       } else {
-        // Maneja el caso cuando la respuesta no es ni una lista ni un mapa
         setState(() {
           entityList = [];
           _isLoading = false;
         });
       }
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         entityList = [];
         _isLoading = false;
       });
     }
-  }
-
-  Future<void> _refreshEntities() async {
-    await getEntities();
   }
 
   @override
@@ -177,14 +168,9 @@ class _EntityScreenState extends State<EntityScreen> {
                                 ),
                               );
                               if (result == true) {
-                                print(
-                                    "Entity created successfully, updating list.");
                                 setState(() {
                                   getEntities();
                                 });
-                              } else {
-                                print(
-                                    "Entity creation failed or was canceled.");
                               }
                             },
                             child: Container(
@@ -210,7 +196,7 @@ class _EntityScreenState extends State<EntityScreen> {
                                 ),
                               );
                               if (result == true) {
-                                _refreshEntities(); // Refresh entities when coming back
+                                getEntities();
                               }
                             },
                             child: Container(
@@ -282,7 +268,8 @@ class _EntityScreenState extends State<EntityScreen> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'No sigues\nninguna entidad',
+                                            AppLocalizations.of(context)!
+                                                .do_not_follow_entities,
                                             textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme
@@ -310,7 +297,9 @@ class _EntityScreenState extends State<EntityScreen> {
                                               ),
                                               children: [
                                                 TextSpan(
-                                                  text: 'Presiona ',
+                                                  text: AppLocalizations.of(
+                                                          context)!
+                                                      .press,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium,
@@ -325,8 +314,9 @@ class _EntityScreenState extends State<EntityScreen> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text:
-                                                      ' para buscar entidades',
+                                                  text: AppLocalizations.of(
+                                                          context)!
+                                                      .to_go_to_entities,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium,
@@ -346,7 +336,9 @@ class _EntityScreenState extends State<EntityScreen> {
                                               ),
                                               children: [
                                                 TextSpan(
-                                                  text: 'o presiona ',
+                                                  text: AppLocalizations.of(
+                                                          context)!
+                                                      .or_press,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium,
@@ -361,7 +353,9 @@ class _EntityScreenState extends State<EntityScreen> {
                                                   ),
                                                 ),
                                                 TextSpan(
-                                                  text: ' para crear una',
+                                                  text: AppLocalizations.of(
+                                                          context)!
+                                                      .to_create,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium,

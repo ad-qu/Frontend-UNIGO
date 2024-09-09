@@ -1,10 +1,6 @@
-// ignore_for_file: sort_child_properties_last, prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'dart:ui';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../components/map/map_gps.dart';
 import '../../components/home_screen/sliding_up_panel.dart';
 
@@ -49,7 +45,7 @@ class _MapState extends State<Map> {
         topLeft: Radius.circular(22.5),
         topRight: Radius.circular(22.5),
       ),
-      body: MapGPS(),
+      body: const MapGPS(),
     ));
   }
 }

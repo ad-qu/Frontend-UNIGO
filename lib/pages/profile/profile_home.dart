@@ -1,10 +1,8 @@
-// ignore_for_file: library_private_types_in_public_api
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:unigo/components/snackbar/snackbar_provider.dart';
 import 'package:unigo/pages/profile/followers_screen.dart';
 import 'package:unigo/pages/profile/following_screen.dart';
 import 'package:unigo/pages/profile/history_home.dart';
@@ -18,34 +16,35 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unigo/pages/startup/welcome.dart';
 import 'package:unigo/components/input_widgets/delete_account_button.dart';
 import 'package:unigo/components/input_widgets/edit_account_button.dart';
 import 'package:unigo/components/input_widgets/edit_password_button.dart';
-import 'package:unigo/components/input_widgets/grey_button.dart';
 import 'package:unigo/components/input_widgets/history_button.dart';
 import 'package:unigo/components/input_widgets/log_out_button.dart';
 import 'package:unigo/components/language/language_button.dart';
 import 'package:unigo/components/theme/theme_provider.dart';
-import '../../models/user.dart' as user_ea;
-import '../../components/profile_screen/user_card.dart';
+
 import 'package:page_transition/page_transition.dart';
-import 'package:unigo/pages/profile/edit_account.dart';
-import 'package:unigo/pages/profile/edit_password.dart';
+
+import 'dart:ui';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'dart:ui';
+
 import 'package:restart_app/restart_app.dart';
+import 'package:unigo/pages/profile/edit_account.dart';
+import 'package:unigo/pages/profile/edit_password.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = false;
+
   String? _idUser = "";
   String? _name = "";
   String? _surname = "";
@@ -53,38 +52,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _deleteUsername = "";
   // ignore: unused_field
   String? _token = "";
+  // ignore: unused_field
   String? _campus = "";
   String? _followers = "";
   String? _following = "";
   int _level = 0;
   int _exp = 0;
-  bool _seeFollowing = false;
-  bool _seeFollowers = false;
-  bool _seeOptions = true;
-  List<user_ea.User> followingList = [];
-  List<user_ea.User> followersList = [];
+
   List<dynamic> insigniasList = [];
-  FirebaseAuth auth = FirebaseAuth.instance;
+
   String imageURL = "";
-  bool _isFollowingHighlighted = false;
-  bool _isFollowersHighlighted = false;
-
-  final TextStyle _highlightedText = const TextStyle(
-      color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 18);
-
-  // ignore: prefer_const_constructors
-  late TextStyle _normalText;
-  late TextStyle _textStyleFollowers;
-  late TextStyle _textStyleFollowing;
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
+
     getUserInfo();
     getFriendsInfo();
-    getFollowing();
-    getFollowers();
-    getInsignias();
   }
 
   Future clearInfo() async {
@@ -165,8 +150,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             child: Container(
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 247, 199, 18),
+              decoration: BoxDecoration(
+                color: Theme.of(context).highlightColor,
                 shape: BoxShape.circle,
               ),
               child: const Padding(
@@ -199,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           Text(
-            "Choose a profile photo",
+            AppLocalizations.of(context)!.select_a_photo,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(
@@ -249,7 +234,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Icon(
                       Icons.image,
                       color: Colors.white,
-                      semanticLabel: "Gallery",
                     ),
                   ),
                 ),
@@ -284,20 +268,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ));
         // ignore: avoid_print
+        setState(() {
+          imageURL = downloadURL;
+        });
         print(response);
         if (mounted) {}
       }
     } on PlatformException catch (e) {
       // ignore: avoid_print
-
       print('Failed to pick the image: $e');
     }
   }
 
   Future getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(
-        'Valor imageURL en las PREFS PROFILE SCREEN ----> ${prefs.getString('imageURL')}');
     if (mounted) {
       setState(() {
         _token = prefs.getString('token');
@@ -310,9 +294,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _level = prefs.getInt('level')!;
           _exp = prefs.getInt('experience')!;
           _campus = prefs.getString('campus')!;
-          print("342342342342346237853gbedfgjhsdfjhksdfjhsdj");
-          print(_level);
         } catch (e) {
+          // ignore: avoid_print
           print(e);
           _level = 0;
           _exp = 0;
@@ -326,6 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _isLoading = true;
       });
+      // ignore: unused_local_variable
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var followersCount = await Dio().get(
           'http://${dotenv.env['API_URL']}/user/followers/count/${_idUser!}');
@@ -347,6 +331,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _isLoading = false;
       });
+      // ignore: avoid_print
       print('Error in the counting of friends: $e');
     }
   }
@@ -378,81 +363,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         insigniasList = insignias;
       });
     } catch (e) {
+      // ignore: avoid_print
       print('Error in insignias: $e');
     }
+    // ignore: avoid_print
     print("He fet les insignies");
-  }
-
-  Future getFollowing() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/user/following/$_idUser';
-    try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-      var users = response.data as List;
-      if (mounted) {
-        setState(() {
-          followingList =
-              users.map((user) => user_ea.User.fromJson2(user)).toList();
-        });
-      }
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
-    }
-  }
-
-  Future getFollowers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String token = prefs.getString('token') ?? "";
-    String path = 'http://${dotenv.env['API_URL']}/user/followers/$_idUser';
-    try {
-      var response = await Dio().get(
-        path,
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
-      var users = response.data as List;
-      if (mounted) {
-        setState(() {
-          followersList =
-              users.map((user) => user_ea.User.fromJson2(user)).toList();
-        });
-      }
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   elevation: 0,
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: Colors.transparent,
-      //   content: AwesomeSnackbarContent(
-      //     title: 'Unable! $e',
-      //     message: 'Try again later.',
-      //     contentType: ContentType.failure,
-      //   ),
-      // ));
-    }
   }
 
   seeHistory() async {
@@ -479,7 +394,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.push(
       context,
       PageTransition(
-        type: PageTransitionType.leftToRight,
+        type: PageTransitionType.rightToLeft,
         child: const EditPasswordScreen(),
       ),
     );
@@ -489,113 +404,105 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Stack(children: [
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-            child: Container(),
-          ),
-          AlertDialog(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(35.0),
+        return Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: Container(),
             ),
-            title: Text('Eliminar cuenta',
-                style: Theme.of(context).textTheme.titleSmall),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '¿Estás seguro de que quieres eliminar tu cuenta? \n\nAl eliminar tu cuenta, esta quedará inaccesible y no podrás utilizarla. \n\nPara reactivarla, será necesario contactar con nuestro equipo de soporte. \n\nPor favor, considera esta opción con cuidado antes de confirmar la eliminación. \n\n\nEscribe tu nombre de usuario para confirmar:',
-                  textAlign: TextAlign.start,
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                const SizedBox(height: 25),
-                TextField(
-                  onChanged: (value) {
-                    if (mounted) {
-                      setState(() {
-                        _deleteUsername = value;
-                      });
-                    }
-                  },
-                  cursorColor: const Color.fromARGB(255, 222, 66, 66),
-                  style: const TextStyle(
-                    color: Color.fromARGB(255, 25, 25, 25),
-                  ),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).textTheme.bodyMedium?.color,
-                    hintText: _username,
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 146, 146, 146),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(17.5),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all<Color>(
-                    const Color.fromARGB(255, 222, 66, 66),
-                  ),
-                ),
-                child: const Text('Cancelar'),
+            AlertDialog(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(35.0),
               ),
-              TextButton(
-                onPressed: () {
-                  if (_username == _deleteUsername) {
-                    disableAccount();
-                    auth.signOut();
-                    GoogleSignIn().signOut();
-                    clearInfo();
-                    Navigator.pushReplacement(
+              title: Text(AppLocalizations.of(context)!.delete_account,
+                  style: Theme.of(context).textTheme.titleSmall),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.delete_account_explanation,
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const SizedBox(height: 25),
+                  TextField(
+                    onChanged: (value) {
+                      if (mounted) {
+                        setState(() {
+                          _deleteUsername = value;
+                        });
+                      }
+                    },
+                    cursorColor: Theme.of(context).splashColor,
+                    style: TextStyle(
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Theme.of(context).dividerColor,
+                      hintText: _username,
+                      hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 138, 138, 138),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(17.5),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.fromLTRB(18.5, 14, 0, 0),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStateProperty.all<Color>(
+                      Theme.of(context).splashColor,
+                    ),
+                  ),
+                  child: Text(AppLocalizations.of(context)!.cancel),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (_username == _deleteUsername) {
+                      disableAccount();
+                      auth.signOut();
+                      GoogleSignIn().signOut();
+                      clearInfo();
+                      Navigator.pushReplacement(
                         context,
                         PageTransition(
-                            type: PageTransitionType.leftToRight,
-                            child: const LoginScreen()));
-                  } else {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.amber,
-                        showCloseIcon: true,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          type: PageTransitionType.leftToRight,
+                          child: const LoginScreen(),
                         ),
-                        margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-                        content: const Text(
-                          'Nombre de usuario incorrecto',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        ),
-                        closeIconColor: Colors.black,
-                        behavior: SnackBarBehavior.floating,
-                        duration: const Duration(seconds: 3),
-                      ),
-                    );
-                  }
-                },
-                style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all<Color>(
-                    const Color.fromARGB(255, 222, 66, 66),
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                      SnackBarProvider().showWarningSnackBar(
+                        context,
+                        AppLocalizations.of(context)!.wrong_username,
+                        30,
+                        0,
+                        30,
+                        30,
+                      );
+                    }
+                  },
+                  style: ButtonStyle(
+                    foregroundColor: WidgetStateProperty.all<Color>(
+                      Theme.of(context).splashColor,
+                    ),
                   ),
+                  child: Text(AppLocalizations.of(context)!.confirm),
                 ),
-                child: const Text('Confirmar'),
-              ),
-            ],
-          )
-        ]);
+              ],
+            )
+          ],
+        );
       },
     );
   }
@@ -616,55 +523,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
       if (response.statusCode == 200) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-            content: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Account successfully deleted',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.check,
-                  color: Colors.white,
-                ),
-              ],
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
+        SnackBarProvider().showSuccessSnackBar(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: use_build_context_synchronously
+          AppLocalizations.of(context)!.account_deleted,
+          30,
+          0,
+          30,
+          30,
         );
       } else {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: const Color.fromARGB(255, 222, 66, 66),
-            showCloseIcon: true,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 22.5),
-            content: const Text(
-              'Unable to delete your account. Try again later',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
+        SnackBarProvider().showErrorSnackBar(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: use_build_context_synchronously
+          AppLocalizations.of(context)!.server_error,
+          30,
+          0,
+          30,
+          30,
         );
       }
     } catch (e) {
@@ -691,8 +569,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget showBadges() {
-    print("Estic al podium");
-
     List<String> badgeLevels = [];
     // Asumiendo que las imágenes están disponibles solo para los niveles 2, 4, y 6.
     for (int level = 2; level <= _level; level += 2) {
@@ -702,7 +578,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (badgeLevels.isEmpty) {
-      return SizedBox(
+      return const SizedBox(
         height: 10,
       );
     } else {
@@ -727,11 +603,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                 ],
               );
             } catch (e) {
-              return SizedBox();
+              return const SizedBox();
             }
           },
         ),
@@ -741,20 +617,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _normalText = TextStyle(
-      color: MediaQuery.of(context).platformBrightness == Brightness.light
-          ? Colors.black
-          : Colors.white,
-      fontWeight: FontWeight.normal,
-      fontSize: 18,
-    );
-
-    _textStyleFollowers = _normalText;
-    _textStyleFollowing =
-        _isFollowingHighlighted ? _highlightedText : _normalText;
-    _textStyleFollowers =
-        _isFollowersHighlighted ? _highlightedText : _normalText;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -923,7 +785,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ],
                             ),
-
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -947,14 +808,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       ),
                                     ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 2.0),
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: showBadges(),
-                                      ),
-                                    ),
+                                    // Padding(
+                                    //   padding:
+                                    //       const EdgeInsets.only(right: 2.0),
+                                    //   child: Align(
+                                    //     alignment: Alignment.centerRight,
+                                    //     child: showBadges(),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                                 const SizedBox(height: 8.5),
@@ -968,7 +829,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       minHeight: 6.5,
                                       value: _exp.toDouble() / 100,
                                       backgroundColor: Theme.of(context)
-                                          .secondaryHeaderColor,
+                                          .dialogBackgroundColor,
                                       color: Theme.of(context).highlightColor,
                                     ),
                                   ),
@@ -1018,10 +879,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 20),
-                            // Following scroll page
-
                             Column(
                               children: [
                                 const SizedBox(height: 17.5),
@@ -1029,15 +887,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                   child: HistoryButton(
-                                      buttonText: "History", onTap: seeHistory),
+                                      buttonText:
+                                          AppLocalizations.of(context)!.history,
+                                      onTap: seeHistory),
                                 ),
                                 const SizedBox(height: 38),
-                                //const SizedBox(height: 17.5),
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                   child: EditAccountButton(
-                                      buttonText: "Edit account",
+                                      buttonText: AppLocalizations.of(context)!
+                                          .edit_account,
                                       onTap: editAccount),
                                 ),
                                 const SizedBox(height: 12),
@@ -1045,7 +905,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                   child: EditPasswordButton(
-                                      buttonText: "Edit password",
+                                      buttonText: AppLocalizations.of(context)!
+                                          .edit_password,
                                       onTap: editPassword),
                                 ),
                                 const SizedBox(height: 38),
@@ -1053,7 +914,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                   child: DeleteAccountButton(
-                                      buttonText: "Disable account",
+                                      buttonText: AppLocalizations.of(context)!
+                                          .delete_account,
                                       onTap: showDisableConfirmation),
                                 ),
                                 const SizedBox(height: 12),
@@ -1061,7 +923,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   padding:
                                       const EdgeInsets.fromLTRB(12, 0, 12, 0),
                                   child: LogOutButton(
-                                      buttonText: "Log out", onTap: logOut),
+                                      buttonText:
+                                          AppLocalizations.of(context)!.log_out,
+                                      onTap: logOut),
                                 ),
                               ],
                             ),

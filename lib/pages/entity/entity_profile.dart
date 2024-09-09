@@ -1,20 +1,14 @@
-// ignore_for_file: library_private_types_in_public_api
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:unigo/pages/entity/chat_screens/chat_screen.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:unigo/pages/entity/entity_edit.dart';
 import 'package:unigo/pages/entity/entity_home.dart';
 import 'package:unigo/pages/entity/entity_people.dart';
-import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
 import 'package:unigo/pages/entity/news/news_home.dart';
-
-import 'package:flutter/material.dart';
-
-import 'package:page_transition/page_transition.dart';
-
-import 'package:flutter/services.dart';
-import 'dart:ui';
+import 'package:unigo/pages/entity/chat_screens/chat_screen.dart';
+import 'package:unigo/pages/entity/itineraries/itinerary_home.dart';
 
 class EntityProfileScreen extends StatefulWidget {
   final String idUserSession;
@@ -37,6 +31,7 @@ class EntityProfileScreen extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _EntityProfileScreenState createState() => _EntityProfileScreenState();
 }
 
@@ -122,12 +117,12 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                         .blue.shade700, // Color de fondo azul
                                     shape: BoxShape.circle, // Forma circular
                                   ),
-                                  child: const Center(
+                                  child: Center(
                                     child: Icon(
                                       Icons.check,
                                       size: 12,
-                                      color:
-                                          Colors.white, // Color del tick blanco
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor, // Color del tick blanco
                                     ),
                                   ),
                                 ),
@@ -143,7 +138,7 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                               type: PageTransitionType.rightToLeft,
                               child: EntityPeople(
                                   idEntity: widget.idEntity,
-                                  admin: widget.attr5!),
+                                  admin: widget.attr5),
                             ),
                           );
                         },
@@ -224,7 +219,7 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                       child: NewsScreen(
                                           idUserSession: widget.idUserSession,
                                           idEntity: widget.idEntity,
-                                          admin: widget.attr5!),
+                                          admin: widget.attr5),
                                     ),
                                   );
                                 },
@@ -256,7 +251,8 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                               width: 17,
                                             ),
                                             Text(
-                                              "Noticias",
+                                              AppLocalizations.of(context)!
+                                                  .news,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .labelMedium,
@@ -313,7 +309,8 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                               width: 17,
                                             ),
                                             Text(
-                                              "Chat",
+                                              AppLocalizations.of(context)!
+                                                  .chat,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .labelMedium,
@@ -373,7 +370,8 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                               width: 17,
                                             ),
                                             Text(
-                                              "Itinerarios",
+                                              AppLocalizations.of(context)!
+                                                  .itineraries,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .labelMedium,
@@ -444,12 +442,12 @@ class _EntityProfileScreenState extends State<EntityProfileScreen> {
                                     width: 12,
                                   ),
                                   Text(
-                                    "Ajustes",
+                                    AppLocalizations.of(context)!.settings,
                                     style: GoogleFonts.inter(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color.fromARGB(
-                                          255, 227, 227, 227),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                     ),
                                   ),
                                 ],

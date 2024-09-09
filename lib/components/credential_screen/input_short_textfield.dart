@@ -26,7 +26,7 @@ class _InputShortTextFieldState extends State<InputShortTextField> {
       controller: widget.controller,
       obscureText: widget.obscureText,
       cursorWidth: 1,
-      maxLength: 12,
+      maxLength: 15,
       style: Theme.of(context).textTheme.labelMedium,
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(

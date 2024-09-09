@@ -1,17 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:ui';
-
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unigo/models/entity.dart';
-import 'package:unigo/pages/entity/entity_home.dart';
-import 'package:unigo/pages/entity/itineraries/challenge_qr_generator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:unigo/pages/entity/itineraries/challenge_qr_generator.dart';
 
 class ChallengeMenu extends StatefulWidget {
   final String idChallenge;
@@ -46,13 +42,13 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(35.0),
             ),
-            title: Text('Eliminar reto',
+            title: Text(AppLocalizations.of(context)!.delete_challenge,
                 style: Theme.of(context).textTheme.titleSmall),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "¿Seguro que desea eliminar este reto?\n\nEsta decisión será permanente.",
+                  AppLocalizations.of(context)!.delete_chalenge_explanation,
                   textAlign: TextAlign.start,
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
@@ -68,11 +64,12 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
                     Theme.of(context).splashColor,
                   ),
                 ),
-                child: const Text('Cancelar'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               TextButton(
                 onPressed: () async {
                   await deleteChallenge();
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                   widget.onChange();
                 },
@@ -81,7 +78,7 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
                     Theme.of(context).splashColor,
                   ),
                 ),
-                child: const Text('Confirmar'),
+                child: Text(AppLocalizations.of(context)!.confirm),
               ),
             ],
           )
@@ -96,7 +93,7 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
     String path =
         'http://${dotenv.env['API_URL']}/challenge/delete/${widget.idChallenge}';
     try {
-      var response = await Dio().delete(
+      await Dio().delete(
         path,
         options: Options(
           headers: {
@@ -106,28 +103,8 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
         ),
       );
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).splashColor,
-          showCloseIcon: false,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.5)),
-          margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-          content: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-            child: Text(
-              AppLocalizations.of(context)!.unable_to_proceed,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: Theme.of(context).secondaryHeaderColor,
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      // ignore: avoid_print
+      print("Error $e");
     }
   }
 
@@ -150,7 +127,7 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Center(
               child: Text(
-                'Descargar QR',
+                AppLocalizations.of(context)!.download_QR,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   color: Theme.of(context).secondaryHeaderColor,
@@ -169,7 +146,7 @@ class _ChallengeMenuState extends State<ChallengeMenu> {
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Center(
               child: Text(
-                'Eliminar',
+                AppLocalizations.of(context)!.delete_button,
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   color: Theme.of(context).secondaryHeaderColor,

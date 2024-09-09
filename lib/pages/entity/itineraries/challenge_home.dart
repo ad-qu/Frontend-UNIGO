@@ -1,12 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
 import 'package:dio/dio.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:unigo/components/challenge/challenge_card.dart';
-import 'package:unigo/models/challenge.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:unigo/models/challenge.dart';
+import 'package:unigo/components/challenge/challenge_card.dart';
 import 'package:unigo/pages/entity/itineraries/challenge_add.dart';
 
 class ChallengeHome extends StatefulWidget {
@@ -25,13 +26,15 @@ class ChallengeHome extends StatefulWidget {
 
 class _ChallengeHomeState extends State<ChallengeHome> {
   bool _isLoading = true;
+
   List<Challenge> challengeList = [];
+
   String? _idUser = "";
 
   @override
   void initState() {
-
     super.initState();
+
     getChallenges();
     getUserInfo();
   }
@@ -66,6 +69,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
         _isLoading = false;
       });
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       setState(() {
         _isLoading = false;
@@ -98,7 +102,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                             ),
                           ),
                           Text(
-                            "Retos",
+                            AppLocalizations.of(context)!.challenges,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           if (widget.admin == _idUser)
@@ -108,9 +112,9 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                                 color: Colors.transparent,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.add,
-                                color: Color.fromARGB(255, 227, 227, 227),
+                                color: Theme.of(context).secondaryHeaderColor,
                                 size: 27.5,
                               ),
                             )
@@ -173,7 +177,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                             ),
                           ),
                           Text(
-                            "Retos ",
+                            AppLocalizations.of(context)!.challenges,
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.bold,
                               color:
@@ -193,11 +197,7 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                                   ),
                                 );
                                 if (result == true) {
-                                  print(
-                                      "New created successfully, updating list.");
                                   getChallenges();
-                                } else {
-                                  print("New creation failed or was canceled.");
                                 }
                               },
                               child: Container(
@@ -206,9 +206,9 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.add,
-                                  color: Color.fromARGB(255, 227, 227, 227),
+                                  color: Theme.of(context).secondaryHeaderColor,
                                   size: 27.5,
                                 ),
                               ),
@@ -282,7 +282,8 @@ class _ChallengeHomeState extends State<ChallengeHome> {
                                             .center, // Centra el contenido horizontalmente
                                         children: [
                                           Text(
-                                            'Este itinerario\nno tiene retos',
+                                            AppLocalizations.of(context)!
+                                                .itinerary_no_challenges,
                                             textAlign: TextAlign.center,
                                             style: Theme.of(context)
                                                 .textTheme
